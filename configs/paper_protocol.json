@@ -1,0 +1,112 @@
+{
+  "scope": "Executable fixed-model public10 protocol. All ten inputs and references are bundled.",
+  "arms_and_readout": {
+    "p0": "raw",
+    "bpr": "strict-S24",
+    "full": "strict-S24"
+  },
+  "aggregation": "Unweighted mean of the 10 per-case mean errors; 10 repetitions per case and arm.",
+  "repeat_policy": "Ten seed blocks (2029-2038), each with all 10 cases and all compared arms; a fresh process per solve. Same initial seed within each block does not imply common random paths.",
+  "workers": 8,
+  "p": 0.01,
+  "c": 0.01,
+  "omp_threads": 1,
+  "mkl_threads": 1,
+  "cases": [
+    {
+      "case": "case1",
+      "master": "APpolysub",
+      "reference_F": 1.591776e-14,
+      "c_ratio": 0.95,
+      "geometry": "benchmarks/public10/case1.cap3d",
+      "reference_source": "benchmarks/public10/ref/case1.dspf"
+    },
+    {
+      "case": "case2",
+      "master": "M4M1poly",
+      "reference_F": 1.6464417800000003e-14,
+      "c_ratio": 0.95,
+      "geometry": "benchmarks/public10/case2.cap3d",
+      "reference_source": "benchmarks/public10/ref/case2.dspf"
+    },
+    {
+      "case": "case3",
+      "master": "M8polysub",
+      "reference_F": 2.15818e-14,
+      "c_ratio": 0.95,
+      "geometry": "benchmarks/public10/case3.cap3d",
+      "reference_source": "benchmarks/public10/ref/case3.dspf"
+    },
+    {
+      "case": "case4",
+      "master": "NoLayerALRDLM4",
+      "reference_F": 8.210106e-15,
+      "c_ratio": 0.95,
+      "geometry": "benchmarks/public10/case4.cap3d",
+      "reference_source": "benchmarks/public10/ref/case4.dspf"
+    },
+    {
+      "case": "case5",
+      "master": "NoLayerTMpoly",
+      "reference_F": 1.419204e-14,
+      "c_ratio": 0.95,
+      "geometry": "benchmarks/public10/case5.cap3d",
+      "reference_source": "benchmarks/public10/ref/case5.dspf"
+    },
+    {
+      "case": "case6",
+      "master": "NoLayerTMM1",
+      "reference_F": 9.584033e-15,
+      "c_ratio": 0.95,
+      "geometry": "benchmarks/public10/case6.cap3d",
+      "reference_source": "benchmarks/public10/ref/case6.dspf"
+    },
+    {
+      "case": "case7",
+      "master": "1",
+      "reference_F": 9.176692675804292e-16,
+      "c_ratio": 0.3,
+      "geometry": "benchmarks/public10/case7.cap3d",
+      "reference_source": "benchmarks/public10/ref/case7.dspf"
+    },
+    {
+      "case": "case8",
+      "master": "1",
+      "reference_F": 8.763291910000002e-16,
+      "c_ratio": 0.3,
+      "geometry": "benchmarks/public10/case8.cap3d",
+      "reference_source": "benchmarks/public10/ref/case8.dspf"
+    },
+    {
+      "case": "case9",
+      "master": "G",
+      "reference_F": 1.8767555390000001e-16,
+      "c_ratio": 0.3,
+      "geometry": "benchmarks/public10/case9.cap3d",
+      "reference_source": "benchmarks/public10/ref/case9.dspf"
+    },
+    {
+      "case": "case10",
+      "master": "G",
+      "reference_F": 1.2410000000000002e-15,
+      "c_ratio": 0.3,
+      "geometry": "benchmarks/public10/case10.cap3d",
+      "reference_source": "benchmarks/public10/ref/case10.spice"
+    }
+  ],
+  "solver_initial_seeds": [
+    2029,
+    2030,
+    2031,
+    2032,
+    2033,
+    2034,
+    2035,
+    2036,
+    2037,
+    2038
+  ],
+  "training_seed": 2029,
+  "order_seed": 20260919,
+  "warmup": "For paper profile: one excluded case8 solve per arm, initial seed 2040."
+}

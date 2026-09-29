@@ -1,0 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cu126
+torch==2.6.0+cu126
+torch-tensorrt==2.6.0+cu126
+tensorrt==10.7.0.post1
+numpy==2.4.4

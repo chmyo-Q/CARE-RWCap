@@ -1,0 +1,16 @@
+* text=auto
+*.py text eol=lf
+*.sh text eol=lf
+*.cpp text eol=lf
+*.cu text eol=lf
+*.cuh text eol=lf
+*.h text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.jit binary
+*.pt binary
+*.so binary
+*.cap3d binary
+*.dspf binary
+third_party/deeprwcap/runtime/deepRWCap binary
+third_party/deeprwcap/baselines/rwcap_* binary
