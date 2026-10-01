@@ -1,5 +1,7 @@
 # Method
 
+The [framework overview](figures/overview.png) follows the first Gradient transition (CPGR), subsequent Poisson transitions (BPR), and same-solve endpoint readout (CER). The section order below groups the learned component before the runtime operators. See [paper-to-code mapping](PAPER_MAPPING.md) for stage order and the released single-master interface.
+
 ## BPR: Baseline-Anchored Poisson Refinement
 
 Implementation: `src/bpr/model.py`; historical checkpoint class name: `ResidualFactorizedPredictor` (S29 RF_RISK).

@@ -9,10 +9,11 @@ This is a fixed-model inference and public-benchmark release, not the full resea
 | Evaluate public10 | Ten layouts/references, 300-solve protocol, raw/CER summary | A fixed development benchmark; stochastic outcomes can differ |
 | Compare traditional solvers | Upstream FRW-AGF, MicroWalk and FRW-FDM binaries; CPU-only runner | No source rebuild of these upstream solver cores |
 | Check module effects | Same-readout P0/BPR/Full differences and CER effects | Three solver arms do not identify CPGR's standalone effect or a full factorial interaction |
+| Inspect the framework | Author-supplied overview PNG/PDF and stage-to-code map | Diagram shows multi-master repetition; the released evaluator handles one selected master per invocation |
 | Review historical results | Original 300-run compact per-case and macro reference | Not all experimental cohorts or original logs |
 | Inspect local transition metrics | Optional frozen evaluator and fixed split | Original external datasets required; not bundled |
 | Evaluate a custom geometry | Neural single-run JSON configuration | One logical master task; reference needed for error; unsupported GPU engines require additional work |
-| Reproduce every paper table | Not provided | Additional-layout inputs, dedicated memory/microtiming studies and plotting archive excluded |
+| Reproduce every paper table | Not provided | Coupling-row normalized L1 summaries, additional-layout inputs, dedicated memory/microtiming studies and plotting archive excluded |
 | Retrain or rebuild the complete solver | Not provided | BPR inspection and own CUDA extension builds are supported; upstream core remains a binary dependency |
 
 Only the original paper 300-run cohort is distributed as a historical reference. CPGR's incremental end-to-end benefit has not been consistent across checked batches; the reference does not establish a repeatable ranking or a universal tolerance. Numerical functional checks are distinct from validating an accuracy claim.

@@ -48,6 +48,7 @@ When comparing methods, keep model set, solver settings, inputs, reference value
 - The aligned three-arm table used P0 raw, BPR + strict-S24, and BPR + CPGR + strict-S24. Its mean is the unweighted mean of the ten per-case mean errors (each case has ten repetitions). Case-to-case standard deviation and within-case repeat variation are different statistics and must be labeled separately.
 - Walks and hops/walk come from the solver's output. Approximate steps are their product, rounded to an integer; hops/walk is already rounded by the solver.
 - Elapsed and CPU seconds are values reported by the solver. They are not measurements of Python launch, model loading, or the complete wrapper wall time.
+- The minimal evaluator retains the selected-master capacitance row but does not compute coupling-row normalized L1 error.
 - The minimal evaluator does not measure GPU memory or S24 microbenchmark latency; these require dedicated protocols and are not inferred from solver timing.
 
 The bundled example reference is the frozen total self-capacitance for master `1` from public `case8.dspf`. It is used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.

@@ -1,31 +1,27 @@
 # CARE-RWCap
-### Condition-Aware Refinement for Neural-Guided Random-Walk Capacitance Extraction
+### Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction
 
 [中文](README_CN.md) · [Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](benchmarks/public10/README.md)
 
 ## Introduction
 
-CARE-RWCap refines the neural predictions and capacitance readout of a floating random-walk solver. Built on [DeepRWCap](https://github.com/THU-numbda/deepRWCap), it combines three components:
+CARE-RWCap is a condition-aware refinement framework built on [DeepRWCap](https://github.com/THU-numbda/deepRWCap). It connects local transition refinement, signed sampling contributions and same-solve self-capacitance readout within a floating random walk (FRW) solver.
 
-- **BPR — Baseline-Anchored Poisson Refinement:** a learned adapter around a frozen Poisson predictor.
-- **CPGR — Conditional Parity Gradient Refinement:** reflection-conditioned signed-kernel projection, opposite-face probability averaging and sampling compensation, with frozen gradient networks.
-- **CER — Conditional Endpoint Re-estimation:** a post-solve readout using the logical-conductor coupling row when the frozen applicability conditions hold, with fallback to raw self capacitance.
-
-This repository provides method source, frozen models, the public ten-case benchmark and upstream CPU baselines. It supports fixed-model inference and evaluation; complete retraining is outside the release scope.
+This repository provides the core implementation, frozen deployment models, ten public benchmark inputs/references and three traditional CPU baselines.
 
 ## Overview
 
-```mermaid
-flowchart LR
-    L["Layout and dielectric geometry"] --> S["Random-walk solver"]
-    B["BPR: Poisson prediction"] -->|"Poisson branch"| S
-    G["CPGR: projection and compensated sampling"] -->|"Gradient branch"| S
-    S --> R["Raw capacitance row"]
-    R --> C["CER: conditional readout with raw fallback"]
-    C --> O["Self-capacitance estimate"]
-```
+[![CARE-RWCap overview: physical input, first Gradient transition, subsequent Poisson transitions, conductor-hit accumulation and conditional endpoint readout](docs/figures/overview.png)](docs/figures/overview.pdf)
 
-The diagram shows the Full configuration. BPR replaces only the Poisson predictor; CPGR operates inside gradient sampling; CER runs after the solve. Reference capacitances are used for evaluation, not for activating CER. Definitions and source locations are in [METHOD.md](docs/METHOD.md) and [PAPER_MAPPING.md](docs/PAPER_MAPPING.md).
+*Author-supplied framework figure. Click to view the vector PDF; [full-resolution PNG](docs/figures/overview.png) is also available.*
+
+Following the numbered stages in the figure:
+
+1. **CPGR — Conditional Parity Gradient Refinement.** At eligible neural first-Gradient transitions, strict input-reflection checks control parity projection and contribution compensation. The deployed joint operator also averages eligible opposite-face probabilities; the Gradient network parameters remain frozen.
+2. **BPR — Baseline-Anchored Poisson Refinement.** Subsequent neural Poisson steps use bounded residual reweighting of the in-face conditional distribution, with the frozen anchor and original Poisson face selector.
+3. **CER — Conditional Endpoint Re-estimation.** After conductor-hit contributions are accumulated, the same solve supplies raw and conditional coupling-based self-capacitance readouts. Reference values are used only to evaluate error.
+
+The figure describes the full framework; the released runner evaluates one selected master per invocation. The parser expects an already-aggregated logical-conductor row. Exact selector, input-validation and fallback behavior is explained in [paper-to-code mapping](docs/PAPER_MAPPING.md), with formulas in [METHOD.md](docs/METHOD.md).
 
 ## Requirements
 
@@ -44,7 +40,14 @@ Traditional CPU baselines need only Linux x86_64 and Python 3.10+; they do not r
 
 ## Quick start
 
-Download or clone this repository, enter its root directory, and complete [installation](docs/INSTALL.md). Then build the extensions and run the bundled case8 example:
+Clone the repository and follow [installation](docs/INSTALL.md) to configure the required system libraries and Python environment:
+
+```bash
+git clone https://github.com/chmyo-Q/CARE-RWCap.git
+cd CARE-RWCap
+```
+
+After installation, build the extensions and run the bundled case8 example:
 
 ```bash
 python scripts/check_environment.py --build-only
@@ -138,6 +141,7 @@ third_party/deeprwcap/           Upstream runtime, CPU baselines and license
 results/                         Compact original 300-run reference
 tests/                           CPU and GPU implementation checks
 docs/                            Installation, method and evaluation details
+docs/figures/                    Author-supplied framework PNG and vector PDF
 ```
 
 ## Release scope
@@ -148,7 +152,7 @@ An optional [local transition evaluator](docs/LOCAL_VALIDATION.md) is available 
 
 ## Citation and acknowledgments
 
-Software citation metadata is provided in [CITATION.cff](CITATION.cff). Paper bibliographic details will be added when publicly available.
+The manuscript title is **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**. [CITATION.cff](CITATION.cff) contains software citation metadata. Paper bibliographic details will be added when available.
 
 We thank the DeepRWCap authors for their neural solver, architectures, benchmark cases and baseline executables. If your work uses these upstream components, please also cite:
 

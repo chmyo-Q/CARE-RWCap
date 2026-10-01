@@ -1,37 +1,38 @@
 # CARE-RWCap
-### 面向神经引导随机游走电容提取的条件感知修正
+### 面向神经引导浮动随机游走电容提取的条件感知修正
 
 [English](README.md) · [安装](docs/INSTALL.md) · [方法](docs/METHOD.md) · [评估](benchmarks/public10/README.md)
 
 ## 项目简介
 
-CARE-RWCap 基于 [DeepRWCap](https://github.com/THU-numbda/deepRWCap)，在泊松预测、梯度采样和最终电容读出处加入三个组件：
+CARE-RWCap 基于 [DeepRWCap](https://github.com/THU-numbda/deepRWCap)，将局部转移修正、有符号采样贡献和同次求解的条件自电容读出连接到浮动随机游走（FRW）流程中。本包提供核心实现、冻结模型、公开十案例输入/参考及三种传统 CPU 基线。
 
-- **BPR（Baseline-Anchored Poisson Refinement）**：以冻结的泊松预测器为锚点，学习轻量修正。
-- **CPGR（Conditional Parity Gradient Refinement）**：根据输入的严格反射条件，实施有符号梯度核投影、对置面概率平均及采样补偿；梯度网络参数保持冻结。
-- **CER（Conditional Endpoint Re-estimation）**：满足固定适用条件时，从逻辑导体的耦合电容行重新读出自电容，否则保留原始自电容。
+## 方法总览
 
-本包提供方法实现、冻结模型、公开十案例及上游传统CPU基线，用于冻结模型推理与评估。完整训练工程不在公开范围内。
+[![CARE-RWCap 总览：物理输入、首次 Gradient 转移、后续 Poisson 转移、导体命中累积和条件终点读出](docs/figures/overview.png)](docs/figures/overview.pdf)
 
-## 方法流程
+*使用作者提供的正式 overview 图。点击图片查看矢量 PDF，也可打开[原尺寸 PNG](docs/figures/overview.png)。*
 
-```mermaid
-flowchart LR
-    L["几何与介电布局"] --> S["随机游走求解器"]
-    B["BPR：泊松预测"] -->|"泊松分支"| S
-    G["CPGR：梯度投影与补偿采样"] -->|"梯度分支"| S
-    S --> R["原始电容行"]
-    R --> C["CER：条件读出，不适用时回退"]
-    C --> O["自电容估计"]
-```
+按图中的编号：
 
-图示对应 Full 配置。BPR 仅替换泊松预测器，CPGR 接入梯度采样路径，CER 在求解结束后执行。参考电容只参与误差评估，不用于决定 CER 是否激活。详见[方法说明](docs/METHOD.md)及[论文术语对应](docs/PAPER_MAPPING.md)。
+1. **CPGR（Conditional Parity Gradient Refinement）**：在满足严格输入反射条件的首次神经 Gradient 转移中，实施奇偶投影和贡献补偿。最终联合算子还会对符合条件的对置面概率求平均，梯度网络参数保持冻结。
+2. **BPR（Baseline-Anchored Poisson Refinement）**：后续神经 Poisson 转移使用有界残差重加权修正面内条件分布，保留冻结锚点和原始 Poisson 选面器。
+3. **CER（Conditional Endpoint Re-estimation）**：导体命中贡献累积完成后，从同一次求解中获得 raw 与有条件的耦合项自电容读出。参考电容只参与误差评估。
+
+图示为整体框架；公开入口每次评估一个指定主导体，解析器要求上游已输出按逻辑导体汇总的唯一列。选面、输入有效性检查及回退规则见[论文与实现对应](docs/PAPER_MAPPING.md)，公式见[方法说明](docs/METHOD.md)。
 
 ## 环境与快速开始
 
 冻结神经引擎对应 Ubuntu 24.04 / Linux x86_64、RTX 4090、Python 3.12、CUDA Toolkit 12.6、Torch/Torch-TensorRT 2.6.0+cu126 和 TensorRT 10.7，采用 FP16 部署。未验证其他 GPU/软件组合。
 
-下载或克隆仓库，进入根目录，先按[安装说明](docs/INSTALL.md)配置系统库与 Python 依赖，再执行：
+先克隆仓库：
+
+```bash
+git clone https://github.com/chmyo-Q/CARE-RWCap.git
+cd CARE-RWCap
+```
+
+再按[安装说明](docs/INSTALL.md)配置系统库与 Python 依赖，完成后执行：
 
 ```bash
 python scripts/check_environment.py --build-only
@@ -114,6 +115,7 @@ third_party/deeprwcap/           上游运行库、传统基线及许可证
 results/                         原300-run紧凑历史参考
 tests/                           CPU/GPU实现检查
 docs/                            安装、方法和评估细节
+docs/figures/                    正式overview PNG与矢量PDF
 ```
 
 本项目修正模块和读出逻辑提供源码；上游求解核心与传统基线按二进制形式提供。完整训练数据/驱动、额外layout数据、专用显存实验、全部研发日志和论文绘图工程不在本包内。
@@ -122,6 +124,6 @@ docs/                            安装、方法和评估细节
 
 ## 引用、致谢与反馈
 
-软件引用信息见 [CITATION.cff](CITATION.cff)，论文正式书目信息将在公开后补充。感谢 DeepRWCap 作者提供神经求解器、网络结构、测试案例和基线程序；使用这些上游组件时，也请引用原论文，BibTeX 见[英文首页](README.md#citation-and-acknowledgments)。
+论文题目为 **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**。[CITATION.cff](CITATION.cff)提供软件引用信息，论文书目信息公开后再补充正式引用。感谢 DeepRWCap 作者提供神经求解器、网络结构、测试案例和基线程序；使用这些上游组件时，也请引用原论文，BibTeX 见[英文首页](README.md#citation-and-acknowledgments)。
 
 许可证见 [LICENSE](LICENSE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。安装或实现问题可通过 GitHub Issues 提交，请附运行命令、环境及相关日志片段。

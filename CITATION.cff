@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite CARE-RWCap. Paper bibliographic details will be added when publicly available."
-title: "CARE-RWCap: Condition-Aware Refinement for Neural-Guided Random-Walk Capacitance Extraction"
+title: "CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction"
 type: software
 authors:
   - family-names: Qiao
@@ -18,3 +18,4 @@ authors:
   - family-names: Li
     given-names: Hui
 license: MIT
+repository-code: "https://github.com/chmyo-Q/CARE-RWCap"
