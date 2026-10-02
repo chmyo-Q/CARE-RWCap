@@ -19,3 +19,16 @@ This is an identified historical reference, not a target that every new batch mu
 The original cohort contains three solver arms with two readouts each: P0 raw/CER, BPR raw/CER, and BPR+CPGR raw/CER. Its BPR+CPGR raw mean is **0.8355514%**. It contains no P0+CPGR solve; three-arm results alone cannot identify CPGR's standalone effect or a BPR-by-CPGR factorial interaction.
 
 The main reference above contains only this original cohort. A separate [BPR training-seed supplement](training_seeds/README.md) contains a later Full-only evaluation and explicitly identifies its reused P0 baseline. In other checked batches, CPGR's incremental end-to-end effect did not consistently retain the favorable direction seen here. Consequently, this historical table is not evidence of a stable cross-batch CPGR gain. The package includes neither all research cohorts nor their raw archives.
+
+## All observed configurations in the original batch
+
+| Configuration | Macro SelfCapErr (%) | Error reduction vs P0 (%) |
+|---|---:|---:|
+| DeepRWCap | 0.9278 | 0.00 |
+| DeepRWCap + CER | 0.9150 | 1.37 |
+| BPR | 0.8720 | 6.00 |
+| BPR + CER | 0.9001 | 2.98 |
+| BPR + CPGR | 0.8356 | 9.94 |
+| CARE-RWCap | 0.8110 | 12.58 |
+
+These six rows come from three solver arms, each with raw and CER readouts of the same solve. They are not six independent solver arms or a complete factorial experiment. There is no P0+CPGR observation in this cohort. Relative changes use unrounded means; the CER-only reduction is 1.37%. CER lowers the macro error for P0 and Full in this batch but increases it for the BPR-only arm (0.8720% to 0.9001%). All configurations are retained here.

@@ -42,7 +42,7 @@ mean(K) + 10 mean(A) + 2 mean(T) + 0.5 * (q95(K) + 10 q95(A))
 
 The final recipe uses 100,000 Poisson samples, face-zero targets `abs(kernel)+1e-10` normalized to unit sum, a 90,000/10,000 split using NumPy PCG64 permutation with seed 20260805, and training seed 2029. Adapter optimization uses AdamW (learning rate 3e-4, weight decay 1e-6), batch size 16, 30 epochs, gradient norm clipping at 1, and cosine decay to 5e-6. Epoch shuffling uses a Torch generator seeded with `2029 + epoch`; worker count is 0. Validation selects epoch 25. Full training data and the training driver are not bundled.
 
-These settings must not be replaced in a method description by upstream defaults: the final trust coefficient is 2 (not 0.25), and the optimizer is AdamW at 3e-4 (not Adam at 1e-3). The fixed local evaluation uses the deployed engines. The source-FP32 to deployed-FP16 paths differ numerically for P0 and BPR; deployment-level gains should not all be attributed to the residual adapter without a precision-controlled comparison.
+The fixed local evaluation uses the deployed engines. The archived BPR training settings are recorded in [bpr_training_recipe.json](../configs/bpr_training_recipe.json). The source-FP32 to deployed-FP16 paths differ numerically for P0 and BPR; deployment-level gains should not all be attributed to the residual adapter without a precision-controlled comparison.
 
 ## CPGR: Conditional Parity Gradient Refinement
 

@@ -13,7 +13,7 @@ This repository provides the core implementation, frozen deployment models, ten 
 
 [![CARE-RWCap overview: physical input, first Gradient transition, subsequent Poisson transitions, conductor-hit accumulation and conditional endpoint readout](docs/figures/overview.png)](docs/figures/overview.pdf)
 
-*Author-supplied framework figure. Click to view the vector PDF; [full-resolution PNG](docs/figures/overview.png) is also available.*
+*[Vector PDF](docs/figures/overview.pdf) · [Full-resolution PNG](docs/figures/overview.png)*
 
 Following the numbered stages in the figure:
 
@@ -110,6 +110,26 @@ Each arm retains both raw and CER readouts. Completed batches produce `summary.j
 
 The protocol uses initial seeds **2029–2038**. The [historical reference](results/README.md) identifies the original 300-run cohort. Asynchronous execution can change trajectories, and the incremental CPGR gain has varied in direction across checked batches; the reference is not a guaranteed rerun target or ranking. See [evaluation details](docs/REPRODUCIBILITY.md).
 
+## Reference results
+
+The original public10 batch contains ten runs per case and solver arm. Macro SelfCapErr gives each case equal weight.
+
+| Configuration | Macro SelfCapErr (%) |
+|---|---:|
+| DeepRWCap (paper P0), raw | 0.9278 |
+| BPR + CER | 0.9001 |
+| CARE-RWCap: BPR + CPGR + CER | 0.8110 |
+
+[Complete raw/CER results](results/README.md) identify the measured configurations and their shared-solve readouts. The [paper-to-code guide](docs/PAPER_MAPPING.md) lists which experiments the release supports.
+
+In a separate evaluation of three previously selected BPR checkpoints, the Full-method macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical P0 baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 Full observations and 100 reused P0 observations. Recompute its tables without a GPU:
+
+```bash
+python scripts/summarize_training_seeds.py --output outputs/training_seed_summary
+```
+
+This command reaggregates saved capacitances. The inference runner uses the bundled training-seed2029 model; the two additional model files are not included in the compact supplement.
+
 ## Traditional baselines
 
 Upstream **FRW-AGF**, **MicroWalk** and **FRW-FDM** executables are bundled with their license and provenance. On Linux x86_64:
@@ -138,10 +158,10 @@ benchmarks/public10/             Public inputs and references
 configs/                         Evaluation settings
 scripts/                         Build, inference and evaluation
 third_party/deeprwcap/           Upstream runtime, CPU baselines and license
-results/                         Compact original 300-run reference
+results/                         Main reference and training-seed supplement
 tests/                           CPU and GPU implementation checks
 docs/                            Installation, method and evaluation details
-docs/figures/                    Author-supplied framework PNG and vector PDF
+docs/figures/                    Framework PNG and vector PDF
 ```
 
 ## Release scope
@@ -152,7 +172,7 @@ An optional [local transition evaluator](docs/LOCAL_VALIDATION.md) is available 
 
 ## Citation and acknowledgments
 
-The manuscript title is **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**. [CITATION.cff](CITATION.cff) contains software citation metadata. Paper bibliographic details will be added when available.
+The manuscript title is **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**. [CITATION.cff](CITATION.cff) contains software citation metadata. The citation metadata follows the current manuscript. No publication DOI, volume or issue has been assigned in this repository.
 
 We thank the DeepRWCap authors for their neural solver, architectures, benchmark cases and baseline executables. If your work uses these upstream components, please also cite:
 
@@ -170,7 +190,3 @@ We thank the DeepRWCap authors for their neural solver, architectures, benchmark
 ```
 
 MIT; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Third-party terms are retained. For implementation or installation problems, open a GitHub issue with the command, environment and relevant log excerpt.
-
-## Frozen recipe and training-seed supplement
-
-The [implementation contract](docs/IMPLEMENTATION_CONTRACT.md) specifies the audited BPR recipe, CPGR face-probability correction and CER input boundary. A separate [three-training-seed result supplement](results/training_seeds/README.md) includes all 300 Full observations, 100 reused P0 observations and a CPU-only table regeneration command. Its mean macro SelfCapErr is 0.8188 +/- 0.0199% across the three tested models. It is kept separate from the original main table; the default inference model is unchanged.

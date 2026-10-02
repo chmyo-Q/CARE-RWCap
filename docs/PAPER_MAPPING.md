@@ -1,6 +1,6 @@
 # Paper framework and released implementation
 
-CARE-RWCap is **Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**. The [overview figure](figures/overview.png) shows the physical problem, transition refinements and same-solve readout. The source PNG and PDF are included without redrawing.
+CARE-RWCap is **Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**. The [overview figure](figures/overview.png) shows the physical problem, transition refinements and same-solve readout. PNG and vector PDF versions are included.
 
 ## Follow the overview
 
@@ -26,7 +26,7 @@ The released parser expects the upstream solver to provide one already-aggregate
 
 For a valid row, CER requires the complete expected column set, at least one off-diagonal entry, nonpositive couplings and a positive coupling-magnitude sum. If these applicability checks fail, it retains the positive raw self-capacitance. Nonfinite output, a missing/nonpositive raw master self term or ambiguous duplicate records are rejected as invalid input, rather than converted into a valid fallback measurement. No reference capacitance is used to decide applicability.
 
-Thus, the figure's “logical-conductor aggregation” describes the overall solver-to-readout pipeline, not an extra generic fragment-summing routine supplied by this Python parser. See [METHOD.md](METHOD.md) for the exact rule.
+The figure's “logical-conductor output formation” precedes CER and belongs to the existing solver-output pipeline. See [METHOD.md](METHOD.md) for the exact rule.
 
 ## Experiment coverage
 

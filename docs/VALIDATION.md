@@ -33,3 +33,9 @@ The [frozen implementation contract](IMPLEMENTATION_CONTRACT.md) was checked aga
 All 300 original outputs gave identical results under the historical and released parsers. The 300 new training-seed Full outputs and 100 reused baseline outputs were independently checked against the published capacitance records. The CPU supplement script reproduces the accepted per-seed results to numerical precision. All 28 CPU unit tests passed, including rejection of missing/duplicate records, inconsistent references and altered capacitances. No new GPU solve or training was performed for this documentation/result-packaging audit.
 
 The accepted three-model experiment is a separate result supplement, not a new execution of the release's three-arm benchmark command. Its comparison and model-release boundaries are documented with the data.
+
+## Final manuscript and repository review
+
+The TCAD_v0 manuscript's BPR optimizer/loss settings, conditional Gradient face symmetrization and CER logical-row boundary agree with the released implementation. Its code-availability statement describes the core implementation, frozen models, public benchmark inputs and evaluation configurations; the detailed release boundaries remain in [ARTIFACT_SCOPE.md](ARTIFACT_SCOPE.md).
+
+The 28 CPU tests, 300-measured-solve/3-warmup plan and saved training-seed reaggregation were checked again. GitHub Actions completed successfully for the preceding repository revision `9aa6555`. This review did not execute new GPU solves or a clean Docker build. The CI workflow now also exercises the training-seed summary command.

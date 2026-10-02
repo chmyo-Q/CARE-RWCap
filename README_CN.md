@@ -11,7 +11,7 @@ CARE-RWCap 基于 [DeepRWCap](https://github.com/THU-numbda/deepRWCap)，将局�
 
 [![CARE-RWCap 总览：物理输入、首次 Gradient 转移、后续 Poisson 转移、导体命中累积和条件终点读出](docs/figures/overview.png)](docs/figures/overview.pdf)
 
-*使用作者提供的正式 overview 图。点击图片查看矢量 PDF，也可打开[原尺寸 PNG](docs/figures/overview.png)。*
+*[矢量 PDF](docs/figures/overview.pdf) · [原尺寸 PNG](docs/figures/overview.png)*
 
 按图中的编号：
 
@@ -85,6 +85,26 @@ python scripts/benchmark.py --profile paper --output runs/public10
 
 协议采用初始 seeds **2029–2038**；训练和单案例默认 seed 是 **2029**。[历史参考](results/README.md)仅对应原始300-run。异步执行可能改变轨迹，已核验批次间 CPGR 增量收益的方向也曾变化，因此不承诺新批次必然获得相同均值或排序。更多定义见[评估协议](docs/REPRODUCIBILITY.md)。
 
+## 参考结果
+
+原始 public10 批次每个案例、每个求解臂各运行10次，宏平均对十个案例等权。
+
+| 配置 | Macro SelfCapErr (%) |
+|---|---:|
+| DeepRWCap（paper P0），raw | 0.9278 |
+| BPR + CER | 0.9001 |
+| CARE-RWCap：BPR + CPGR + CER | 0.8110 |
+
+[完整 raw/CER 对照](results/README.md)列出实际运行配置以及共用同次求解的读出结果。[论文与代码对应](docs/PAPER_MAPPING.md)说明各项实验的公开范围。
+
+另外三个预先选定的 BPR checkpoint，在完整方法下得到0.8112%、0.8038%、0.8414%的宏平均误差，均值±样本标准差为 **0.8188±0.0199%**。这项实验复用历史 P0 对照。[补充数据与协议](results/training_seeds/README.md)包含全部300条 Full 和100条复用 P0 记录，可在 CPU 上重算表格：
+
+```bash
+python scripts/summarize_training_seeds.py --output outputs/training_seed_summary
+```
+
+该命令汇总已保存电容值，不执行新求解。推理入口仍使用包内的 training-seed2029 模型，紧凑补充材料不含另外两个模型文件。
+
 ## 传统 CPU 基线
 
 附带上游 FRW-AGF、MicroWalk、FRW-FDM 二进制及其许可证。在 Linux x86_64 下，仅需 Python 3.10+ 标准库，无需神经网络环境：
@@ -112,7 +132,7 @@ benchmarks/public10/             十案例输入与参考
 configs/                         运行设置
 scripts/                         编译、推理、评估
 third_party/deeprwcap/           上游运行库、传统基线及许可证
-results/                         原300-run紧凑历史参考
+results/                         原主表参考与训练种子补充结果
 tests/                           CPU/GPU实现检查
 docs/                            安装、方法和评估细节
 docs/figures/                    正式overview PNG与矢量PDF
@@ -124,10 +144,6 @@ docs/figures/                    正式overview PNG与矢量PDF
 
 ## 引用、致谢与反馈
 
-论文题目为 **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**。[CITATION.cff](CITATION.cff)提供软件引用信息，论文书目信息公开后再补充正式引用。感谢 DeepRWCap 作者提供神经求解器、网络结构、测试案例和基线程序；使用这些上游组件时，也请引用原论文，BibTeX 见[英文首页](README.md#citation-and-acknowledgments)。
+论文题目为 **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**。[CITATION.cff](CITATION.cff)提供与当前终稿作者信息一致的软件引用；仓库未填写尚未获得的论文 DOI、卷期或录用信息。感谢 DeepRWCap 作者提供神经求解器、网络结构、测试案例和基线程序；使用这些上游组件时，也请引用原论文，BibTeX 见[英文首页](README.md#citation-and-acknowledgments)。
 
 许可证见 [LICENSE](LICENSE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。安装或实现问题可通过 GitHub Issues 提交，请附运行命令、环境及相关日志片段。
-
-## 冻结实现与训练种子补充结果
-
-[实现口径说明](docs/IMPLEMENTATION_CONTRACT.md)给出 BPR 的真实训练配方、CPGR 对 Gradient 面概率的修正，以及 CER 的输入边界。[三个训练种子的补充实验](results/training_seeds/README.md)包含 300 条 Full 观测、100 条复用的历史 P0 观测及 CPU 汇总脚本。三个模型的 macro SelfCapErr 为 0.8188 ± 0.0199%（样本标准差）；补充批次与原论文主表分开保存。当前推理入口仍使用已发布的 training-seed2029 模型。

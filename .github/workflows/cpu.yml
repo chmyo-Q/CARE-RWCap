@@ -11,3 +11,4 @@ jobs:
       - run: python -m pip install numpy==2.4.4
       - run: python -m unittest discover -s tests -p 'test_*.py'
       - run: python scripts/benchmark.py --profile paper --plan-only --output runs/ci_plan
+      - run: python scripts/summarize_training_seeds.py --output outputs/ci_training_seeds
