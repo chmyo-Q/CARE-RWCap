@@ -8,6 +8,6 @@
 
 Mean +/- sample SD (n=3): 0.8187973 +/- 0.0199141%.
 
-Historical protocol-matched P0 raw; not contemporaneous/common-path paired. Across three model-specific macro means; includes FRW evaluation noise.
+Historical protocol-matched DeepRWCap raw; not contemporaneous/common-path paired. Across three model-specific macro means; includes FRW evaluation noise.
 
 This command reaggregates released capacitance records; it does not rerun inference or reparse original solver logs.

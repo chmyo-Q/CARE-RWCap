@@ -16,7 +16,7 @@ The implementation below is the one associated with the original aligned public1
 
 The [machine-readable recipe](../configs/bpr_training_recipe.json) distinguishes the training tail objective from the validation selection score. Adam at 1e-3 and trust coefficient 0.25 do not describe this checkpoint. AdamW refers to [decoupled weight decay](https://arxiv.org/abs/1711.05101).
 
-The source is the RF_RISK checkpoint selected in `train_seed2029_30e_20260909_180652`. Its released state dictionary and uncompiled TorchScript agree with the preserved training-seed artifact. The BPR FP16 engine, all five paper P0 engines, and CPGR source agree with the original aligned-batch inventory (one C++ file differs only in line endings). This identifies the deployed files; it is not a new training or engine-recompilation experiment. The original training protocol JSON records loss coefficients but does not itself record optimizer/lr. Those settings come from the archived launcher and implementation; an optimizer-state replay is not claimed.
+The source is the RF_RISK checkpoint selected in `train_seed2029_30e_20260909_180652`. Its released state dictionary and uncompiled TorchScript agree with the preserved training-seed artifact. The BPR FP16 engine, all five DeepRWCap engines, and CPGR source agree with the original aligned-batch inventory (one C++ file differs only in line endings). This identifies the deployed files; it is not a new training or engine-recompilation experiment. The original training protocol JSON records loss coefficients but does not itself record optimizer/lr. Those settings come from the archived launcher and implementation; an optimizer-state replay is not claimed.
 
 ## CPGR changes the Gradient face distribution
 

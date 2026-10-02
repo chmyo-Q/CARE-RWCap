@@ -53,7 +53,7 @@ After installation, build the extensions and run the bundled case8 example:
 python scripts/check_environment.py --build-only
 python scripts/build.py
 python scripts/check_environment.py
-python scripts/run.py --arm full --output runs/full_case8
+python scripts/run.py --arm care-rwcap --output runs/full_case8
 ```
 
 Every invocation needs a new output directory. The example uses initial seed 2029 and saves:
@@ -80,20 +80,20 @@ All ten public geometries and reference files are included under `benchmarks/pub
 
 | Directory | Contents |
 |---|---|
-| `models/paper_p0/` | Five FP16 engines for the locally trained DeepRWCap baseline |
-| `models/bpr/` | BPR Poisson engine; the other four engines are shared with P0 |
+| [DeepRWCap models](models/README.md) | Five FP16 engines for the locally trained DeepRWCap baseline |
+| `models/bpr/` | BPR Poisson engine; the other four engines are shared with DeepRWCap |
 | `models/checkpoints/` | Inspectable FP32 checkpoints and uncompiled TorchScript |
 | `benchmarks/public10/` | Public layouts and reference capacitances |
 
-The paper P0 uses DeepRWCap architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
+The DeepRWCap uses DeepRWCap architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
 
 ## Public10 evaluation
 
 | `--arm` | Poisson model | CPGR | Main comparison readout |
 |---|---|---|---|
-| `p0` | Paper P0 | Off | Raw |
+| `deeprwcap` | DeepRWCap | Off | Raw |
 | `bpr` | BPR | Off | CER |
-| `full` | BPR | On | CER |
+| `care-rwcap` | BPR | On | CER |
 
 ```bash
 # Quick comparison: case8, initial seed 2029, three solves
@@ -116,13 +116,13 @@ The original public10 batch contains ten runs per case and solver arm. Macro Sel
 
 | Configuration | Macro SelfCapErr (%) |
 |---|---:|
-| DeepRWCap (paper P0), raw | 0.9278 |
+| DeepRWCap, raw | 0.9278 |
 | BPR + CER | 0.9001 |
 | CARE-RWCap: BPR + CPGR + CER | 0.8110 |
 
 [Complete raw/CER results](results/README.md) identify the measured configurations and their shared-solve readouts. The [paper-to-code guide](docs/PAPER_MAPPING.md) lists which experiments the release supports.
 
-In a separate evaluation of three previously selected BPR checkpoints, the Full-method macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical P0 baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 Full observations and 100 reused P0 observations. Recompute its tables without a GPU:
+In a separate evaluation of three previously selected BPR checkpoints, the Full-method macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical DeepRWCap baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 Full observations and 100 reused DeepRWCap observations. Recompute its tables without a GPU:
 
 ```bash
 python scripts/summarize_training_seeds.py --output outputs/training_seed_summary

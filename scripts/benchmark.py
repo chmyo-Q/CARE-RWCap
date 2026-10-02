@@ -9,12 +9,13 @@ import subprocess
 import sys
 from common import ROOT, dump, check_files
 from validation import validate_plan, validate_config
+from naming import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ARMS=('p0','bpr','full')
 
 
 def make_plan(protocol, profile='quick', arms=None):
-    selected=list(arms or ['p0','bpr','full'])
+    selected=[normalize_arm(a) for a in (arms or ['p0','bpr','full'])]
     if not selected or len(selected)!=len(set(selected)) or any(a not in ARMS for a in selected):
         raise ValueError('Specify distinct supported arms')
     if profile not in ('quick','paper'):
@@ -76,7 +77,7 @@ def execute(plan, output, runner=None):
             log=output/f'launch_{index:04d}.log'
             status['active']=item['directory']
             dump(output/'status.json',status)
-            print(f"{index+1}/{len(items)} {item['directory']}",flush=True)
+            print(f"{index+1}/{len(items)} {item['case']}/seed{item['seed']} {ARM_LABELS[item['arm']]}",flush=True)
             try:
                 with log.open('w') as stream:
                     subprocess.run([sys.executable,str(runner),'--config',str(cfg),'--arm',item['arm'],
@@ -96,7 +97,7 @@ def execute(plan, output, runner=None):
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--profile',choices=['quick','paper'],default='quick')
-    ap.add_argument('--arms',nargs='+',choices=ARMS)
+    ap.add_argument('--arms',nargs='+',type=normalize_arm,choices=ARMS,metavar=CLI_ARMS)
     ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--plan-only',action='store_true',help='Write the exact order without loading Torch or starting solves')
     args=ap.parse_args()

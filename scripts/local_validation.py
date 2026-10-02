@@ -70,9 +70,9 @@ def main():
         dump(out/'summary.json',result)
         lines=['# Frozen local transition evaluation','','Precision: '+cfg['precision']+'. No end-to-end solve.','']
         if 'bpr' in result:
-            b=result['bpr'];lines+=['| BPR metric | P0 | BPR |','|---|---:|---:|']
+            b=result['bpr'];lines+=['| BPR metric | DeepRWCap | BPR |','|---|---:|---:|']
             for k in ['kl','action_error']:lines.append(f"| Mean {k} | {b['raw_'+k]['mean']:.10g} | {b['bpr_'+k]['mean']:.10g} |")
-            lines+=['',f"Mean TV(BPR,P0): {b['bpr_vs_p0_tv']['mean']:.10g}; this measures refinement magnitude.",'']
+            lines+=['',f"Mean TV(BPR,DeepRWCap): {b['bpr_vs_p0_tv']['mean']:.10g}; this measures refinement magnitude.",'']
         if 'cpgr' in result:
             lines+=['| Head | Active / total | Raw NL2 | CPGR NL2 | Relative change (%) | Win fraction |','|---|---:|---:|---:|---:|---:|']
             for name,b in result['cpgr'].items():

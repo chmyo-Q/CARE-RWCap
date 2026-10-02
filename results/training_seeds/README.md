@@ -8,9 +8,9 @@ This supplement evaluates three **previously selected** BPR models in full CARE-
 | 2039 | 17 | 0.8037911 | -0.1239595 | -13.3613 | 7/10 |
 | 2053 | 19 | 0.8413895 | -0.0863611 | -9.3087 | 7/10 |
 
-Mean +/- sample SD across the three model-specific macro means: **0.8187973 +/- 0.0199141%** (`n=3`, `ddof=1`). Each macro is the unweighted mean of ten case means. Relative changes use the unrounded historical P0 raw mean **0.927750543349835%** (displayed as 0.9278%), not the rounded display value.
+Mean +/- sample SD across the three model-specific macro means: **0.8187973 +/- 0.0199141%** (`n=3`, `ddof=1`). Each macro is the unweighted mean of ten case means. Relative changes use the unrounded historical DeepRWCap raw mean **0.927750543349835%** (displayed as 0.9278%), not the rounded display value.
 
-The 100 P0 records are reused from `paper_final_aligned_20260919`. Matching case and initial seed does not make this a contemporaneous control or a common-random-path experiment. The cross-model SD also includes residual FRW evaluation noise. These observations support lower macro error for the three tested models against this historical P0 reference; they do not establish universal seed robustness, an isolated CPGR effect, or a runtime improvement. Each model loses on three cases, which remain included in the per-case table.
+The 100 DeepRWCap records are reused from `paper_final_aligned_20260919`. Matching case and initial seed does not make this a contemporaneous control or a common-random-path experiment. The cross-model SD also includes residual FRW evaluation noise. These observations support lower macro error for the three tested models against this historical DeepRWCap reference; they do not establish universal seed robustness, an isolated CPGR effect, or a runtime improvement. Each model loses on three cases, which remain included in the per-case table.
 
 The new seed2029 mean **0.8112113%** is separate from the old main-batch Full mean **0.8109996%**. The checkpoint is the same; the observations are fresh stochastic solves. Neither value replaces the other.
 
@@ -27,7 +27,7 @@ The output directory must not already exist. The script uses only the standard l
 ## Contents and boundary
 
 - `repeat_results.csv`: all 300 Full repeat-level capacitances/errors and matched baseline values, copied without rounding from the accepted experiment archive.
-- `baseline_runs.csv`: the 100 reused P0 raw capacitance records.
+- `baseline_runs.csv`: the 100 reused DeepRWCap raw capacitance records.
 - `protocol.json`: intervention, training/solver seeds, selected epochs and comparison boundaries.
 - `case_summary.csv`, `seed_summary.csv`, `aggregate.json`, `SUMMARY.md`: generated from the released records by the command above.
 

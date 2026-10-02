@@ -7,10 +7,11 @@ import subprocess
 from common import ROOT, dump, model_paths, runtime_env, check_files
 from evaluate import evaluate
 from validation import validate_config, validate_cpgr_counts
+from naming import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--config', type=Path, default=ROOT/'configs/example.json')
-ap.add_argument('--arm', choices=['p0', 'bpr', 'full'], default='full')
+ap.add_argument('--arm', type=normalize_arm, choices=['p0', 'bpr', 'full'], default='care-rwcap', metavar=CLI_ARMS)
 ap.add_argument('--output', type=Path, required=True, help='New directory; existing directories are never overwritten')
 ap.add_argument('--seed', type=int, help='Override initial solver seed; does not fix asynchronous trajectories')
 a = ap.parse_args()
@@ -46,6 +47,6 @@ if a.arm == 'full':
     selector=json.loads((out/'JOINT_COUNTS.json').read_text())
     validate_cpgr_counts(projection,selector)
 result = evaluate(geom, out/'result.out', cfg.get('reference_F'), cfg['master'])
-result.update(case=cfg['case'], arm=a.arm, initial_seed=cfg['seed'])
+result.update(case=cfg['case'], arm=a.arm, method=ARM_LABELS[a.arm], initial_seed=cfg['seed'])
 dump(out/'metrics.json', result)
-print(json.dumps({k:v for k,v in result.items() if k!='matrix_F'}, indent=2))
+print(json.dumps({k:v for k,v in result.items() if k not in ('matrix_F', 'arm')}, indent=2))

@@ -8,14 +8,14 @@ Implementation: `src/bpr/model.py`; historical checkpoint class name: `ResidualF
 
 The input is a normalized dielectric tensor of shape `(B,1,1,23,23,23)`. The Poisson predictor returns a nonnegative `(B,23,23)` conditional face distribution. Normalize the dielectric tensor by its spatial maximum; use divisor 1 when that maximum is zero. The upstream solver performs this normalization for inference.
 
-The frozen anchor consists of 2D positional coordinates, a 1×1 projection to 16 channels, depthwise-separable blocks with channels 16→16→8→4→2 and dilations 1,1,2,3, and a one-channel head. Each separable block has depthwise convolution, BatchNorm, GELU, pointwise convolution, BatchNorm, and GELU. Despite the historical `skip` member name, these blocks do not add a residual shortcut. ReLU plus `1e-10`, followed by normalization, yields `p0`.
+The frozen anchor consists of 2D positional coordinates, a 1×1 projection to 16 channels, depthwise-separable blocks with channels 16→16→8→4→2 and dilations 1,1,2,3, and a one-channel head. Each separable block has depthwise convolution, BatchNorm, GELU, pointwise convolution, BatchNorm, and GELU. Despite the historical `skip` member name, these blocks do not add a residual shortcut. ReLU plus `1e-10`, followed by normalization, yields `deeprwcap`.
 
 The trainable adapter has a 23→24 pointwise convolution, two depthwise blocks (dilations 1 and 2), and a 24→12 pointwise projection; these stages use BatchNorm and GELU. Two heads produce `r=tanh(residual_head(features))` and `a=sigmoid(gate(mean(features)))`.
 
 ```
-r_centered = r - sum(p0 * r)
+r_centered = r - sum(q0 * r)
 dose       = 0.125 * a
-p          = softmax(log(clamp(p0, min=1e-10)) + dose * r_centered)
+p          = softmax(log(clamp(q0, min=1e-10)) + dose * r_centered)
 ```
 
 The anchor stays frozen, including BatchNorm statistics. The residual head starts at zero; initialization recovers the anchor distribution up to clamping and floating-point normalization. The final model has 2,869 parameters, of which 1,466 belong to the trainable adapter. Only the Poisson predictor is replaced in the solver.
@@ -27,7 +27,7 @@ For each sample, define:
 ```
 K = KL(target || p)
 A = mean_j <p - target, probe_j>²
-T = KL(p || p0)
+T = KL(p || q0)
 L = K + 10 A + 2 T
 batch_loss = mean(L) + 0.5 * mean(largest ceil(0.25 * batch_size) values of L)
 ```
@@ -42,7 +42,7 @@ mean(K) + 10 mean(A) + 2 mean(T) + 0.5 * (q95(K) + 10 q95(A))
 
 The final recipe uses 100,000 Poisson samples, face-zero targets `abs(kernel)+1e-10` normalized to unit sum, a 90,000/10,000 split using NumPy PCG64 permutation with seed 20260805, and training seed 2029. Adapter optimization uses AdamW (learning rate 3e-4, weight decay 1e-6), batch size 16, 30 epochs, gradient norm clipping at 1, and cosine decay to 5e-6. Epoch shuffling uses a Torch generator seeded with `2029 + epoch`; worker count is 0. Validation selects epoch 25. Full training data and the training driver are not bundled.
 
-The fixed local evaluation uses the deployed engines. The archived BPR training settings are recorded in [bpr_training_recipe.json](../configs/bpr_training_recipe.json). The source-FP32 to deployed-FP16 paths differ numerically for P0 and BPR; deployment-level gains should not all be attributed to the residual adapter without a precision-controlled comparison.
+The fixed local evaluation uses the deployed engines. The archived BPR training settings are recorded in [bpr_training_recipe.json](../configs/bpr_training_recipe.json). The source-FP32 to deployed-FP16 paths differ numerically for DeepRWCap and BPR; deployment-level gains should not all be attributed to the residual adapter without a precision-controlled comparison.
 
 ## CPGR: Conditional Parity Gradient Refinement
 
@@ -65,7 +65,7 @@ E[ sign((Pg)_J) * rho * f(J) ] = sum_j (Pg)_j f(j) / ||g||_1,
 
 This identity explains the compensation factor relative to the original kernel normalization. It does not imply the projected prediction equals the exact physical kernel, nor guarantee a lower end-to-end error for every layout. If the projection is zero, the implementation retains the original sampling proposal and sets its compensating weight to zero. With no eligible symmetry, the kernel and correction are unchanged (`rho=1`).
 
-The production extension interposes the pinned `DNNSolverGrad` methods using `LD_PRELOAD`. The legacy environment names `S29_GRADIENT_PARITY_ENABLE` and `S29_GRADIENT_JOINT_ENABLE` are preserved for compatibility; the public runner enables both for CPGR. CPGR is not enabled in the `p0` and `bpr` arms. This mechanism requires the shipped upstream C++ ABI.
+The production extension interposes the pinned `DNNSolverGrad` methods using `LD_PRELOAD`. The legacy environment names `S29_GRADIENT_PARITY_ENABLE` and `S29_GRADIENT_JOINT_ENABLE` are preserved for compatibility; the public runner enables both for CPGR. CPGR is not enabled in the `deeprwcap` and `bpr` arms. This mechanism requires the shipped upstream C++ ABI.
 
 ## CER: Conditional Endpoint Re-estimation (strict-S24)
 

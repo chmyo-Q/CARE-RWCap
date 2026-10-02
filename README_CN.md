@@ -38,7 +38,7 @@ cd CARE-RWCap
 python scripts/check_environment.py --build-only
 python scripts/build.py
 python scripts/check_environment.py
-python scripts/run.py --arm full --output runs/full_case8
+python scripts/run.py --arm care-rwcap --output runs/full_case8
 ```
 
 输出目录必须是新目录。示例使用 case8、初始 seed 2029，保存 `result.out`、`metrics.json`、`run.json` 和日志，包含 raw/CER 电容、误差、walks、hops 和求解器耗时。CER 不额外运行一次求解。
@@ -54,21 +54,21 @@ bash scripts/smoke_test.sh --output runs/smoke
 
 | 目录 | 内容 |
 |---|---|
-| `models/paper_p0/` | 本地训练的 DeepRWCap 基线的五个 FP16 引擎 |
-| `models/bpr/` | BPR 泊松引擎，其余四个引擎与 P0 共享 |
+| [DeepRWCap 模型](models/README.md) | 本地训练的 DeepRWCap 基线的五个 FP16 引擎 |
+| `models/bpr/` | BPR 泊松引擎，其余四个引擎与 DeepRWCap 共享 |
 | `models/checkpoints/` | FP32 权重与未编译 TorchScript |
 | `benchmarks/public10/` | 十案例几何与参考电容 |
 | `configs/paper_protocol.json` | 选定主导体、参考值、运行参数和 seed 协议 |
 
-论文 P0 采用 DeepRWCap 架构，但并非官方发布的预训练权重。CPGR、CER 不新增训练检查点。模型来源见 [models/README.md](models/README.md)。
+论文中的 DeepRWCap 采用 DeepRWCap 架构，但并非官方发布的预训练权重。CPGR、CER 不新增训练检查点。模型来源见 [models/README.md](models/README.md)。
 
 ## 十案例评估
 
 | 组名 | 泊松模型 | CPGR | 主比较读出 |
 |---|---|---|---|
-| `p0` | Paper P0 | 关闭 | raw |
+| `deeprwcap` | DeepRWCap | 关闭 | raw |
 | `bpr` | BPR | 关闭 | CER |
-| `full` | BPR | 开启 | CER |
+| `care-rwcap` | BPR | 开启 | CER |
 
 ```bash
 # 单 case8、seed 2029、三组快速检查
@@ -91,13 +91,13 @@ python scripts/benchmark.py --profile paper --output runs/public10
 
 | 配置 | Macro SelfCapErr (%) |
 |---|---:|
-| DeepRWCap（paper P0），raw | 0.9278 |
+| DeepRWCap，raw | 0.9278 |
 | BPR + CER | 0.9001 |
 | CARE-RWCap：BPR + CPGR + CER | 0.8110 |
 
 [完整 raw/CER 对照](results/README.md)列出实际运行配置以及共用同次求解的读出结果。[论文与代码对应](docs/PAPER_MAPPING.md)说明各项实验的公开范围。
 
-另外三个预先选定的 BPR checkpoint，在完整方法下得到0.8112%、0.8038%、0.8414%的宏平均误差，均值±样本标准差为 **0.8188±0.0199%**。这项实验复用历史 P0 对照。[补充数据与协议](results/training_seeds/README.md)包含全部300条 Full 和100条复用 P0 记录，可在 CPU 上重算表格：
+另外三个预先选定的 BPR checkpoint，在完整方法下得到0.8112%、0.8038%、0.8414%的宏平均误差，均值±样本标准差为 **0.8188±0.0199%**。这项实验复用历史 DeepRWCap 对照。[补充数据与协议](results/training_seeds/README.md)包含全部300条 Full 和100条复用 DeepRWCap 记录，可在 CPU 上重算表格：
 
 ```bash
 python scripts/summarize_training_seeds.py --output outputs/training_seed_summary

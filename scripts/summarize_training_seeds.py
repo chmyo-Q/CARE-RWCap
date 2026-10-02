@@ -95,7 +95,7 @@ def summarize(data, protocol):
         mean_macro_selfcaperr_percent=statistics.mean(macros),
         sample_sd_macro_selfcaperr_percent=statistics.stdev(macros), ddof=1,
         baseline_macro_percent=base_macro, baseline_reused=True,
-        comparison='Historical protocol-matched P0 raw; not contemporaneous/common-path paired',
+        comparison='Historical protocol-matched DeepRWCap raw; not contemporaneous/common-path paired',
         uncertainty='Across three model-specific macro means; includes FRW evaluation noise')
     return case_rows, seed_rows, aggregate
 

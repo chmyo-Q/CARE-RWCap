@@ -34,8 +34,8 @@
     "S29_GRADIENT_PARITY_ENABLE": "1",
     "S29_GRADIENT_JOINT_ENABLE": "1"
   },
-  "readout": "Original strict-S24/CER; P0 uses raw",
-  "comparison": "New Full models versus historical protocol-matched P0 raw, matched by case and initial FRW seed; not contemporaneous or common-path pairing.",
+  "readout": "Original strict-S24/CER; DeepRWCap uses raw",
+  "comparison": "New Full models versus historical protocol-matched DeepRWCap raw, matched by case and initial FRW seed; not contemporaneous or common-path pairing.",
   "standard_deviation": "Sample SD (ddof=1) across three model-specific 10-case macro means; includes residual FRW evaluation noise.",
   "baseline_batch": "paper_final_aligned_20260919",
   "source_record_fields": "Numerical fields copied from accepted repeat_results.csv and baseline_repeat_results.csv without rounding.",

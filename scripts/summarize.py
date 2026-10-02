@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 import statistics
 from common import ROOT, dump
+from naming import ARM_LABELS, comparison_label
 from validation import validate_plan
 from statistics_report import attribution, workload
 from evaluate import evaluate
@@ -125,14 +126,14 @@ def save_summary(directory,report):
         lines += ['| Arm | Raw mean error (%) | CER/S24 mean error (%) | Selected endpoint (%) |',
                   '|---|---:|---:|---:|']
         for arm,row in report['macro'].items():
-            lines.append(f"| {arm} | {row['raw_macro_error_percent']:.6f} | {row['s24_macro_error_percent']:.6f} | {row['endpoint_macro_error_percent']:.6f} |")
+            lines.append(f"| {ARM_LABELS[arm]} | {row['raw_macro_error_percent']:.6f} | {row['s24_macro_error_percent']:.6f} | {row['endpoint_macro_error_percent']:.6f} |")
         lines += ['', '| Same-batch comparison | Difference (pp) | 95% seed-block interval |', '|---|---:|---|']
         for name,row in report['module_comparisons'].items():
             ci=row['ci95_pp'];label='Not estimated (one seed)' if ci is None else f'[{ci[0]:+.6f}, {ci[1]:+.6f}]'
-            lines.append(f"| {name} | {row['mean_difference_pp']:+.6f} | {label} |")
+            lines.append(f"| {comparison_label(name)} | {row['mean_difference_pp']:+.6f} | {label} |")
         lines += ['', '| Arm | Elapsed (s/case) | CPU (s/case) | Total walks | Weighted hops/walk |', '|---|---:|---:|---:|---:|']
         for arm,r in report['resources'].items():
-            if r:lines.append(f"| {arm} | {r['mean_elapsed_seconds_per_case']:.3f} | {r['mean_cpu_seconds_per_case']:.3f} | {r['mean_total_walks_across_cases']:.1f} | {r['walk_weighted_hops_per_walk']:.5f} |")
+            if r:lines.append(f"| {ARM_LABELS[arm]} | {r['mean_elapsed_seconds_per_case']:.3f} | {r['mean_cpu_seconds_per_case']:.3f} | {r['mean_total_walks_across_cases']:.1f} | {r['walk_weighted_hops_per_walk']:.5f} |")
         lines += ['', 'Timings describe this batch. GPU/host memory and CER micro-latency are not measured here.']
     else:
         lines += ['Incomplete batch: aggregate performance comparisons are withheld. Inspect coverage and errors in summary.json.']
