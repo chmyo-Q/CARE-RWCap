@@ -1,6 +1,6 @@
 # Release validation
 
-Updated 2026-09-28. Functional acceptance and replay of archived observations do not establish a repeatable accuracy gain.
+Updated 2026-10-02. Functional acceptance and replay of archived observations do not establish a repeatable accuracy gain.
 
 ## Current public release
 
@@ -25,3 +25,11 @@ These are earlier GPU checks, not fresh acceptance of every current Python-wrapp
 ## Not claimed
 
 A clean Docker build, other-GPU deployment, retraining, a new complete paper accuracy batch, full CPU baseline batches, peak-memory studies and CER microtiming are not validated by this packaging revision. The Docker recipe's prior attempt was blocked during dependency download. Fixed initial seeds do not guarantee identical asynchronous trajectories, a fixed historical mean or a stable ranking.
+
+## 2026-10-02 consistency and supplement audit
+
+The [frozen implementation contract](IMPLEMENTATION_CONTRACT.md) was checked against the original aligned-batch configuration and archived training material. The five P0 engines, BPR engine, four upstream runtime files and twenty public geometry/reference files match the original frozen inventory. Released CPGR source matches the archived source after normalizing line endings.
+
+All 300 original outputs gave identical results under the historical and released parsers. The 300 new training-seed Full outputs and 100 reused baseline outputs were independently checked against the published capacitance records. The CPU supplement script reproduces the accepted per-seed results to numerical precision. All 28 CPU unit tests passed, including rejection of missing/duplicate records, inconsistent references and altered capacitances. No new GPU solve or training was performed for this documentation/result-packaging audit.
+
+The accepted three-model experiment is a separate result supplement, not a new execution of the release's three-arm benchmark command. Its comparison and model-release boundaries are documented with the data.

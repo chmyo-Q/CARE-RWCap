@@ -1,0 +1,10 @@
+{
+  "training_seed_count": 3,
+  "mean_macro_selfcaperr_percent": 0.8187972707470784,
+  "sample_sd_macro_selfcaperr_percent": 0.01991409174931329,
+  "ddof": 1,
+  "baseline_macro_percent": 0.927750543349835,
+  "baseline_reused": true,
+  "comparison": "Historical protocol-matched P0 raw; not contemporaneous/common-path paired",
+  "uncertainty": "Across three model-specific macro means; includes FRW evaluation noise"
+}

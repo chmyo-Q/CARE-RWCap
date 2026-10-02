@@ -79,3 +79,7 @@ The solver must provide an already aggregated logical-conductor row. Extract the
 - Otherwise retain the raw self capacitance and report the fallback reason.
 
 The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate S24. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and strict-S24 capacitances. See [paper terminology and input contract](PAPER_MAPPING.md).
+
+## Frozen recipe and interface evidence
+
+The [implementation contract](IMPLEMENTATION_CONTRACT.md) gives the source of each training setting, the exact Gradient opposite-face pairs, and the solver/CER boundary. The [BPR recipe JSON](../configs/bpr_training_recipe.json) records the historical settings; it is metadata and does not change the deployed model or act as a training entry point.

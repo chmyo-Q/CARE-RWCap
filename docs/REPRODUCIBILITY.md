@@ -74,3 +74,7 @@ The original three comparisons consumed successive RNG blocks. To reproduce thei
 Raw/CER are dependent readouts of the same solve. The released three-arm protocol measures the CPGR effect conditional on BPR, not its standalone effect or the complete BPR-by-CPGR interaction. The [results reference](../results/README.md) belongs to the original 300-run cohort; keep new batches separate and do not transport percentage gains between cohorts to create missing observations.
 
 For the traditional CPU programs, use the separate [baseline instructions](CPU_BASELINES.md). They do not load neural engines or use CER.
+
+## BPR training-seed supplement
+
+[Archived records and reaggregation](../results/training_seeds/README.md) cover training seeds 2029, 2039 and 2053 with 100 new Full solves per model. They reuse 100 P0 solves from the original aligned batch, matched by case and initial solver seed. This is not a simultaneous control experiment or common-path pairing. The script verifies coverage, matching references and saved errors, and recomputes all summaries from capacitance values. It does not perform new inference. The main inference runner and checkpoints remain unchanged.

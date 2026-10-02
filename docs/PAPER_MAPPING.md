@@ -44,3 +44,7 @@ Thus, the figure's “logical-conductor aggregation” describes the overall sol
 Historical identifiers remain only where needed for file/interface compatibility: **S29 RF_RISK = BPR**, **Gradient-Joint = CPGR**, and **strict-S24 = CER**.
 
 The frozen BPR recipe uses AdamW, learning rate 3e-4 and trust coefficient 2; validation selects epoch 25. Its full recipe and the distinction between training loss and validation score are in [METHOD.md](METHOD.md). The paper P0 is a locally trained DeepRWCap architecture, as documented in [BASELINE.md](BASELINE.md). CPGR and CER require no additional trained model.
+
+## Frozen-version consistency
+
+Use the [implementation contract](IMPLEMENTATION_CONTRACT.md) when describing the frozen method: distinguish unchanged Poisson probabilities from post-processed Gradient probabilities, and upstream logical-row output from CER's conditional readout. The [training recipe](../configs/bpr_training_recipe.json) records AdamW, 3e-4 and trust coefficient 2. The [training-seed supplement](../results/training_seeds/README.md) is an independent Full evaluation with a reused historical P0 baseline; it does not replace the original main table.

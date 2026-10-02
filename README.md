@@ -170,3 +170,7 @@ We thank the DeepRWCap authors for their neural solver, architectures, benchmark
 ```
 
 MIT; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Third-party terms are retained. For implementation or installation problems, open a GitHub issue with the command, environment and relevant log excerpt.
+
+## Frozen recipe and training-seed supplement
+
+The [implementation contract](docs/IMPLEMENTATION_CONTRACT.md) specifies the audited BPR recipe, CPGR face-probability correction and CER input boundary. A separate [three-training-seed result supplement](results/training_seeds/README.md) includes all 300 Full observations, 100 reused P0 observations and a CPU-only table regeneration command. Its mean macro SelfCapErr is 0.8188 +/- 0.0199% across the three tested models. It is kept separate from the original main table; the default inference model is unchanged.

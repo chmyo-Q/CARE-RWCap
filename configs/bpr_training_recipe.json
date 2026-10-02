@@ -1,0 +1,55 @@
+{
+  "scope": "Recorded recipe for the released frozen BPR; metadata, not an executable training driver.",
+  "historical_arm": "S29 RF_RISK",
+  "training_seed": 2029,
+  "epochs": 30,
+  "selected_epoch": 25,
+  "batch_size": 16,
+  "validation_batch_size": 64,
+  "optimizer": {
+    "name": "AdamW",
+    "learning_rate": 0.0003,
+    "weight_decay": 1e-06,
+    "parameters": "adapter only; anchor parameters and BatchNorm statistics frozen"
+  },
+  "scheduler": {
+    "name": "CosineAnnealingLR",
+    "T_max": 30,
+    "eta_min": 5e-06,
+    "step": "after each training epoch"
+  },
+  "gradient_norm_clip": 1.0,
+  "num_workers": 0,
+  "epoch_shuffle_seed": "training_seed + epoch; epochs 1..30",
+  "dataset": {
+    "name": "poisson.bin",
+    "samples": 100000,
+    "train_samples": 90000,
+    "validation_samples": 10000,
+    "split_seed": 20260805,
+    "split_manifest": "poisson_Dnew_100000_seed20260805.json",
+    "input": "normalize by spatial maximum (divisor 1 if maximum is zero)",
+    "target": "face-zero absolute kernel + 1e-10, normalized to unit sum"
+  },
+  "loss": {
+    "action_weight": 10.0,
+    "trust_weight": 2.0,
+    "risk_weight": 0.5,
+    "cvar_fraction": 0.25,
+    "max_log_dose": 0.125,
+    "primary": "K + 10*A + 2*T",
+    "training": "mean(primary) + 0.5*mean(top ceil(0.25*batch_size) primary)",
+    "validation_selection": "mean(K)+10*mean(A)+2*mean(T)+0.5*(q95(K)+10*q95(A))"
+  },
+  "checkpoint": "models/checkpoints/bpr/best.pt",
+  "source_torchscript": "models/checkpoints/bpr/PoissonPredictor_best.jit",
+  "deployed_engine": "models/bpr/PoissonPredictor_tensorrt_fp16.jit",
+  "deployment_precision": "TensorRT FP16; source checkpoint/TorchScript FP32",
+  "evidence": {
+    "optimizer_lr_batch_schedule": "Archived RUN_S29_A0A1.sh and tools/s29_train.py in deeprwcap_s29_a0a1_risk_bounded_residual_factorized_v1_clean",
+    "loss_seed_epochs": "Original S29_A1_PROTOCOL.json for train_seed2029_30e_20260909_180652",
+    "selected_epoch": "Original RF_RISK/run.json",
+    "deployment": "paper_final_aligned_20260919 frozen model inventory",
+    "limit": "Optimizer/lr are recovered from the archived launcher/source, not recorded in S29_A1_PROTOCOL.json or inferable from best.pt. No optimizer-state replay is claimed."
+  }
+}

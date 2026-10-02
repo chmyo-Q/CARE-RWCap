@@ -1,0 +1,43 @@
+{
+  "study": "care_bpr_training_seeds_20261001",
+  "accepted_date": "2026-10-02",
+  "training_seeds": [
+    2029,
+    2039,
+    2053
+  ],
+  "selected_epochs": {
+    "2029": 25,
+    "2039": 17,
+    "2053": 19
+  },
+  "measured_solves": 300,
+  "reused_baseline_solves": 100,
+  "benchmark_protocol": "../../configs/paper_protocol.json",
+  "solver_initial_seeds": [
+    2029,
+    2030,
+    2031,
+    2032,
+    2033,
+    2034,
+    2035,
+    2036,
+    2037,
+    2038
+  ],
+  "order_seed": 20260919,
+  "warmups": "One excluded case8 solve for each BPR model, initial seed 2040.",
+  "intervention": "Only the second models.txt line (BPR Poisson engine); no tuning, training or new model selection.",
+  "precision": "TensorRT FP16",
+  "cpgr": {
+    "S29_GRADIENT_PARITY_ENABLE": "1",
+    "S29_GRADIENT_JOINT_ENABLE": "1"
+  },
+  "readout": "Original strict-S24/CER; P0 uses raw",
+  "comparison": "New Full models versus historical protocol-matched P0 raw, matched by case and initial FRW seed; not contemporaneous or common-path pairing.",
+  "standard_deviation": "Sample SD (ddof=1) across three model-specific 10-case macro means; includes residual FRW evaluation noise.",
+  "baseline_batch": "paper_final_aligned_20260919",
+  "source_record_fields": "Numerical fields copied from accepted repeat_results.csv and baseline_repeat_results.csv without rounding.",
+  "release_scope": "Capacitance records and CPU reaggregation. Additional seed2039/2053 model files and original solver logs are not bundled; the default inference runner remains seed2029."
+}

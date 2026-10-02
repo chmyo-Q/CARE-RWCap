@@ -27,3 +27,7 @@ BPR is the final S29 RF_RISK model: frozen P0 anchor, training seed 2029, 30-epo
 The `.pt` and uncompiled `.jit` files use FP32. They are supplied for inspection and loading, not as silent substitutes for the frozen deployment engines. `tests/check_models.py` demonstrates loading BPR from source, checking its anchor against paper P0, and comparing it with its uncompiled TorchScript. The remaining P0 architectures are available in the pinned upstream training source.
 
 See [baseline provenance and training-scope boundaries](../docs/BASELINE.md) and [paper terminology](../docs/PAPER_MAPPING.md).
+
+## Audited BPR recipe
+
+The [recorded recipe](../configs/bpr_training_recipe.json) and [implementation contract](../docs/IMPLEMENTATION_CONTRACT.md) identify the frozen RF_RISK training settings and deployment lineage. The public default remains training seed 2029, selected epoch 25. The [three-seed supplement](../results/training_seeds/README.md) publishes capacitance records for the previously selected seed2029/2039/2053 models (epochs 25/17/19); the extra two model files are not included in this compact result supplement.

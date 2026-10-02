@@ -127,3 +127,7 @@ docs/figures/                    正式overview PNG与矢量PDF
 论文题目为 **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**。[CITATION.cff](CITATION.cff)提供软件引用信息，论文书目信息公开后再补充正式引用。感谢 DeepRWCap 作者提供神经求解器、网络结构、测试案例和基线程序；使用这些上游组件时，也请引用原论文，BibTeX 见[英文首页](README.md#citation-and-acknowledgments)。
 
 许可证见 [LICENSE](LICENSE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。安装或实现问题可通过 GitHub Issues 提交，请附运行命令、环境及相关日志片段。
+
+## 冻结实现与训练种子补充结果
+
+[实现口径说明](docs/IMPLEMENTATION_CONTRACT.md)给出 BPR 的真实训练配方、CPGR 对 Gradient 面概率的修正，以及 CER 的输入边界。[三个训练种子的补充实验](results/training_seeds/README.md)包含 300 条 Full 观测、100 条复用的历史 P0 观测及 CPU 汇总脚本。三个模型的 macro SelfCapErr 为 0.8188 ± 0.0199%（样本标准差）；补充批次与原论文主表分开保存。当前推理入口仍使用已发布的 training-seed2029 模型。
