@@ -8,7 +8,7 @@ Implementation: `src/bpr/model.py`; historical checkpoint class name: `ResidualF
 
 The input is a normalized dielectric tensor of shape `(B,1,1,23,23,23)`. The Poisson predictor returns a nonnegative `(B,23,23)` conditional face distribution. Normalize the dielectric tensor by its spatial maximum; use divisor 1 when that maximum is zero. The upstream solver performs this normalization for inference.
 
-The frozen anchor consists of 2D positional coordinates, a 1×1 projection to 16 channels, depthwise-separable blocks with channels 16→16→8→4→2 and dilations 1,1,2,3, and a one-channel head. Each separable block has depthwise convolution, BatchNorm, GELU, pointwise convolution, BatchNorm, and GELU. Despite the historical `skip` member name, these blocks do not add a residual shortcut. ReLU plus `1e-10`, followed by normalization, yields `deeprwcap`.
+The frozen anchor consists of 2D positional coordinates, a 1×1 projection to 16 channels, depthwise-separable blocks with channels 16→16→8→4→2 and dilations 1,1,2,3, and a one-channel head. Each separable block has depthwise convolution, BatchNorm, GELU, pointwise convolution, BatchNorm, and GELU. Despite the historical `skip` member name, these blocks do not add a residual shortcut. ReLU plus `1e-10`, followed by normalization, yields `q0`.
 
 The trainable adapter has a 23→24 pointwise convolution, two depthwise blocks (dilations 1 and 2), and a 24→12 pointwise projection; these stages use BatchNorm and GELU. Two heads produce `r=tanh(residual_head(features))` and `a=sigmoid(gate(mean(features)))`.
 
