@@ -1,43 +1,38 @@
 # Release validation
 
-Updated 2026-10-02. Functional acceptance and replay of archived observations do not establish a repeatable accuracy gain.
+Updated 2026-10-03. This page separates functional checks, replay of saved observations and new inference. Successful execution or replay alone does not establish a repeatable accuracy gain.
 
-## Current public release
+## Completed checks of the public source
+
+The current acceptance run started from public revision `204ecf6`. The solver settings, method implementation and frozen models were not changed for the checks below.
 
 | Check | Result and scope |
 |---|---|
-| CPU tests | 22 passed: parser/readout, complete scheduling, failure retention, saved-output consistency, initial-seed statistics, data preflight, CPGR counters and CPU baseline orchestration. |
-| Original 300-run reference | Reparsed the 300 preserved solver outputs with the current parser/summary. Raw/CER means and the primary bootstrap interval agree with the archived reference; no new neural solves. |
-| Three-arm plan | 300 measured solves, three excluded warmups; original execution order and seed blocks preserved. |
-| Frozen method/model assets | BPR/CPGR/CER source, neural engines, checkpoints, upstream neural runtime and public inputs unchanged. |
-| BPR model consistency | Checkpoint, anchor and FP32 TorchScript consistency passed on checked CPU inputs (maximum difference 0). |
-| CPU baseline provenance | All three executables match the specified upstream commit; upstream license retained. |
-| FRW-AGF and MicroWalk | Each completed case8 through the new runner on local WSL Linux; outputs parsed and summaries generated. These are functional checks, not paper timing measurements. |
-| FRW-FDM | Help and solver startup passed. The local case8 check was stopped at its 60-second inspection budget before completion; no completed FDM solve is claimed for this wrapper revision. The public runner itself has no such timeout. |
-| GitHub CI | CPU checks and plan generation supplied and tested locally; no hosted Actions run is claimed. |
+| CPU tests | 31 passed on the local checkout and server; parser/CER, scheduling, failure retention, saved-output consistency, seed statistics, local-data preflight, naming and baseline orchestration. |
+| Build and model loading | Fresh extension build, six FP16 engine checks, CUDA projection/selector/compensation and actual sampler integration passed on the server described below. |
+| Solver entry points | Case8 smoke, three-arm quick benchmark, CARE-RWCap example and standalone evaluation passed. These are functional checks. |
+| Frozen assets and protocol | Neural engines/runtime, CPGR and seed-control source, public inputs and reference values were checked against the original batch. Case10 reference text differs only in line endings; the reference value is identical. All 300 planned case/seed/arm tuples match. |
+| Original 300-run replay | Public evaluation code reparsed all 300 original outputs without numerical mismatches. Main macro errors round to 0.9278%, 0.9001% and 0.8110%. This is archived-output replay, not new inference. |
+| Local transition evaluation | Frozen FP16 BPR/CPGR evaluation completed using the original external reference datasets and fixed splits. All 26 checked manuscript display values match; strict-active Gradient1/Gradient2 sample counts are 473/476. Those datasets are not bundled. |
+| Checkpoints | Five DeepRWCap FP32 state dictionaries match their uncompiled TorchScript model parameters and buffers; profiling counters are excluded. BPR checkpoint/anchor consistency also passed. |
+| Training-seed supplement | Public CPU reaggregation reproduces the saved per-seed summaries. This check does not rerun three models. |
 
-## Earlier GPU acceptance
+## Hardware and pending end-to-end acceptance
 
-On 2026-09-25 the unchanged method/model assets were built and checked on Ubuntu 24.04 / RTX 4090 / CUDA 12.6 with the stated Torch/TensorRT versions. Model loading, CUDA projection/selector/compensation, sampler integration, and DeepRWCap/Full case8 solves passed. A fresh Python environment and isolated source rebuild also completed a Full case8 solve, reusing the server's system CUDA/TensorRT/Protobuf libraries.
+The original paper batch recorded **RTX 4090, driver 570.124.04**. The 2026-10-03 server reports **RTX 4090 D, driver 595.71.05**. Both checks use the stated Python 3.12 / Torch and Torch-TensorRT 2.6.0+cu126 / TensorRT 10.7 / CUDA toolkit 12.6 stack. The new build and inference checks use an existing dependency environment, not a fresh operating-system installation.
 
-These are earlier GPU checks, not fresh acceptance of every current Python-wrapper change. The later runtime-counter guard and repository-relative local-validation GPU entry have not received a fresh GPU run. Their CPU and archived-record checks are separate evidence.
+The public strict environment checker currently accepts the original RTX 4090 name only and therefore rejects the 4090 D name. The build and inference checks were invoked separately; this rejection is retained in the acceptance record. A narrowly scoped checker update is under review. Successful loading on this particular server does not establish general TensorRT engine portability.
 
-## Not claimed
+A new 300-solve public10 evaluation is in progress. No final rerun accuracy, ranking, replication tolerance or runtime improvement is reported here yet. The hardware difference must be retained when interpreting its eventual results; it is not an established explanation for any numerical difference.
 
-A clean Docker build, other-GPU deployment, retraining, a new complete paper accuracy batch, full CPU baseline batches, peak-memory studies and CER microtiming are not validated by this packaging revision. The Docker recipe's prior attempt was blocked during dependency download. Fixed initial seeds do not guarantee identical asynchronous trajectories, a fixed historical mean or a stable ranking.
+## Earlier checks and optional workflows
 
-## 2026-10-02 consistency and supplement audit
+- On 2026-09-25, unchanged method/model assets passed GPU smoke and Full case8 checks on RTX 4090. A fresh Python environment and isolated source rebuild reused installed system CUDA/TensorRT/Protobuf libraries.
+- FRW-AGF and MicroWalk each completed case8 under the public wrapper on local WSL Linux. FRW-FDM help/startup passed, but its case8 inspection was stopped before completion. The current acceptance does not rerun these traditional baselines.
+- GitHub Actions completed for earlier revision `9aa6555`; the current CPU workflow also includes training-seed reaggregation. Local tests do not establish the hosted CI status of another revision.
 
-The [frozen implementation contract](IMPLEMENTATION_CONTRACT.md) was checked against the original aligned-batch configuration and archived training material. The five DeepRWCap engines, BPR engine, four upstream runtime files and twenty public geometry/reference files match the original frozen inventory. Released CPGR source matches the archived source after normalizing line endings.
+## Not established by these checks
 
-All 300 original outputs gave identical results under the historical and released parsers. The 300 new training-seed Full outputs and 100 reused baseline outputs were independently checked against the published capacitance records. The CPU supplement script reproduces the accepted per-seed results to numerical precision. All 28 CPU unit tests passed, including rejection of missing/duplicate records, inconsistent references and altered capacitances. No new GPU solve or training was performed for this documentation/result-packaging audit.
+A clean Docker build, complete retraining, general GPU portability, all traditional-baseline batches, additional-layout experiments, peak GPU memory and CER microtiming have not been validated by this acceptance. The Docker recipe's earlier attempt stopped during dependency download.
 
-The accepted three-model experiment is a separate result supplement, not a new execution of the release's three-arm benchmark command. Its comparison and model-release boundaries are documented with the data.
-
-## Final manuscript and repository review
-
-The TCAD_v0 manuscript's BPR optimizer/loss settings, conditional Gradient face symmetrization and CER logical-row boundary agree with the released implementation. Its code-availability statement describes the core implementation, frozen models, public benchmark inputs and evaluation configurations; the detailed release boundaries remain in [ARTIFACT_SCOPE.md](ARTIFACT_SCOPE.md).
-
-The 28 CPU tests, 300-measured-solve/3-warmup plan and saved training-seed reaggregation were checked again. GitHub Actions completed successfully for the preceding repository revision `9aa6555`. This review did not execute new GPU solves or a clean Docker build. The CI workflow now also exercises the training-seed summary command.
-
-The paper-name CLI aliases and report labels were checked with 31 CPU tests. New and legacy CLI names produce identical paper plans, and display formatting leaves saved statistical values and archived identifiers unchanged.
+Fixed initial seeds do not fix asynchronous trajectories. The historical 300-run cohort contains three solver arms with two readouts each; it has no standalone DeepRWCap+CPGR arm. See [result interpretation](../results/README.md), [evaluation protocol](REPRODUCIBILITY.md) and [release scope](ARTIFACT_SCOPE.md).
