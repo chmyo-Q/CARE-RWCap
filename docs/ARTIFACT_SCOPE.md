@@ -19,3 +19,19 @@ This is a fixed-model inference and public-benchmark release, not the full resea
 The original paper 300-run cohort remains the main historical reference. A separate [training-seed supplement](../results/training_seeds/README.md) releases 300 Full and 100 reused DeepRWCap capacitance records with CPU reaggregation; it does not bundle the extra two models or a new multi-model inference runner. CPGR's incremental end-to-end benefit has not been consistent across checked batches; the reference does not establish a repeatable ranking or a universal tolerance. Numerical functional checks are distinct from validating an accuracy claim.
 
 The release keeps the input/model/configuration and metric definitions needed to run its documented workflows. It does not require users to repeat every experiment. New outputs are retained and evaluated under their actual settings; reference values are not used to adjust predictions or select favorable runs.
+
+## Core workflow and optional material
+
+The default CARE-RWCap workflow needs the neural runtime, five shared/replaced engine slots, CPGR and seed-control extensions, CER parser, runner and configuration, and a layout. A reference capacitance is needed to report error; it is not an input to the estimator. Use the supplied installation and build scripts to prepare this workflow.
+
+The following material supports inspection or additional experiments and is not required for a single CARE-RWCap solve:
+
+- **Overview PNG/PDF:** documentation of the framework; both depict the same figure.
+- **FP32 checkpoints, uncompiled TorchScript and BPR loss:** architecture/parameter inspection, not a complete retraining or engine-export workflow.
+- **Traditional CPU baselines:** optional upstream comparison methods, separate from CARE-RWCap inference.
+- **Saved reference and training-seed results:** inspect or reaggregate reported observations without rerunning the solver. These files do not alter predictions or tune a new run.
+- **Local transition evaluator:** local BPR/CPGR mechanism checks with separately obtained reference datasets.
+- **Tests and CI:** implementation checks for contributors; users need not run every check before each solve.
+- **Dockerfile:** an optional installation recipe whose clean build remains unvalidated.
+
+Optional means unnecessary for the core command, not that it must be deleted from the research repository. Training data, all research logs and all paper figures are not required to use this release, and are not bundled. Licenses and third-party notices accompany redistributed dependencies.
