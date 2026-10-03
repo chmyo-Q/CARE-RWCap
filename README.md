@@ -1,7 +1,7 @@
 # CARE-RWCap
 ### Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction
 
-[中文](README_CN.md) · [Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](benchmarks/public10/README.md)
+[Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](benchmarks/public10/README.md)
 
 ## Introduction
 
@@ -85,7 +85,7 @@ All ten public geometries and reference files are included under `benchmarks/pub
 | `models/checkpoints/` | Inspectable FP32 checkpoints and uncompiled TorchScript |
 | `benchmarks/public10/` | Public layouts and reference capacitances |
 
-The DeepRWCap uses DeepRWCap architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
+The bundled DeepRWCap baseline uses the upstream architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
 
 ## Public10 evaluation
 
@@ -130,7 +130,7 @@ python scripts/summarize_training_seeds.py --output outputs/training_seed_summar
 
 This command reaggregates saved capacitances. The inference runner uses the bundled training-seed2029 model; the two additional model files are not included in the compact supplement.
 
-## Traditional baselines
+## Optional traditional baselines
 
 Upstream **FRW-AGF**, **MicroWalk** and **FRW-FDM** executables are bundled with their license and provenance. On Linux x86_64:
 
@@ -165,6 +165,17 @@ docs/figures/                    Framework PNG and vector PDF
 ```
 
 ## Release scope
+
+For a first CARE-RWCap run, follow **Quick start**. The framework figure, traditional CPU baselines, training-seed result supplement and local transition evaluator are optional; they are not prerequisites for that run. The local transition evaluator requires external datasets that are not included.
+
+| What you want to do | Start here |
+|---|---|
+| Install and run a case | [Installation](docs/INSTALL.md) and Quick start above |
+| Understand BPR, CPGR and CER | [Method](docs/METHOD.md) and [paper-to-code mapping](docs/PAPER_MAPPING.md) |
+| Evaluate the ten public cases | [Benchmark commands](benchmarks/public10/README.md) and [protocol](docs/REPRODUCIBILITY.md) |
+| Check what has actually been tested | [Validation status](docs/VALIDATION.md) |
+| Understand included and omitted material | [Release scope](docs/ARTIFACT_SCOPE.md) |
+
 
 The upstream solver core and traditional baselines are binary dependencies; our refinement and readout implementations are provided as source. Full training data/driver, additional-layout datasets, dedicated memory studies, all research logs and paper-figure scripts are not included.
 
