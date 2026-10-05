@@ -1,14 +1,14 @@
 {
-  "case": "case8",
-  "geometry": "examples/case8/case8.cap3d",
-  "master": "1",
-  "reference_F": 8.763291910000002e-16,
-  "reference_source": "examples/case8/case8.dspf",
   "workers": 8,
   "p": 0.01,
   "c": 0.01,
-  "c_ratio": 0.3,
-  "seed": 2029,
   "omp_threads": 1,
-  "mkl_threads": 1
+  "mkl_threads": 1,
+  "case": "case7",
+  "master": "1",
+  "reference_F": 9.176692675804292e-16,
+  "c_ratio": 0.3,
+  "geometry": "examples/case7/case7.cap3d",
+  "reference_source": "examples/case7/case7.dspf",
+  "seed": 2029
 }

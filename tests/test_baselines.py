@@ -31,7 +31,7 @@ class BaselineTest(unittest.TestCase):
                 baselines.execute(baselines.make_plan('agf'), out, runner=failure)
             self.assertEqual(json.loads((out/'status.json').read_text())['state'], 'failed')
             self.assertFalse((out/'summary.json').exists())
-            self.assertTrue((out/'case8/seed2029/run.json').exists())
+            self.assertTrue((out/'case7/seed2029/run.json').exists())
 
     def test_raw_endpoint_and_no_neural_environment_leak(self):
         with tempfile.TemporaryDirectory() as tmp, patch.object(baselines.os, 'access', return_value=True):
@@ -46,7 +46,7 @@ class BaselineTest(unittest.TestCase):
             with patch.dict(os.environ, {'LD_PRELOAD': '/example/cpgr.so', 'S29_GRADIENT_JOINT_ENABLE': '1'}):
                 r = baselines.execute(p, out, runner=solver)
             self.assertAlmostEqual(r['raw_macro_self_error_percent'], 1.)
-            self.assertNotIn('s24_capacitance_F', json.loads((out/'case8/seed2029/metrics.json').read_text()))
+            self.assertNotIn('s24_capacitance_F', json.loads((out/'case7/seed2029/metrics.json').read_text()))
             self.assertTrue((out/'per_run.csv').is_file())
             self.assertIsNone(r['between_case_sd'])
             with self.assertRaises(FileExistsError): baselines.execute(p, out, runner=solver)

@@ -4,7 +4,7 @@ The [framework overview](figures/overview.png) follows the first Gradient transi
 
 ## BPR: Baseline-Anchored Poisson Refinement
 
-Implementation: `src/bpr/model.py`; historical checkpoint class name: `ResidualFactorizedPredictor` (S29 RF_RISK).
+Implementation: `src/bpr/model.py`; public class: `BPRPredictor`; historical alias: `ResidualFactorizedPredictor`.
 
 The input is a normalized dielectric tensor of shape `(B,1,1,23,23,23)`. The Poisson predictor returns a nonnegative `(B,23,23)` conditional face distribution. Normalize the dielectric tensor by its spatial maximum; use divisor 1 when that maximum is zero. The upstream solver performs this normalization for inference.
 
@@ -69,7 +69,7 @@ The production extension interposes the pinned `DNNSolverGrad` methods using `LD
 
 ## CER: Conditional Endpoint Re-estimation (strict-S24)
 
-Implementation: `src/readout/frozen.py`. Historical alias S24 is retained to avoid conflating the rule with an unvalidated variant.
+Implementation: `src/readout/cer.py`. Historical alias S24 is retained to avoid conflating the rule with an unvalidated variant.
 
 The solver must provide an already aggregated logical-conductor row. Extract the expected logical conductor set and selected master from the layout. Names matching `digits__name` are mapped to `name`. For the selected matrix row:
 

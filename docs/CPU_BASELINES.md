@@ -19,7 +19,7 @@ python3 scripts/baselines.py --method microwalk --output runs/microwalk_example
 python3 scripts/baselines.py --method fdm --output runs/fdm_example
 ```
 
-Default `quick` means one case8 solve with initial seed 2029, **not** reduced convergence accuracy. FRW-FDM may take appreciably longer than the other methods. For a full selected-method batch:
+Default `quick` means one case7 solve with initial seed 2029, **not** reduced convergence accuracy. FRW-FDM may take appreciably longer than the other methods. For a full selected-method batch:
 
 ```bash
 python3 scripts/baselines.py --method agf --profile paper --plan-only --output runs/agf_plan

@@ -6,7 +6,7 @@ For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](CPU_BASELINES.md);
 
 ## Native Ubuntu installation
 
-Validated with a newly created Python environment, a source rebuild and a Full case8 solve on the supported server. Its system CUDA/TensorRT libraries were already installed; this check did not reinstall Ubuntu.
+The current case7 workflow passed with a source rebuild in an existing matching environment. Earlier checks also used a fresh Python environment, but the most recent clean dependency installation stopped during download. See [validation coverage](VALIDATION.md); the commands below are not a claim that a fresh operating-system installation was tested.
 
 Use an Ubuntu 24.04 x86_64 machine with a working NVIDIA driver (`nvidia-smi`). The commands below install operating-system dependencies with administrator privileges. They do not replace the driver. Run them only on a machine you administer; a configured research server may already have these packages.
 
@@ -39,7 +39,11 @@ bash scripts/smoke_test.sh --output runs/smoke
 python scripts/benchmark.py --profile quick --output runs/quick
 ```
 
-`--build-only` permits compilation without an attached GPU; it is not a runtime acceptance check. The final two commands need the supported GPU and create new directories. The smoke test has two case8 solves; the quick benchmark has three, covering the batch runner and summary. These are functional checks, not a statistical reproduction of the paper.
+`--build-only` permits compilation without an attached GPU; it is not a runtime acceptance check. The final two commands need the supported GPU and create new directories. The smoke test has two case7 solves; the quick benchmark has three, covering the batch runner and summary. These are functional checks, not a statistical reproduction of the paper.
+
+## Optional data generation
+
+The [GGFT workflow](DATA.md) uses Python, Git, Make and a C++17/OpenMP compiler on Linux. It does not require the neural environment. Generated datasets are not needed for public10 inference.
 
 ## Container recipe
 

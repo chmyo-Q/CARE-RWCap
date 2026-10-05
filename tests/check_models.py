@@ -4,14 +4,14 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from common import ROOT, dump
 import torch
-from bpr.model import ResidualFactorizedPredictor, load_p0, P0Predictor
+from bpr.model import BPRPredictor, load_deeprwcap, DeepRWCapPredictor
 
 torch.set_num_threads(1)
 torch.manual_seed(2029)
-model=ResidualFactorizedPredictor().eval()
+model=BPRPredictor().eval()
 model.load_state_dict(torch.load(ROOT/'models/checkpoints/bpr/best.pt',map_location='cpu',weights_only=True),strict=True)
-anchor=P0Predictor().eval()
-load_p0(anchor,ROOT/'models/checkpoints/paper_p0/PoissonPredictor_best.pt')
+anchor=DeepRWCapPredictor().eval()
+load_deeprwcap(anchor,ROOT/'models/checkpoints/paper_p0/PoissonPredictor_best.pt')
 for k,v in anchor.state_dict().items():
     assert torch.equal(v,model.anchor.state_dict()[k]),k
 # Python's file API also handles non-ASCII checkout paths on Windows.

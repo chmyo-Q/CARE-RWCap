@@ -49,7 +49,7 @@ report={'pass':True,'scope':'Functional acceptance only; two single-case runs do
         'model_check':json.loads((mc/'MODEL_CHECK.json').read_text()),
         'kernel_check':json.loads((kc/'KERNEL_CHECK.json').read_text()),
         'integration':json.loads((integ/'INTEGRATION_QA.json').read_text()),
-        'e2e_arms':['p0','full'],'e2e_case':'case8','strict_s24_applied_both':True,
+        'e2e_arms':['p0','full'],'e2e_case':'case7','cer_applied_both':True,
         'projection_counts':counts,'selector_counts':joint,
         'environment':json.loads((ROOT/'build/environment.json').read_text())}
 dump(out/'summary.json',report)

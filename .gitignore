@@ -7,3 +7,4 @@ runs/
 .DS_Store
 MODEL_CHECK.json
 outputs/
+/data/

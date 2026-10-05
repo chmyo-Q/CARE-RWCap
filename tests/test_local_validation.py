@@ -7,8 +7,8 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from common import ROOT
-from local_validation import preflight
-from validation import validate_cpgr_counts
+from evaluate_transitions import preflight
+from input_checks import validate_cpgr_counts
 
 
 class LocalInputTests(unittest.TestCase):
@@ -32,7 +32,7 @@ class LocalInputTests(unittest.TestCase):
             c={'data_bytes':{'poisson':3},'poisson_validation_indices':list(range(10000))}
             with self.assertRaisesRegex(ValueError,'Not the frozen'):
                 preflight(p,'bpr',c)
-            with patch('local_validation.DATA_IDENTITIES',{'poisson':hashlib.sha256(b'abc').hexdigest()}):
+            with patch('evaluate_transitions.DATA_IDENTITIES',{'poisson':hashlib.sha256(b'abc').hexdigest()}):
                 self.assertTrue(preflight(p,'bpr',c)['poisson']['frozen_identity_verified'])
             with self.assertRaises(FileNotFoundError):preflight(p,'cpgr',c)
 

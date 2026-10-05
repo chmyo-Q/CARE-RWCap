@@ -35,3 +35,9 @@ The [recorded recipe](../configs/bpr_training_recipe.json) and [implementation c
 ## File compatibility
 
 The directories `paper_p0/` and `checkpoints/paper_p0/` retain their archived filenames. They contain the DeepRWCap baseline models described in the manuscript; the directory name is not a separate method. Existing run records also retain the IDs `p0`, `bpr`, and `full`. The public CLI accepts `deeprwcap`, `bpr`, and `care-rwcap`, respectively, and report tables display the paper names. Old CLI IDs remain accepted for existing scripts.
+
+### Public Python names
+
+New code uses `BPRPredictor`, `DeepRWCapPredictor` and `load_deeprwcap` from `bpr.model`. Historical class/function names remain aliases; no state-dict keys, tensor values or frozen engines were changed. New readout code uses `readout.cer.cer_value`, and parsing helpers live in `readout.parser`.
+
+The commands `evaluate_readout.py` and `evaluate_transitions.py` describe their tasks explicitly. The former `evaluate.py` and `local_validation.py` commands remain compatibility entry points. New per-run outputs expose `cer_*` fields; the equal-valued `s24_*` fields remain in JSON so existing result readers continue to work. Historical arm IDs and archived experiment records retain their original keys.

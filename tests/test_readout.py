@@ -5,23 +5,24 @@ import tempfile
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from common import ROOT
-from evaluate import evaluate
-from readout.frozen import s24_value, logical
+from evaluate_readout import evaluate
+from readout.cer import cer_value
+from readout.parser import logical
 
 
 class ReadoutTest(unittest.TestCase):
     def test_complete_negative_couplings(self):
-        self.assertEqual(s24_value({'A':4.,'B':-1.,'C':-2.}, {'A','B','C'}, 'A'),
+        self.assertEqual(cer_value({'A':4.,'B':-1.,'C':-2.}, {'A','B','C'}, 'A'),
                          (3.,'abs_coupling_sum'))
 
     def test_missing_and_extra(self):
         for values in [{'A':4.,'B':-1.}, {'A':4.,'B':-1.,'C':-2.,'D':-1.}]:
-            self.assertEqual(s24_value(values,{'A','B','C'},'A'),
+            self.assertEqual(cer_value(values,{'A','B','C'},'A'),
                              (4.,'identity_incomplete_or_extra_columns'))
 
     def test_sign_and_degenerate(self):
         for values in [{'A':4.,'B':1.}, {'A':4.,'B':0.}, {'A':4.}]:
-            self.assertEqual(s24_value(values,set(values),'A'),(4.,'identity_sign_or_degenerate'))
+            self.assertEqual(cer_value(values,set(values),'A'),(4.,'identity_sign_or_degenerate'))
 
     def test_logical_names(self):
         self.assertEqual(logical('42__B'),'B')

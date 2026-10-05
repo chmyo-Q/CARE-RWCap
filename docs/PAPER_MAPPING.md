@@ -10,7 +10,7 @@ CARE-RWCap is **Condition-Aware Refinement for Neural-Guided Floating Random Wal
 | First neural Gradient transition: CPGR | [CUDA projection](../cpp/cpgr/projection.cu), [selector](../cpp/cpgr/selector.cuh), [sampler](../cpp/cpgr/sampler.cpp) | Check strict input reflection, average eligible opposite-face probabilities, project the signed in-face kernel and compensate its sampling contribution. |
 | Subsequent neural Poisson transitions: BPR | [model](../src/bpr/model.py), [loss](../src/bpr/loss.py), [models](../models/README.md) | Keep the Poisson selector and frozen anchor; use bounded residual reweighting for the in-face conditional distribution. |
 | Conductor hit and accumulation | Bundled upstream solver runtime | Accumulate signed terminal-conductor contributions within the existing solve. |
-| Conditional self-capacitance readout: CER | [frozen parser/readout](../src/readout/frozen.py), [evaluation](../scripts/evaluate.py) | Check the logical output row and select the coupling-magnitude sum or the raw self-capacitance. |
+| Conditional self-capacitance readout: CER | [frozen parser/readout](../src/readout/cer.py), [evaluation](../scripts/evaluate_readout.py) | Check the logical output row and select the coupling-magnitude sum or the raw self-capacitance. |
 
 The algorithmic diagram shows repetition for each master and a resulting capacitance matrix. The released Python evaluator handles **one configured master per invocation**. It retains that solver output row and reports raw/CER self estimates; it is not a multi-master matrix-assembly command.
 

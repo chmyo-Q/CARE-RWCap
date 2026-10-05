@@ -51,11 +51,11 @@ When comparing methods, keep model set, solver settings, inputs, reference value
 - The minimal evaluator retains the selected-master capacitance row but does not compute coupling-row normalized L1 error.
 - The minimal evaluator does not measure GPU memory or S24 microbenchmark latency; these require dedicated protocols and are not inferred from solver timing.
 
-The bundled example reference is the frozen total self-capacitance for master `1` from public `case8.dspf`. It is used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
+The bundled example reference is the frozen total self-capacitance for master `1` from public `case7.dspf`. It is used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
 
 ## Scope of the checks
 
-`scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one Full solve on case8. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
+`scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one Full solve on case7. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
 
 ## Public10 batch evaluation
 

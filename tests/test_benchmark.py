@@ -10,8 +10,8 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from common import ROOT,dump
 from benchmark import make_plan,execute
 from summarize import summarize
-from evaluate import evaluate
-from readout.frozen import geometry
+from evaluate_readout import evaluate
+from readout.parser import geometry
 
 
 class BenchmarkTest(unittest.TestCase):

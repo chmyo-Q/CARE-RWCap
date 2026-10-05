@@ -8,7 +8,7 @@ import random
 import subprocess
 import sys
 from common import ROOT, dump, check_files
-from validation import validate_plan, validate_config
+from input_checks import validate_plan, validate_config
 from naming import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ARMS=('p0','bpr','full')
@@ -20,9 +20,9 @@ def make_plan(protocol, profile='quick', arms=None):
         raise ValueError('Specify distinct supported arms')
     if profile not in ('quick','paper'):
         raise ValueError('Unknown profile')
-    cases=protocol['cases'] if profile=='paper' else [r for r in protocol['cases'] if r['case']=='case8']
+    cases=protocol['cases'] if profile=='paper' else [r for r in protocol['cases'] if r['case']=='case7']
     if not cases:
-        raise ValueError('Protocol must include case8 for the quick profile')
+        raise ValueError('Protocol must include case7 for the quick profile')
     seeds=protocol['solver_initial_seeds'] if profile=='paper' else [2029]
     permutations=list(itertools.permutations(selected))
     rng=random.Random(protocol['order_seed'])

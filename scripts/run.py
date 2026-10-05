@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 import subprocess
 from common import ROOT, dump, model_paths, runtime_env, check_files
-from evaluate import evaluate
-from validation import validate_config, validate_cpgr_counts
+from evaluate_readout import evaluate
+from input_checks import validate_config, validate_cpgr_counts
 from naming import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ap = argparse.ArgumentParser(description=__doc__)
@@ -49,4 +49,4 @@ if a.arm == 'full':
 result = evaluate(geom, out/'result.out', cfg.get('reference_F'), cfg['master'])
 result.update(case=cfg['case'], arm=a.arm, method=ARM_LABELS[a.arm], initial_seed=cfg['seed'])
 dump(out/'metrics.json', result)
-print(json.dumps({k:v for k,v in result.items() if k not in ('matrix_F', 'arm')}, indent=2))
+print(json.dumps({k:v for k,v in result.items() if k not in ('matrix_F', 'arm') and not k.startswith('s24_')}, indent=2))

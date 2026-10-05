@@ -14,6 +14,7 @@ This is a fixed-model inference and public-benchmark release, not the full resea
 | Inspect local transition metrics | Optional frozen evaluator and fixed split | Original external datasets required; not bundled |
 | Evaluate a custom geometry | Neural single-run JSON configuration | One logical master task; reference needed for error; unsupported GPU engines require additional work |
 | Reproduce every paper table | Not provided | Coupling-row normalized L1 summaries, additional-layout inputs, dedicated memory/microtiming studies and plotting archive excluded |
+| Generate new local reference data | Pinned upstream GGFT workflow and CPU generation wrapper | Generates new datasets; does not supply the archived paper data or a training driver |
 | Retrain or rebuild the complete solver | Not provided | BPR inspection and own CUDA extension builds are supported; upstream core remains a binary dependency |
 
 The original paper 300-run cohort remains the main historical reference. A separate [training-seed supplement](../results/training_seeds/README.md) releases 300 Full and 100 reused DeepRWCap capacitance records with CPU reaggregation; it does not bundle the extra two models or a new multi-model inference runner. CPGR's incremental end-to-end benefit has not been consistent across checked batches; the reference does not establish a repeatable ranking or a universal tolerance. Numerical functional checks are distinct from validating an accuracy claim.

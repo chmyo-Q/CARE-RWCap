@@ -11,7 +11,7 @@ import statistics
 import subprocess
 
 from common import ROOT, dump
-from readout.frozen import geometry, parse_output
+from readout.parser import geometry, parse_output
 
 METHODS = {'agf': 'FRW-AGF', 'microwalk': 'MicroWalk', 'fdm': 'FRW-FDM'}
 
@@ -22,7 +22,7 @@ def make_plan(method, profile='quick', workers=16):
     if type(workers) is not int or workers < 1:
         raise ValueError('workers must be a positive integer')
     protocol = json.loads((ROOT/'configs/paper_protocol.json').read_text())
-    cases = protocol['cases'] if profile == 'paper' else [c for c in protocol['cases'] if c['case'] == 'case8']
+    cases = protocol['cases'] if profile == 'paper' else [c for c in protocol['cases'] if c['case'] == 'case7']
     seeds = protocol['solver_initial_seeds'] if profile == 'paper' else [2029]
     runs = []
     for seed in seeds:

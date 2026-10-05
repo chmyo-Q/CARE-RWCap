@@ -4,7 +4,7 @@ The ten layouts and reference files are bundled from the fixed DeepRWCap public 
 
 `configs/paper_protocol.json` selects one master per layout, its reference self-capacitance, solver settings, and seeds. DSPF cases use the declared `*|NET` total for that master. Case10 uses its frozen SPICE-derived reference. Reference values only enter error evaluation, not CER activation.
 
-Quick functional batch (case8, seed 2029, three arms):
+Quick functional batch (case7, seed 2029, three arms):
 
 ```bash
 python scripts/benchmark.py --output runs/quick

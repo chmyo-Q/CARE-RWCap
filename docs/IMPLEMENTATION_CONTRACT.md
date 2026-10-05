@@ -36,7 +36,7 @@ After the face is drawn from this corrected distribution, the conditional signed
 
 The solver-to-parser interface supplies at most one entry for each logical conductor in the selected-master row. For example, archived case10 contains 48 physical blocks representing 8 logical names; its output row contains 8 unique logical columns. The parser canonicalizes a numeric `digits__` prefix for name matching but does **not** sum multiple physical-fragment columns.
 
-The conceptual sum over physical blocks in a method derivation belongs to the upstream accumulation/output representation. It must not be described as a new summation performed by `src/readout/frozen.py`. The released upstream core is a binary dependency: the interface is verified from archived outputs, but its internal fragment-accumulation implementation is not independently source-audited here.
+The conceptual sum over physical blocks in a method derivation belongs to the upstream accumulation/output representation. It must not be described as a new summation performed by `src/readout/cer.py`. The released upstream core is a binary dependency: the interface is verified from archived outputs, but its internal fragment-accumulation implementation is not independently source-audited here.
 
 CER checks the observed logical set against the layout's expected set. For a complete row with at least one off-diagonal term, nonpositive couplings and a positive sum of coupling magnitudes, it returns that sum. Otherwise it retains the valid raw self term. Reference capacitance is not an activation input. Missing geometry columns are not silently fabricated: archived cases1-3, for example, lack a `GROUND` output column and therefore use the raw fallback.
 

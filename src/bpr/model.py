@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BPR: bounded residual Poisson predictor anchored to the paper P0."""
+"""BPR: bounded residual Poisson refinement with a frozen DeepRWCap anchor."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -53,7 +53,7 @@ class FaceSolver(nn.Module):
         return self.head(self.blocks(self.z_weight(self.pe(x))))
 
 
-class P0Predictor(nn.Module):
+class DeepRWCapPredictor(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         self.name = "BeefedFacePredictor"
@@ -93,16 +93,16 @@ class ResidualHead(nn.Module):
         return residual, gate
 
 
-class ResidualFactorizedPredictor(nn.Module):
-    """P0 conditional predictor plus a bounded multiplicative residual.
+class BPRPredictor(nn.Module):
+    """DeepRWCap conditional predictor plus a bounded multiplicative residual.
 
-    The residual output layer is zero initialized, so this module initially recovers P0 up to the
+    The residual output layer is zero initialized, so this module initially recovers the anchor up to the
     numerical effects of clamping and softmax normalization.
     """
     def __init__(self) -> None:
         super().__init__()
         self.max_log_dose = 0.125
-        self.anchor = P0Predictor()
+        self.anchor = DeepRWCapPredictor()
         self.adapter = ResidualHead()
         for parameter in self.anchor.parameters():
             parameter.requires_grad_(False)
@@ -148,18 +148,18 @@ def _extract_state(payload: Any) -> dict[str, torch.Tensor]:
     return state
 
 
-def load_p0(model: P0Predictor, checkpoint: Path) -> None:
+def load_deeprwcap(model: DeepRWCapPredictor, checkpoint: Path) -> None:
     state = _extract_state(torch.load(checkpoint, map_location="cpu", weights_only=True))
     result = model.load_state_dict(state, strict=False)
     missing = [x for x in result.missing_keys if not x.endswith("num_batches_tracked")]
     unexpected = [x for x in result.unexpected_keys if not x.endswith("num_batches_tracked")]
     if missing or unexpected:
-        raise RuntimeError(f"P0 checkpoint mismatch: missing={missing}, unexpected={unexpected}")
+        raise RuntimeError(f"DeepRWCap checkpoint mismatch: missing={missing}, unexpected={unexpected}")
 
 
-def build_model(checkpoint: Path) -> ResidualFactorizedPredictor:
-    model = ResidualFactorizedPredictor()
-    load_p0(model.anchor, checkpoint)
+def build_model(checkpoint: Path) -> BPRPredictor:
+    model = BPRPredictor()
+    load_deeprwcap(model.anchor, checkpoint)
     return model
 
 
@@ -169,3 +169,9 @@ def trainable_parameter_count(model: nn.Module) -> int:
 
 def total_parameter_count(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters())
+
+
+# Historical names remain importable; state-dict keys and computation are unchanged.
+P0Predictor = DeepRWCapPredictor
+ResidualFactorizedPredictor = BPRPredictor
+load_p0 = load_deeprwcap

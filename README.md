@@ -47,14 +47,16 @@ git clone https://github.com/chmyo-Q/CARE-RWCap.git
 cd CARE-RWCap
 ```
 
-After installation, build the extensions and run the bundled case8 example:
+After installation, build the extensions and run the bundled case7 example:
 
 ```bash
 python scripts/check_environment.py --build-only
 python scripts/build.py
 python scripts/check_environment.py
-python scripts/run.py --arm care-rwcap --output runs/full_case8
+python scripts/run.py --arm care-rwcap --output runs/full_case7
 ```
+
+The default example is **case7**, a case with improved mean error in the historical public10 comparison. It demonstrates how to run the solver; a single realization does not estimate the ten-case average. The complete evaluation retains all ten cases.
 
 Every invocation needs a new output directory. The example uses initial seed 2029 and saves:
 
@@ -87,6 +89,8 @@ All ten public geometries and reference files are included under `benchmarks/pub
 
 The bundled DeepRWCap baseline uses the upstream architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
 
+For new local Poisson/Gradient data, the optional [GGFT generation workflow](docs/DATA.md) uses a fixed upstream source revision and a CPU-only entry, `scripts/generate_data.py`. It documents generation settings, the binary format and BPR preprocessing. Generated data do not replace the frozen paper reference files or retrain the bundled models.
+
 ## Public10 evaluation
 
 | `--arm` | Poisson model | CPGR | Main comparison readout |
@@ -96,15 +100,20 @@ The bundled DeepRWCap baseline uses the upstream architectures with locally trai
 | `care-rwcap` | BPR | On | CER |
 
 ```bash
-# Quick comparison: case8, initial seed 2029, three solves
-python scripts/benchmark.py --profile quick --output runs/quick
-
 # Inspect the full plan without a GPU or any solves
 python scripts/benchmark.py --profile paper --plan-only --output runs/paper_plan
 
 # Ten cases × ten initial seeds × three arms, plus three excluded warmups
 python scripts/benchmark.py --profile paper --output runs/public10
 ```
+
+An optional three-run check of the batch interface uses case7 and initial seed 2029:
+
+```bash
+python scripts/benchmark.py --profile quick --output runs/quick
+```
+
+This quick profile checks execution and summary generation. Use the full profile for a public10 performance comparison.
 
 Each arm retains both raw and CER readouts. Completed batches produce `summary.json` and `summary.md` with per-case statistics, equal-case macro SelfCapErr, same-readout differences, uncertainty, workload and timing. Incomplete batches retain their outputs but do not receive a complete aggregate.
 
@@ -171,6 +180,7 @@ For a first CARE-RWCap run, follow **Quick start**. The framework figure, tradit
 | What you want to do | Start here |
 |---|---|
 | Install and run a case | [Installation](docs/INSTALL.md) and Quick start above |
+| Generate new Poisson/Gradient data | [GGFT source, format and generation](docs/DATA.md) |
 | Understand BPR, CPGR and CER | [Method](docs/METHOD.md) and [paper-to-code mapping](docs/PAPER_MAPPING.md) |
 | Evaluate the ten public cases | [Benchmark commands](benchmarks/public10/README.md) and [protocol](docs/REPRODUCIBILITY.md) |
 | Check what has actually been tested | [Validation status](docs/VALIDATION.md) |

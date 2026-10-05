@@ -7,9 +7,9 @@ from pathlib import Path
 import statistics
 from common import ROOT, dump
 from naming import ARM_LABELS, comparison_label
-from validation import validate_plan
+from input_checks import validate_plan
 from statistics_report import attribution, workload
-from evaluate import evaluate
+from evaluate_readout import evaluate
 
 
 def describe(values):
@@ -123,7 +123,7 @@ def save_summary(directory,report):
     dump(directory/'summary.json',report)
     lines=['# Benchmark summary','',f"Complete: {report['complete']}; valid/planned: {report['valid']}/{report['planned']}.",'']
     if report['complete']:
-        lines += ['| Arm | Raw mean error (%) | CER/S24 mean error (%) | Selected endpoint (%) |',
+        lines += ['| Arm | Raw mean error (%) | CER mean error (%) | Selected endpoint (%) |',
                   '|---|---:|---:|---:|']
         for arm,row in report['macro'].items():
             lines.append(f"| {ARM_LABELS[arm]} | {row['raw_macro_error_percent']:.6f} | {row['s24_macro_error_percent']:.6f} | {row['endpoint_macro_error_percent']:.6f} |")
