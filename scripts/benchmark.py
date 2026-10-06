@@ -20,10 +20,10 @@ def make_plan(protocol, profile='quick', arms=None):
         raise ValueError('Specify distinct supported arms')
     if profile not in ('quick','paper'):
         raise ValueError('Unknown profile')
-    cases=protocol['cases'] if profile=='paper' else [r for r in protocol['cases'] if r['case']=='case7']
+    cases=protocol['cases'] if profile=='paper' else [r for r in protocol['cases'] if r['case']=='case1']
     if not cases:
-        raise ValueError('Protocol must include case7 for the quick profile')
-    seeds=protocol['solver_initial_seeds'] if profile=='paper' else [2029]
+        raise ValueError('Protocol must include case1 for the quick profile')
+    seeds=protocol['solver_initial_seeds'] if profile=='paper' else [2029,2030,2031]
     permutations=list(itertools.permutations(selected))
     rng=random.Random(protocol['order_seed'])
     runs=[]

@@ -39,7 +39,7 @@ bash scripts/smoke_test.sh --output runs/smoke
 python scripts/benchmark.py --profile quick --output runs/quick
 ```
 
-`--build-only` permits compilation without an attached GPU; it is not a runtime acceptance check. The final two commands need the supported GPU and create new directories. The smoke test has two case7 solves; the quick benchmark has three, covering the batch runner and summary. These are functional checks, not a statistical reproduction of the paper.
+`--build-only` permits compilation without an attached GPU; it is not a runtime acceptance check. The final two commands need the supported GPU and create new directories. The smoke test has two case7 solves; the quick benchmark has nine case1 solves (three initial seeds per arm), covering the batch runner and repeated-result summary. See [the benchmark guide](../benchmarks/public10/README.md) for the example selection and full paper protocol.
 
 ## Optional data generation
 

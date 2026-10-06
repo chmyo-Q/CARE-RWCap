@@ -47,6 +47,16 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(len(keys),300)
         self.assertEqual({r['seed'] for r in p['runs']},set(range(2029,2039)))
 
+    def test_quick_plan_is_fixed_before_observing_results(self):
+        p=make_plan(self.protocol,'quick')
+        self.assertEqual(p['cases'],['case1'])
+        self.assertEqual(p['seeds'],[2029,2030,2031])
+        self.assertEqual(len(p['runs']),9)
+        self.assertEqual(p['warmups'],[])
+        self.assertEqual(p,make_plan(self.protocol,'quick'))
+        for arm in ['p0','bpr','full']:
+            self.assertEqual([r['seed'] for r in p['runs'] if r['arm']==arm],[2029,2030,2031])
+
     def test_complete_macro_and_same_readout_differences(self):
         p=make_plan(self.protocol,'paper')
         with tempfile.TemporaryDirectory() as tmp:
@@ -96,7 +106,7 @@ class BenchmarkTest(unittest.TestCase):
             state=json.loads((d/'status.json').read_text())
             self.assertEqual(state['state'],'failed')
             self.assertEqual(len(list(d.glob('launch_*.log'))),1)
-            self.assertEqual(len(summarize(d)['missing']),3)
+            self.assertEqual(len(summarize(d)['missing']),9)
 
     def test_edited_metrics_cannot_override_solver_output(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -116,7 +126,10 @@ class BenchmarkTest(unittest.TestCase):
 
     def test_one_seed_has_no_confidence_interval(self):
         with tempfile.TemporaryDirectory() as tmp:
-            d=Path(tmp);p=make_plan(self.protocol);self.populate(d,p)
+            d=Path(tmp);p=make_plan(self.protocol)
+            p['seeds']=[2029]
+            p['runs']=[r for r in p['runs'] if r['seed']==2029]
+            self.populate(d,p)
             r=summarize(d)
             self.assertIsNone(r['module_comparisons']['whole method: full CER - p0 raw']['ci95_pp'])
 

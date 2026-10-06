@@ -4,11 +4,13 @@ The ten layouts and reference files are bundled from the fixed DeepRWCap public 
 
 `configs/paper_protocol.json` selects one master per layout, its reference self-capacitance, solver settings, and seeds. DSPF cases use the declared `*|NET` total for that master. Case10 uses its frozen SPICE-derived reference. Reference values only enter error evaluation, not CER activation.
 
-Quick functional batch (case7, seed 2029, three arms):
+Quick repeated comparison (case1, seeds 2029–2031, three arms: nine solves):
 
 ```bash
 python scripts/benchmark.py --output runs/quick
 ```
+
+Case1 is an illustrative example selected for its lower CARE-RWCap mean error in earlier evaluations. The quick batch reports all three new runs per arm; stochastic values and rankings may differ. Use the full ten-case profile for a performance comparison. Single-run and smoke examples use case7 to exercise the conditional modules.
 
 Paper accuracy protocol (10 cases × 10 seeds × 3 arms = 300 measured solves, plus 3 excluded warmups):
 

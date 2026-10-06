@@ -107,13 +107,15 @@ python scripts/benchmark.py --profile paper --plan-only --output runs/paper_plan
 python scripts/benchmark.py --profile paper --output runs/public10
 ```
 
-An optional three-run check of the batch interface uses case7 and initial seed 2029:
+For a small repeated comparison, the quick profile uses **case1**, initial seeds **2029–2031**, and three arms: nine solves in total.
 
 ```bash
 python scripts/benchmark.py --profile quick --output runs/quick
 ```
 
-This quick profile checks execution and summary generation. Use the full profile for a public10 performance comparison.
+Case1 was selected as an illustrative case with lower CARE-RWCap mean error in prior evaluations. Its [archived ten-repeat](results/reference_public10.json) mean was **0.7542%**, versus **0.8875%** for DeepRWCap raw. The quick command evaluates all three predefined seeds and reports their new means; stochastic values and rankings can differ from the archive.
+
+Use the full profile for a ten-case performance comparison. The single-run and smoke examples remain case7 to exercise both CPGR activation and the CER coupling-sum branch. Each conditional module follows its usual activation or fallback rule in the quick example.
 
 Each arm retains both raw and CER readouts. Completed batches produce `summary.json` and `summary.md` with per-case statistics, equal-case macro SelfCapErr, same-readout differences, uncertainty, workload and timing. Incomplete batches retain their outputs but do not receive a complete aggregate.
 
