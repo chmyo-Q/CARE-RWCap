@@ -10,7 +10,7 @@ Quick repeated comparison (case1, seeds 2029–2031, three arms: nine solves):
 python scripts/benchmark.py --output runs/quick
 ```
 
-Case1 is an illustrative example selected for its lower CARE-RWCap mean error in earlier evaluations. The quick batch reports all three new runs per arm; stochastic values and rankings may differ. Use the full ten-case profile for a performance comparison. Single-run and smoke examples use case7 to exercise the conditional modules.
+Case1 is an illustrative example selected for its lower CARE-RWCap mean error in earlier evaluations. The quick batch reports all three new runs per arm; stochastic values and rankings may differ. Use the full ten-case profile for a performance comparison. The default single-run example also uses case1; smoke uses its separate case7 configuration to exercise the conditional modules.
 
 Paper accuracy protocol (10 cases × 10 seeds × 3 arms = 300 measured solves, plus 3 excluded warmups):
 

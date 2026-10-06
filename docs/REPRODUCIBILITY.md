@@ -34,7 +34,7 @@ If a shared library fails to load, inspect `build/compile_*.log` or the run's `c
 
 ## Seed and repetition
 
-The example uses initial seed **2029**, with solver arguments `-n 8 -p 0.01 -c 0.01 --c-ratio 0.3`. `cpp/seed_control/seed_control.cpp` initializes Torch CPU/CUDA generators and the exported solver-core seed before the main program. Each run records whether that initialization occurred.
+The default case1 example uses initial seed **2029**, with solver arguments `-n 8 -p 0.01 -c 0.01 --c-ratio 0.95`, matching its public10 configuration. The separate case7 smoke configuration uses `--c-ratio 0.3`. `cpp/seed_control/seed_control.cpp` initializes Torch CPU/CUDA generators and the exported solver-core seed before the main program. Each run records whether that initialization occurred.
 
 The aligned 300-run public protocol uses ten seed blocks, **2029–2038**, with the same seed assigned to every case and method within a block. This is distinct from the training seed (2029) and from the single-run example default (2029). Actual run records and the frozen protocol agree on these ten seeds. Other public-case ratios and reference values are documented in `configs/paper_protocol.json`; the batch runner consumes this protocol and creates individual run configurations. The single-case runner uses `configs/example.json` by default.
 
@@ -51,11 +51,11 @@ When comparing methods, keep model set, solver settings, inputs, reference value
 - The minimal evaluator retains the selected-master capacitance row but does not compute coupling-row normalized L1 error.
 - The minimal evaluator does not measure GPU memory or S24 microbenchmark latency; these require dedicated protocols and are not inferred from solver timing.
 
-The bundled example reference is the frozen total self-capacitance for master `1` from public `case7.dspf`. It is used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
+The default example reference is the frozen total self-capacitance for master `APpolysub` from public `case1.dspf` (`1.591776e-14 F`). The separate smoke configuration retains master `1` and its public case7 reference. References are used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
 
 ## Scope of the checks
 
-`scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one Full solve on case7. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
+`scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one Full solve using `configs/smoke_case7.json`. It explicitly checks case7, CPGR activation and CER application independently of the default single-run configuration. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
 
 ## Public10 batch evaluation
 

@@ -57,6 +57,18 @@ class BenchmarkTest(unittest.TestCase):
         for arm in ['p0','bpr','full']:
             self.assertEqual([r['seed'] for r in p['runs'] if r['arm']==arm],[2029,2030,2031])
 
+    def test_default_example_and_smoke_use_their_own_frozen_cases(self):
+        for filename,case in [('example.json','case1'),('smoke_case7.json','case7')]:
+            cfg=json.loads((ROOT/'configs'/filename).read_text())
+            selected=next(r for r in self.protocol['cases'] if r['case']==case)
+            self.assertEqual(cfg['case'],case)
+            self.assertEqual(cfg['seed'],2029)
+            for key in ['master','reference_F','c_ratio']:
+                self.assertEqual(cfg[key],selected[key])
+            for key in ['workers','p','c','omp_threads','mkl_threads']:
+                self.assertEqual(cfg[key],self.protocol[key])
+            self.assertEqual((ROOT/cfg['geometry']).read_bytes(),(ROOT/selected['geometry']).read_bytes())
+
     def test_complete_macro_and_same_readout_differences(self):
         p=make_plan(self.protocol,'paper')
         with tempfile.TemporaryDirectory() as tmp:

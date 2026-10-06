@@ -35,10 +35,11 @@ with (integ/'console.log').open('w') as log:
 for arm in ['p0','full']:
     print('Checking end-to-end '+arm,flush=True)
     with (out/(arm+'.log')).open('w') as log:
-        subprocess.run([sys.executable,str(ROOT/'scripts/run.py'),'--arm',arm,'--output',str(out/arm)],
+        subprocess.run([sys.executable,str(ROOT/'scripts/run.py'),
+                       '--config',str(ROOT/'configs/smoke_case7.json'),'--arm',arm,'--output',str(out/arm)],
                        stdout=log,stderr=subprocess.STDOUT,check=True)
     metrics=json.loads((out/arm/'metrics.json').read_text())
-    assert metrics['walks']>0 and metrics['s24_applied']
+    assert metrics['case']=='case7' and metrics['walks']>0 and metrics['s24_applied']
 counts=json.loads((out/'full/PROJECTION_COUNTS.json').read_text())
 joint=json.loads((out/'full/JOINT_COUNTS.json').read_text())
 assert counts['cuda_status']==0 and counts['samples']>0 and sum(counts['masks'][1:])>0
@@ -49,7 +50,7 @@ report={'pass':True,'scope':'Functional acceptance only; two single-case runs do
         'model_check':json.loads((mc/'MODEL_CHECK.json').read_text()),
         'kernel_check':json.loads((kc/'KERNEL_CHECK.json').read_text()),
         'integration':json.loads((integ/'INTEGRATION_QA.json').read_text()),
-        'e2e_arms':['p0','full'],'e2e_case':'case7','cer_applied_both':True,
+        'e2e_arms':['p0','full'],'e2e_case':'case7','e2e_config':'configs/smoke_case7.json','cer_applied_both':True,
         'projection_counts':counts,'selector_counts':joint,
         'environment':json.loads((ROOT/'build/environment.json').read_text())}
 dump(out/'summary.json',report)

@@ -4,11 +4,11 @@
   "c": 0.01,
   "omp_threads": 1,
   "mkl_threads": 1,
-  "case": "case7",
-  "master": "1",
-  "reference_F": 9.176692675804292e-16,
-  "c_ratio": 0.3,
-  "geometry": "examples/case7/case7.cap3d",
-  "reference_source": "examples/case7/case7.dspf",
+  "case": "case1",
+  "master": "APpolysub",
+  "reference_F": 1.591776e-14,
+  "c_ratio": 0.95,
+  "geometry": "benchmarks/public10/case1.cap3d",
+  "reference_source": "benchmarks/public10/ref/case1.dspf",
   "seed": 2029
 }

@@ -47,16 +47,16 @@ git clone https://github.com/chmyo-Q/CARE-RWCap.git
 cd CARE-RWCap
 ```
 
-After installation, build the extensions and run the bundled case7 example:
+After installation, build the extensions and run the bundled case1 example:
 
 ```bash
 python scripts/check_environment.py --build-only
 python scripts/build.py
 python scripts/check_environment.py
-python scripts/run.py --arm care-rwcap --output runs/full_case7
+python scripts/run.py --arm care-rwcap --output runs/full_case1
 ```
 
-The default example is **case7**, a case with improved mean error in the historical public10 comparison. It demonstrates how to run the solver; a single realization does not estimate the ten-case average. The complete evaluation retains all ten cases.
+The default example is **case1**, using `configs/example.json` and the input under `benchmarks/public10/`. This illustrative case had improved mean error in earlier evaluations. A single realization does not estimate the ten-case average; the complete evaluation retains all ten cases.
 
 Every invocation needs a new output directory. The example uses initial seed 2029 and saves:
 
@@ -74,7 +74,7 @@ python -m unittest discover -s tests -p 'test_*.py'
 bash scripts/smoke_test.sh --output runs/smoke
 ```
 
-The first command needs NumPy but no GPU; the second requires the supported GPU environment. See [validation status](docs/VALIDATION.md) for completed checks and remaining limits.
+The first command needs NumPy but no GPU; the second requires the supported GPU environment. The smoke test explicitly uses `configs/smoke_case7.json` so that both CPGR activation and the CER coupling-sum branch are exercised. See [validation status](docs/VALIDATION.md) for completed checks and remaining limits.
 
 ## Data and pretrained models
 
@@ -115,7 +115,7 @@ python scripts/benchmark.py --profile quick --output runs/quick
 
 Case1 was selected as an illustrative case with lower CARE-RWCap mean error in prior evaluations. Its [archived ten-repeat](results/reference_public10.json) mean was **0.7542%**, versus **0.8875%** for DeepRWCap raw. The quick command evaluates all three predefined seeds and reports their new means; stochastic values and rankings can differ from the archive.
 
-Use the full profile for a ten-case performance comparison. The single-run and smoke examples remain case7 to exercise both CPGR activation and the CER coupling-sum branch. Each conditional module follows its usual activation or fallback rule in the quick example.
+Use the full profile for a ten-case performance comparison. The default single run also uses case1; the smoke test retains its separate case7 configuration. Each conditional module follows its usual activation or fallback rule in the case1 examples.
 
 Each arm retains both raw and CER readouts. Completed batches produce `summary.json` and `summary.md` with per-case statistics, equal-case macro SelfCapErr, same-readout differences, uncertainty, workload and timing. Incomplete batches retain their outputs but do not receive a complete aggregate.
 

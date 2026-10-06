@@ -1,16 +1,16 @@
 # Release validation
 
-Updated 2026-10-06. The case7 single-run/smoke workflow and case1 repeated quick comparison were checked on Ubuntu 24.04 with an RTX 4090, Python 3.12, Torch/Torch-TensorRT 2.6.0+cu126, TensorRT 10.7 and CUDA Toolkit 12.6. Checks used the existing matching dependency environment and rebuilt the extensions from source.
+Updated 2026-10-06. The case1 single-run/quick examples and separate case7 smoke workflow were checked on Ubuntu 24.04 with an RTX 4090, Python 3.12, Torch/Torch-TensorRT 2.6.0+cu126, TensorRT 10.7 and CUDA Toolkit 12.6. Checks used the existing matching dependency environment and rebuilt the extensions from source.
 
 ## Current checks
 
 | Check | Result |
 |---|---|
-| CPU tests | 34 passed locally and on the server. Coverage includes parser/CER behavior, scheduling, saved-output consistency, local-data preflight and GGFT file boundaries. |
+| CPU tests | 35 passed locally and on the server. Coverage includes parser/CER behavior, scheduling, separate example/smoke configurations, saved-output consistency, local-data preflight and GGFT file boundaries. |
 | Build and environment | Extension compilation and the supported-GPU environment check passed. |
 | Model loading | BPR source predictions matched its archived TorchScript in the checked inputs; the frozen DeepRWCap anchor matched the supplied checkpoint. |
 | CPGR | Projection, selector, compensation and sampler-integration checks passed. The case7 solve recorded actual CPGR activation. |
-| Case7 examples | The single CARE-RWCap example and two-solve smoke test completed. These check execution, not a statistical performance claim. |
+| Default example and smoke | The default Python command and shell example completed case1 solves. The separate two-solve smoke test used `configs/smoke_case7.json` and confirmed case7, CPGR activation and CER application. These check execution, not a statistical performance claim. |
 | Quick comparison | The fixed case1 batch completed all nine solves: three arms, initial seeds 2029–2031. All observations were summarized. Case1 was selected from prior improved examples; this small batch does not establish public10 performance. |
 | Readout commands | New `evaluate_readout.py` and compatible `evaluate.py` produced identical results from the same solver output. |
 | Saved-output compatibility | The renamed parser/readout reparsed 300 stored solver outputs without changes to the original numerical fields. New `cer_*` fields equal their retained `s24_*` aliases. |
