@@ -30,7 +30,7 @@ The Poisson selector is unchanged by CAPR. The Gradient selector **network param
 
 See [selector.cuh](../cpp/cpgr/selector.cuh) and the call to `joint_selector_launch` **before** `torch::multinomial(faceProbabilities,...)` in [sampler.cpp](../cpp/cpgr/sampler.cpp). Each pair sum and the sum of all six entries are preserved up to floating-point roundoff; inactive pairs and the seventh output (global weight) are copied unchanged. Eligible averaging can change individual face probabilities.
 
-After the face is drawn from this corrected distribution, the conditional signed kernel is projected and its L1 norm ratio compensates in-face sampling as described in [METHOD.md](METHOD.md). The conditional expectation identity does not assert that the original joint face-and-position transition law is preserved. No original-to-corrected face-probability importance ratio is applied. Both `S29_GRADIENT_JOINT_ENABLE=1` and `S29_GRADIENT_PARITY_ENABLE=1` were enabled in the archived Full arm and are enabled by the public runner.
+After the face is drawn from this corrected distribution, the conditional signed kernel is projected and its L1 norm ratio compensates in-face sampling as described in [METHOD.md](METHOD.md). The conditional expectation identity does not assert that the original joint face-and-position transition law is preserved. No original-to-corrected face-probability importance ratio is applied. Both `S29_GRADIENT_JOINT_ENABLE=1` and `S29_GRADIENT_PARITY_ENABLE=1` were enabled in the archived CARE-RWCap arm and are enabled by the public runner.
 
 ## CER consumes a logical row
 

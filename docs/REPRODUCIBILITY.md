@@ -44,18 +44,18 @@ When comparing methods, keep model set, solver settings, inputs, reference value
 
 ## Metrics
 
-- SelfCapErr (%) = `100 * abs(C / C_ref - 1)`; report raw and strict-S24 separately.
-- The aligned three-arm table used DeepRWCap raw, CAPR + strict-S24, and CAPR + CPGR + strict-S24. Its mean is the unweighted mean of the ten per-case mean errors (each case has ten repetitions). Case-to-case standard deviation and within-case repeat variation are different statistics and must be labeled separately.
+- SelfCapErr (%) = `100 * abs(C / C_ref - 1)`; report raw and CER separately.
+- The aligned three-arm table used DeepRWCap raw, CAPR + CER, and CAPR + CPGR + CER. Its mean is the unweighted mean of the ten per-case mean errors (each case has ten repetitions). Case-to-case standard deviation and within-case repeat variation are different statistics and must be labeled separately.
 - Walks and hops/walk come from the solver's output. Approximate steps are their product, rounded to an integer; hops/walk is already rounded by the solver.
 - Elapsed and CPU seconds are values reported by the solver. They are not measurements of Python launch, model loading, or the complete wrapper wall time.
 - The minimal evaluator retains the selected-master capacitance row but does not compute coupling-row normalized L1 error.
-- The minimal evaluator does not measure GPU memory or S24 microbenchmark latency; these require dedicated protocols and are not inferred from solver timing.
+- The minimal evaluator does not measure GPU memory or CER microbenchmark latency; these require dedicated protocols and are not inferred from solver timing.
 
 The default example reference is the frozen total self-capacitance for master `APpolysub` from public `case1.dspf` (`1.591776e-14 F`). The separate smoke configuration retains master `1` and its public case7 reference. References are used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
 
 ## Scope of the checks
 
-`scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one Full solve using `configs/smoke_case7.json`. It explicitly checks case7, CPGR activation and CER application independently of the default single-run configuration. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
+`scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one CARE-RWCap solve using `configs/smoke_case7.json`. It explicitly checks case7, CPGR activation and CER application independently of the default single-run configuration. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
 
 ## Public10 batch evaluation
 
@@ -69,7 +69,7 @@ The current summary reparses each measured `result.out` and checks saved raw/CER
 
 For each initial seed, error differences are averaged equally over the fixed cases. `statistics_report.py` uses NumPy PCG64 seed 20260919 and 20,000 percentile bootstrap resamples of those blocks. With one seed, the interval is omitted. All intervals are pointwise and unadjusted for multiple comparisons. Results do not imply shared random paths or unseen-case generalization.
 
-The original three comparisons consumed successive RNG blocks. To reproduce their interval endpoints without depending on display order, the implementation records explicit stream indices: CAPR-CER versus DeepRWCap-raw uses 0, Full-CER versus DeepRWCap-raw uses 1, and Full-CER versus CAPR-CER uses 2. Other component contrasts use block 3. Each block consists of `draws x number_of_seeds` sampled indices. Merely resetting seed 20260919 for every contrast gives slightly different Monte Carlo percentile endpoints; it is not a change in observed capacitance.
+The original three comparisons consumed successive RNG blocks. To reproduce their interval endpoints without depending on display order, the implementation records explicit stream indices: CAPR-CER versus DeepRWCap-raw uses 0, CARE-RWCap versus DeepRWCap-raw uses 1, and CARE-RWCap versus CAPR-CER uses 2. Other component contrasts use block 3. Each block consists of `draws x number_of_seeds` sampled indices. Merely resetting seed 20260919 for every contrast gives slightly different Monte Carlo percentile endpoints; it is not a change in observed capacitance.
 
 Raw/CER are dependent readouts of the same solve. The released three-arm protocol measures the CPGR effect conditional on CAPR, not its standalone effect or the complete CAPR-by-CPGR interaction. The [results reference](../results/README.md) belongs to the original 300-run cohort; keep new batches separate and do not transport percentage gains between cohorts to create missing observations.
 
@@ -77,4 +77,4 @@ For the traditional CPU programs, use the separate [baseline instructions](CPU_B
 
 ## CAPR training-seed supplement
 
-[Archived records and reaggregation](../results/training_seeds/README.md) cover training seeds 2029, 2039 and 2053 with 100 new Full solves per model. They reuse 100 DeepRWCap solves from the original aligned batch, matched by case and initial solver seed. This is not a simultaneous control experiment or common-path pairing. The script verifies coverage, matching references and saved errors, and recomputes all summaries from capacitance values. It does not perform new inference. The main inference runner and checkpoints remain unchanged.
+[Archived records and reaggregation](../results/training_seeds/README.md) cover training seeds 2029, 2039 and 2053 with 100 new CARE-RWCap solves per model. They reuse 100 DeepRWCap solves from the original aligned batch, matched by case and initial solver seed. This is not a simultaneous control experiment or common-path pairing. The script verifies coverage, matching references and saved errors, and recomputes all summaries from capacitance values. It does not perform new inference. The main inference runner and checkpoints remain unchanged.

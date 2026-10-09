@@ -72,7 +72,7 @@ The production extension interposes the pinned `DNNSolverGrad` methods using `LD
 
 ## CER: Conditional Endpoint Re-estimation
 
-Implementation: `src/readout/cer.py`. Historical alias S24 is retained to avoid conflating the rule with an unvalidated variant.
+Implementation: `src/readout/cer.py`. Historical file and field aliases are listed in [paper-to-code mapping](PAPER_MAPPING.md#terminology-and-training).
 
 The solver must provide an already aggregated logical-conductor row. Extract the expected logical conductor set and selected master from the layout. Names matching `digits__name` are mapped to `name`. For the selected matrix row:
 
@@ -81,7 +81,7 @@ The solver must provide an already aggregated logical-conductor row. Extract the
 - If all conditions hold, read the self capacitance as that absolute coupling sum.
 - Otherwise retain the raw self capacitance and report the fallback reason.
 
-The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate S24. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and strict-S24 capacitances. See [paper terminology and input contract](PAPER_MAPPING.md).
+The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate CER. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and CER capacitances. See [paper terminology and input contract](PAPER_MAPPING.md).
 
 For a parsed row with a finite positive raw self term, the exact applicability rule can be written as:
 

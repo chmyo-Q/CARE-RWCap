@@ -8,7 +8,7 @@ This is a fixed-model inference and public-benchmark release, not the full resea
 | Run CARE-RWCap and DeepRWCap | Frozen engines, checkpoints, runtime and single-case runner | Supported Linux x86_64 / RTX 4090 deployment |
 | Evaluate public10 | Ten layouts/references, 300-solve protocol, raw/CER summary | A fixed development benchmark; stochastic outcomes can differ |
 | Compare traditional solvers | Upstream FRW-AGF, MicroWalk and FRW-FDM binaries; CPU-only runner | No source rebuild of these upstream solver cores |
-| Check module effects | Same-readout DeepRWCap/CAPR/Full differences and CER effects | Three solver arms do not identify CPGR's standalone effect or a full factorial interaction |
+| Check module effects | Same-readout DeepRWCap/CAPR/CARE-RWCap differences and CER effects | Three solver arms do not identify CPGR's standalone effect or a full factorial interaction |
 | Inspect the framework | Author-supplied overview PNG/PDF and stage-to-code map | Diagram shows multi-master repetition; the released evaluator handles one selected master per invocation |
 | Review historical results | Original 300-run compact per-case and macro reference | Not all experimental cohorts or original logs |
 | Inspect local transition metrics | Optional frozen evaluator and fixed split | Original external datasets required; not bundled |
@@ -17,7 +17,7 @@ This is a fixed-model inference and public-benchmark release, not the full resea
 | Generate new local reference data | Pinned upstream GGFT workflow and CPU generation wrapper | Generates new datasets; does not supply the archived paper data or a training driver |
 | Retrain or rebuild the complete solver | Not provided | CAPR inspection and own CUDA extension builds are supported; upstream core remains a binary dependency |
 
-The original paper 300-run cohort remains the main historical reference. A separate [training-seed supplement](../results/training_seeds/README.md) releases 300 Full and 100 reused DeepRWCap capacitance records with CPU reaggregation; it does not bundle the extra two models or a new multi-model inference runner. CPGR's incremental end-to-end benefit has not been consistent across checked batches; the reference does not establish a repeatable ranking or a universal tolerance. Numerical functional checks are distinct from validating an accuracy claim.
+The original paper 300-run cohort remains the main historical reference. A separate [training-seed supplement](../results/training_seeds/README.md) releases 300 CARE-RWCap and 100 reused DeepRWCap capacitance records with CPU reaggregation; it does not bundle the extra two models or a new multi-model inference runner. CPGR's incremental end-to-end benefit has not been consistent across checked batches; the reference does not establish a repeatable ranking or a universal tolerance. Numerical functional checks are distinct from validating an accuracy claim.
 
 The release keeps the input/model/configuration and metric definitions needed to run its documented workflows. It does not require users to repeat every experiment. New outputs are retained and evaluated under their actual settings; reference values are not used to adjust predictions or select favorable runs.
 

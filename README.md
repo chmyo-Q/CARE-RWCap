@@ -133,7 +133,7 @@ The original public10 batch contains ten runs per case and solver arm. Macro Sel
 
 [Complete raw/CER results](results/README.md) identify the measured configurations and their shared-solve readouts. The [paper-to-code guide](docs/PAPER_MAPPING.md) lists which experiments the release supports.
 
-In a separate evaluation of three previously selected CAPR checkpoints, the Full-method macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical DeepRWCap baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 Full observations and 100 reused DeepRWCap observations. Recompute its tables without a GPU:
+In a separate evaluation of three previously selected CAPR checkpoints, the CARE-RWCap macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical DeepRWCap baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 CARE-RWCap observations and 100 reused DeepRWCap observations. Recompute its tables without a GPU:
 
 ```bash
 python scripts/summarize_training_seeds.py --output outputs/training_seed_summary
