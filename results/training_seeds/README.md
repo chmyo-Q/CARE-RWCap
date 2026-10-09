@@ -1,8 +1,8 @@
-# BPR training-seed robustness supplement
+# CAPR training-seed robustness supplement
 
-This supplement evaluates three **previously selected** BPR models in full CARE-RWCap. Only the BPR Poisson predictor was replaced; the CPGR, CER, solver, references and public10 parameters were fixed. Each model received ten fresh solves on each of ten cases (initial FRW seeds 2029-2038). No new training, tuning or best-seed selection was performed for this evaluation.
+This supplement evaluates three **previously selected** CAPR models in full CARE-RWCap. Only the CAPR Poisson predictor was replaced; the CPGR, CER, solver, references and public10 parameters were fixed. Each model received ten fresh solves on each of ten cases (initial FRW seeds 2029-2038). No new training, tuning or best-seed selection was performed for this evaluation.
 
-| BPR training seed | Selected epoch | Macro SelfCapErr (%) | Change (pp) | Relative change (%) | Improved cases |
+| CAPR training seed | Selected epoch | Macro SelfCapErr (%) | Change (pp) | Relative change (%) | Improved cases |
 |---|---:|---:|---:|---:|---:|
 | 2029 | 25 | 0.8112113 | -0.1165393 | -12.5615 | 7/10 |
 | 2039 | 17 | 0.8037911 | -0.1239595 | -13.3613 | 7/10 |
@@ -31,4 +31,4 @@ The output directory must not already exist. The script uses only the standard l
 - `protocol.json`: intervention, training/solver seeds, selected epochs and comparison boundaries.
 - `case_summary.csv`, `seed_summary.csv`, `aggregate.json`, `SUMMARY.md`: generated from the released records by the command above.
 
-The numerical records were checked against the original solver outputs before release. This compact supplement does not contain the original solver logs or the two additional model files. The command independently reaggregates the released capacitance records; it does not rerun all three models. The default inference workflow continues to use the bundled training-seed2029 model. See the [frozen BPR recipe](../../configs/bpr_training_recipe.json) and [release scope](../../docs/ARTIFACT_SCOPE.md).
+The numerical records were checked against the original solver outputs before release. This compact supplement does not contain the original solver logs or the two additional model files. The command independently reaggregates the released capacitance records; it does not rerun all three models. The default inference workflow continues to use the bundled training-seed2029 model. See the [frozen CAPR recipe](../../configs/capr_training_recipe.json) and [release scope](../../docs/ARTIFACT_SCOPE.md).

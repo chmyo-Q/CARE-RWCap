@@ -1,5 +1,5 @@
 {
-  "scope": "Recorded recipe for the released frozen BPR; metadata, not an executable training driver.",
+  "scope": "Recorded recipe for the released frozen CAPR; metadata, not an executable training driver.",
   "historical_arm": "S29 RF_RISK",
   "training_seed": 2029,
   "epochs": 30,
@@ -41,9 +41,9 @@
     "training": "mean(primary) + 0.5*mean(top ceil(0.25*batch_size) primary)",
     "validation_selection": "mean(K)+10*mean(A)+2*mean(T)+0.5*(q95(K)+10*q95(A))"
   },
-  "checkpoint": "models/checkpoints/bpr/best.pt",
-  "source_torchscript": "models/checkpoints/bpr/PoissonPredictor_best.jit",
-  "deployed_engine": "models/bpr/PoissonPredictor_tensorrt_fp16.jit",
+  "checkpoint": "models/checkpoints/capr/best.pt",
+  "source_torchscript": "models/checkpoints/capr/PoissonPredictor_best.jit",
+  "deployed_engine": "models/capr/PoissonPredictor_tensorrt_fp16.jit",
   "deployment_precision": "TensorRT FP16; source checkpoint/TorchScript FP32",
   "evidence": {
     "optimizer_lr_batch_schedule": "Archived RUN_S29_A0A1.sh and tools/s29_train.py in deeprwcap_s29_a0a1_risk_bounded_residual_factorized_v1_clean",

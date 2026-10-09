@@ -5,8 +5,8 @@
 | Arm | Readout used in the historical main comparison | Macro SelfCapErr (%) |
 |---|---|---:|
 | DeepRWCap | Raw | 0.9277505 |
-| BPR | CER / strict-S24 | 0.9000874 |
-| Full: BPR + CPGR | CER / strict-S24 | 0.8109996 |
+| CAPR | CER / strict-S24 | 0.9000874 |
+| Full: CAPR + CPGR | CER / strict-S24 | 0.8109996 |
 
 The JSON also supplies per-case raw and CER/S24 means, sample SD over repetitions, and both raw/S24 macro results. Macro means give equal weight to each case. Between-case variation is not the same as repeated-run variation.
 
@@ -16,9 +16,9 @@ This is an identified historical reference, not a target that every new batch mu
 
 ## Interpretation of module comparisons
 
-The original cohort contains three solver arms with two readouts each: DeepRWCap raw/CER, BPR raw/CER, and BPR+CPGR raw/CER. Its BPR+CPGR raw mean is **0.8355514%**. It contains no DeepRWCap+CPGR solve; three-arm results alone cannot identify CPGR's standalone effect or a BPR-by-CPGR factorial interaction.
+The original cohort contains three solver arms with two readouts each: DeepRWCap raw/CER, CAPR raw/CER, and CAPR+CPGR raw/CER. Its CAPR+CPGR raw mean is **0.8355514%**. It contains no DeepRWCap+CPGR solve; three-arm results alone cannot identify CPGR's standalone effect or a CAPR-by-CPGR factorial interaction.
 
-The main reference above contains only this original cohort. A separate [BPR training-seed supplement](training_seeds/README.md) contains a later Full-only evaluation and explicitly identifies its reused DeepRWCap baseline. In other checked batches, CPGR's incremental end-to-end effect did not consistently retain the favorable direction seen here. Consequently, this historical table is not evidence of a stable cross-batch CPGR gain. The package includes neither all research cohorts nor their raw archives.
+The main reference above contains only this original cohort. A separate [CAPR training-seed supplement](training_seeds/README.md) contains a later Full-only evaluation and explicitly identifies its reused DeepRWCap baseline. In other checked batches, CPGR's incremental end-to-end effect did not consistently retain the favorable direction seen here. Consequently, this historical table is not evidence of a stable cross-batch CPGR gain. The package includes neither all research cohorts nor their raw archives.
 
 ## All observed configurations in the original batch
 
@@ -26,9 +26,9 @@ The main reference above contains only this original cohort. A separate [BPR tra
 |---|---:|---:|
 | DeepRWCap | 0.9278 | 0.00 |
 | DeepRWCap + CER | 0.9150 | 1.37 |
-| BPR | 0.8720 | 6.00 |
-| BPR + CER | 0.9001 | 2.98 |
-| BPR + CPGR | 0.8356 | 9.94 |
+| CAPR | 0.8720 | 6.00 |
+| CAPR + CER | 0.9001 | 2.98 |
+| CAPR + CPGR | 0.8356 | 9.94 |
 | CARE-RWCap | 0.8110 | 12.58 |
 
-These six rows come from three solver arms, each with raw and CER readouts of the same solve. They are not six independent solver arms or a complete factorial experiment. There is no DeepRWCap+CPGR observation in this cohort. Relative changes use unrounded means; the CER-only reduction is 1.37%. CER lowers the macro error for DeepRWCap and Full in this batch but increases it for the BPR-only arm (0.8720% to 0.9001%). All configurations are retained here.
+These six rows come from three solver arms, each with raw and CER readouts of the same solve. They are not six independent solver arms or a complete factorial experiment. There is no DeepRWCap+CPGR observation in this cohort. Relative changes use unrounded means; the CER-only reduction is 1.37%. CER lowers the macro error for DeepRWCap and Full in this batch but increases it for the CAPR-only arm (0.8720% to 0.9001%). All configurations are retained here.

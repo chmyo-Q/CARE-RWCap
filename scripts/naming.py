@@ -3,16 +3,16 @@ import re
 
 ARM_LABELS = {
     'p0': 'DeepRWCap',
-    'bpr': 'DeepRWCap + BPR',
+    'bpr': 'DeepRWCap + CAPR',
     'full': 'CARE-RWCap',
 }
-CLI_ARMS = '{deeprwcap,bpr,care-rwcap}'
-ALIASES = {'deeprwcap': 'p0', 'care-rwcap': 'full', **{k: k for k in ARM_LABELS}}
+CLI_ARMS = '{deeprwcap,capr,care-rwcap}'
+ALIASES = {'deeprwcap': 'p0', 'capr': 'bpr', 'care-rwcap': 'full', **{k: k for k in ARM_LABELS}}
 
 
 def normalize_arm(value):
     if value not in ALIASES:
-        raise ValueError('Choose deeprwcap, bpr, or care-rwcap')
+        raise ValueError('Choose deeprwcap, capr, or care-rwcap')
     return ALIASES[value]
 
 

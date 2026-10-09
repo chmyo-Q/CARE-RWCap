@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute the archived BPR training-seed supplement, without a solver/GPU."""
+"""Recompute the archived CAPR training-seed supplement, without a solver/GPU."""
 import argparse
 import csv
 import json
@@ -118,7 +118,7 @@ def main():
     write_csv(args.output/'case_summary.csv', cases)
     write_csv(args.output/'seed_summary.csv', seeds)
     (args.output/'aggregate.json').write_text(json.dumps(aggregate, indent=2)+'\n', encoding='utf-8')
-    lines = ['# BPR training-seed supplement', '',
+    lines = ['# CAPR training-seed supplement', '',
         '| Training seed | Macro SelfCapErr (%) | Delta (pp) | Relative change (%) | Wins |',
         '|---|---:|---:|---:|---:|']
     for r in seeds:

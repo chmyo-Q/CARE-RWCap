@@ -18,7 +18,7 @@ This repository provides the core implementation, frozen deployment models, ten 
 Following the numbered stages in the figure:
 
 1. **CPGR — Conditional Parity Gradient Refinement.** At eligible neural first-Gradient transitions, strict input-reflection checks control parity projection and contribution compensation. The deployed joint operator also averages eligible opposite-face probabilities; the Gradient network parameters remain frozen.
-2. **BPR — Baseline-Anchored Poisson Refinement.** Subsequent neural Poisson steps use bounded residual reweighting of the in-face conditional distribution, with the frozen anchor and original Poisson face selector.
+2. **CAPR — Condition-Aware Poisson Refinement.** Subsequent neural Poisson steps use bounded residual reweighting of the in-face conditional distribution, with the frozen anchor and original Poisson face selector.
 3. **CER — Conditional Endpoint Re-estimation.** After conductor-hit contributions are accumulated, the same solve supplies raw and conditional coupling-based self-capacitance readouts. Reference values are used only to evaluate error.
 
 The figure describes the full framework; the released runner evaluates one selected master per invocation. The parser expects an already-aggregated logical-conductor row. Exact selector, input-validation and fallback behavior is explained in [paper-to-code mapping](docs/PAPER_MAPPING.md), with formulas in [METHOD.md](docs/METHOD.md).
@@ -83,21 +83,21 @@ All ten public geometries and reference files are included under `benchmarks/pub
 | Directory | Contents |
 |---|---|
 | [DeepRWCap models](models/README.md) | Five FP16 engines for the locally trained DeepRWCap baseline |
-| `models/bpr/` | BPR Poisson engine; the other four engines are shared with DeepRWCap |
+| `models/capr/` | CAPR Poisson engine; the other four engines are shared with DeepRWCap |
 | `models/checkpoints/` | Inspectable FP32 checkpoints and uncompiled TorchScript |
 | `benchmarks/public10/` | Public layouts and reference capacitances |
 
 The bundled DeepRWCap baseline uses the upstream architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
 
-For new local Poisson/Gradient data, the optional [GGFT generation workflow](docs/DATA.md) uses a fixed upstream source revision and a CPU-only entry, `scripts/generate_data.py`. It documents generation settings, the binary format and BPR preprocessing. Generated data do not replace the frozen paper reference files or retrain the bundled models.
+For new local Poisson/Gradient data, the optional [GGFT generation workflow](docs/DATA.md) uses a fixed upstream source revision and a CPU-only entry, `scripts/generate_data.py`. It documents generation settings, the binary format and CAPR preprocessing. Generated data do not replace the frozen paper reference files or retrain the bundled models.
 
 ## Public10 evaluation
 
 | `--arm` | Poisson model | CPGR | Main comparison readout |
 |---|---|---|---|
 | `deeprwcap` | DeepRWCap | Off | Raw |
-| `bpr` | BPR | Off | CER |
-| `care-rwcap` | BPR | On | CER |
+| `capr` | CAPR | Off | CER |
+| `care-rwcap` | CAPR | On | CER |
 
 ```bash
 # Inspect the full plan without a GPU or any solves
@@ -128,12 +128,12 @@ The original public10 batch contains ten runs per case and solver arm. Macro Sel
 | Configuration | Macro SelfCapErr (%) |
 |---|---:|
 | DeepRWCap, raw | 0.9278 |
-| BPR + CER | 0.9001 |
-| CARE-RWCap: BPR + CPGR + CER | 0.8110 |
+| CAPR + CER | 0.9001 |
+| CARE-RWCap: CAPR + CPGR + CER | 0.8110 |
 
 [Complete raw/CER results](results/README.md) identify the measured configurations and their shared-solve readouts. The [paper-to-code guide](docs/PAPER_MAPPING.md) lists which experiments the release supports.
 
-In a separate evaluation of three previously selected BPR checkpoints, the Full-method macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical DeepRWCap baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 Full observations and 100 reused DeepRWCap observations. Recompute its tables without a GPU:
+In a separate evaluation of three previously selected CAPR checkpoints, the Full-method macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical DeepRWCap baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 Full observations and 100 reused DeepRWCap observations. Recompute its tables without a GPU:
 
 ```bash
 python scripts/summarize_training_seeds.py --output outputs/training_seed_summary
@@ -160,7 +160,7 @@ These use raw SelfCapErr without CER, with 16 solver threads by default; the neu
 ## Repository structure
 
 ```text
-src/bpr/                         BPR architecture and loss
+src/capr/                        CAPR architecture and loss
 src/readout/                     Output parser and CER
 cpp/cpgr/                        Projection, selector and compensation
 cpp/seed_control/                Initial neural-solver seed setup
@@ -183,7 +183,7 @@ For a first CARE-RWCap run, follow **Quick start**. The framework figure, tradit
 |---|---|
 | Install and run a case | [Installation](docs/INSTALL.md) and Quick start above |
 | Generate new Poisson/Gradient data | [GGFT source, format and generation](docs/DATA.md) |
-| Understand BPR, CPGR and CER | [Method](docs/METHOD.md) and [paper-to-code mapping](docs/PAPER_MAPPING.md) |
+| Understand CAPR, CPGR and CER | [Method](docs/METHOD.md) and [paper-to-code mapping](docs/PAPER_MAPPING.md) |
 | Evaluate the ten public cases | [Benchmark commands](benchmarks/public10/README.md) and [protocol](docs/REPRODUCIBILITY.md) |
 | Check what has actually been tested | [Validation status](docs/VALIDATION.md) |
 | Understand included and omitted material | [Release scope](docs/ARTIFACT_SCOPE.md) |

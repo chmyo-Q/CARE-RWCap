@@ -25,7 +25,7 @@ def check_files():
 
 
 def model_paths(bpr):
-    return [ROOT / 'models' / ('bpr' if bpr and n == 'PoissonPredictor' else 'paper_p0') /
+    return [ROOT / 'models' / ('capr' if bpr and n == 'PoissonPredictor' else 'deeprwcap') /
             (n + '_tensorrt_fp16.jit') for n in NAMES]
 
 

@@ -1,8 +1,8 @@
 # Frozen implementation contract
 
-The implementation below is the one associated with the original aligned public10 batch (2026-09-19). The audit used its archived configuration, deployed files and solver outputs, rather than selecting a recipe from a manuscript draft. Historical names are S29 RF_RISK = BPR, Gradient-Joint = CPGR, strict-S24 = CER.
+The implementation below is the one associated with the original aligned public10 batch (2026-09-19). The audit used its archived configuration, deployed files and solver outputs, rather than selecting a recipe from a manuscript draft. Historical names are S29 RF_RISK = CAPR, Gradient-Joint = CPGR, strict-S24 = CER.
 
-## BPR training and checkpoint lineage
+## CAPR training and checkpoint lineage
 
 | Setting | Frozen recipe | Evidence type |
 |---|---|---|
@@ -14,13 +14,13 @@ The implementation below is the one associated with the original aligned public1
 | Training seed / selected epoch | 2029 / 25 | Original protocol / completed RF_RISK run metadata |
 | Split | 90,000 training + 10,000 validation; seed 20260805 | Fixed split manifest used by the training launcher |
 
-The [machine-readable recipe](../configs/bpr_training_recipe.json) distinguishes the training tail objective from the validation selection score. Adam at 1e-3 and trust coefficient 0.25 do not describe this checkpoint. AdamW refers to [decoupled weight decay](https://arxiv.org/abs/1711.05101).
+The [machine-readable recipe](../configs/capr_training_recipe.json) distinguishes the training tail objective from the validation selection score. Adam at 1e-3 and trust coefficient 0.25 do not describe this checkpoint. AdamW refers to [decoupled weight decay](https://arxiv.org/abs/1711.05101).
 
-The source is the RF_RISK checkpoint selected in `train_seed2029_30e_20260909_180652`. Its released state dictionary and uncompiled TorchScript agree with the preserved training-seed artifact. The BPR FP16 engine, all five DeepRWCap engines, and CPGR source agree with the original aligned-batch inventory (one C++ file differs only in line endings). This identifies the deployed files; it is not a new training or engine-recompilation experiment. The original training protocol JSON records loss coefficients but does not itself record optimizer/lr. Those settings come from the archived launcher and implementation; an optimizer-state replay is not claimed.
+The source is the RF_RISK checkpoint selected in `train_seed2029_30e_20260909_180652`. Its released state dictionary and uncompiled TorchScript agree with the preserved training-seed artifact. The CAPR FP16 engine, all five DeepRWCap engines, and CPGR source agree with the original aligned-batch inventory (one C++ file differs only in line endings). This identifies the deployed files; it is not a new training or engine-recompilation experiment. The original training protocol JSON records loss coefficients but does not itself record optimizer/lr. Those settings come from the archived launcher and implementation; an optimizer-state replay is not claimed.
 
 ## CPGR changes the Gradient face distribution
 
-The Poisson selector is unchanged by BPR. The Gradient selector **network parameters** are also unchanged, but CPGR post-processes its first six outputs before sampling a face. For each strictly symmetric input axis, replace the corresponding opposite pair `(q_a, q_b)` by `((q_a+q_b)/2, (q_a+q_b)/2)`.
+The Poisson selector is unchanged by CAPR. The Gradient selector **network parameters** are also unchanged, but CPGR post-processes its first six outputs before sampling a face. For each strictly symmetric input axis, replace the corresponding opposite pair `(q_a, q_b)` by `((q_a+q_b)/2, (q_a+q_b)/2)`.
 
 | Reflected input index after Gradient-axis rotation | Exact-equality mask bit | Zero-based face pair |
 |---|---:|---|

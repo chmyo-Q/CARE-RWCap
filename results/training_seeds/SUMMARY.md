@@ -1,4 +1,4 @@
-# BPR training-seed supplement
+# CAPR training-seed supplement
 
 | Training seed | Macro SelfCapErr (%) | Delta (pp) | Relative change (%) | Wins |
 |---|---:|---:|---:|---:|

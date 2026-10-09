@@ -18,14 +18,18 @@ class NamingTest(unittest.TestCase):
 
     def test_aliases_preserve_exact_paper_plan(self):
         old=make_plan(self.protocol,'paper',['p0','bpr','full'])
-        new=make_plan(self.protocol,'paper',['deeprwcap','bpr','care-rwcap'])
+        new=make_plan(self.protocol,'paper',['deeprwcap','capr','care-rwcap'])
         self.assertEqual(old,new)
+        self.assertEqual(normalize_arm('capr'),'bpr')
+        self.assertEqual(normalize_arm('bpr'),'bpr')
         self.assertEqual(normalize_arm('deeprwcap'),'p0')
         self.assertEqual(normalize_arm('care-rwcap'),'full')
 
     def test_same_arm_twice_via_alias_is_rejected(self):
         with self.assertRaises(ValueError):
             make_plan(self.protocol,'paper',['p0','deeprwcap'])
+        with self.assertRaises(ValueError):
+            make_plan(self.protocol,'paper',['bpr','capr'])
 
     def test_display_changes_do_not_rewrite_saved_data(self):
         report={'complete':True,'valid':3,'planned':3,'macro':{
@@ -39,6 +43,8 @@ class NamingTest(unittest.TestCase):
             text=(Path(d)/'summary.md').read_text(encoding='utf-8')
             self.assertIn('| DeepRWCap |',text)
             self.assertIn('| CARE-RWCap |',text)
+            self.assertIn('| DeepRWCap + CAPR |',text)
+            self.assertNotIn('BPR',text)
             self.assertIn('CARE-RWCap CER - DeepRWCap raw',text)
             self.assertNotIn('p0',text)
 

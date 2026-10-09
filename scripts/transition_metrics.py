@@ -143,8 +143,8 @@ def poisson_metrics(p,t,basis):
  return (t*(np.log(np.maximum(t,EPS))-np.log(np.maximum(p,EPS)))).sum((1,2)),np.square((p-t).reshape(-1,529)@basis.T).mean(1)
 
 
-def evaluate_bpr(ids,out,batch):
- ds=Dataset(DATA/'poisson.bin');p0=load('paper_p0/PoissonPredictor_tensorrt_fp16.jit');bpr=load('bpr/PoissonPredictor_tensorrt_fp16.jit')
+def evaluate_capr(ids,out,batch):
+ ds=Dataset(DATA/'poisson.bin');p0=load('deeprwcap/PoissonPredictor_tensorrt_fp16.jit');bpr=load('capr/PoissonPredictor_tensorrt_fp16.jit')
  basis=probes();rows=[];maxnorm=0.
  for start in range(0,len(ids),batch):
   ix=ids[start:start+batch];x,exact=ds.read(ix)
@@ -161,8 +161,8 @@ def evaluate_bpr(ids,out,batch):
   a=a/sa;b=b/sb;t=t/t.sum((1,2),keepdims=True)
   ka,aa=poisson_metrics(a,t,basis);kb,ab=poisson_metrics(b,t,basis);tv=.5*abs(a-b).sum((1,2))
   for j,i in enumerate(ix):rows.append(dict(dataset_index=int(i),raw_kl=float(ka[j]),bpr_kl=float(kb[j]),raw_action_error=float(aa[j]),bpr_action_error=float(ab[j]),bpr_vs_p0_tv=float(tv[j]),raw_output_sum=float(sa[j,0,0]),bpr_output_sum=float(sb[j,0,0]),legacy_direct_raw_kl_formula=float(la[j]),legacy_direct_bpr_kl_formula=float(lb[j]),legacy_direct_raw_action=float(laa[j]),legacy_direct_bpr_action=float(lba[j])))
-  if start%1024==0:print('BPR',start+len(ix),'/',len(ids),flush=True)
- write_csv(out/'bpr_samples.csv.gz',rows)
+  if start%1024==0:print('CAPR',start+len(ix),'/',len(ids),flush=True)
+ write_csv(out/'capr_samples.csv.gz',rows)
  v={k:stats([r[k] for r in rows]) for k in rows[0] if k!='dataset_index'}
  v.update(kl_relative_change_percent=change(v['raw_kl']['mean'],v['bpr_kl']['mean']),action_relative_change_percent=change(v['raw_action_error']['mean'],v['bpr_action_error']['mean']),normalization_max_error=maxnorm)
  del p0,bpr;torch.cuda.empty_cache();return v
@@ -192,7 +192,7 @@ def summarize_kernel(rows):
 
 
 def evaluate_gradient(ids,out,batch):
- ds=Dataset(DATA/'gradient.bin');g1=load('paper_p0/Gradient1Predictor_tensorrt_fp16.jit');g2=load('paper_p0/Gradient2Predictor_tensorrt_fp16.jit');sel=load('paper_p0/GradientSelectorWeight_tensorrt_fp16.jit');prod=Production()
+ ds=Dataset(DATA/'gradient.bin');g1=load('deeprwcap/Gradient1Predictor_tensorrt_fp16.jit');g2=load('deeprwcap/Gradient2Predictor_tensorrt_fp16.jit');sel=load('deeprwcap/GradientSelectorWeight_tensorrt_fp16.jit');prod=Production()
  rows=[];wrows=[];normgap=0.
  for start in range(0,len(ids),batch):
   ix=ids[start:start+batch];x,exact=ds.read(ix)
@@ -229,3 +229,5 @@ def evaluate_gradient(ids,out,batch):
  return models,ws,checks
 
 
+# Legacy API for archived evaluation callers.
+evaluate_bpr = evaluate_capr

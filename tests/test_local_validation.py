@@ -33,7 +33,9 @@ class LocalInputTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'Not the frozen'):
                 preflight(p,'bpr',c)
             with patch('evaluate_transitions.DATA_IDENTITIES',{'poisson':hashlib.sha256(b'abc').hexdigest()}):
-                self.assertTrue(preflight(p,'bpr',c)['poisson']['frozen_identity_verified'])
+                legacy=preflight(p,'bpr',c)
+                self.assertTrue(legacy['poisson']['frozen_identity_verified'])
+                self.assertEqual(preflight(p,'capr',c),legacy)
             with self.assertRaises(FileNotFoundError):preflight(p,'cpgr',c)
 
 

@@ -61,7 +61,7 @@ The pinned upstream code uses:
 | Gradient mode | `WVTZ` |
 | Random generator | `std::mt19937`, seeded with the OpenMP thread index |
 
-Thread count changes the random streams, workload partition and concatenated sample order. The upstream generator does **not** take CARE's BPR training seed or FRW solver seed. The values 2029 and 2029–2038 in the other workflows are not GGFT generation seeds. Keep the generation thread count and source version fixed when comparing generated datasets; compiler/library differences can also affect numerical results.
+Thread count changes the random streams, workload partition and concatenated sample order. The upstream generator does **not** take CARE's CAPR training seed or FRW solver seed. The values 2029 and 2029–2038 in the other workflows are not GGFT generation seeds. Keep the generation thread count and source version fixed when comparing generated datasets; compiler/library differences can also affect numerical results.
 
 ## Binary layout
 
@@ -74,7 +74,7 @@ The documented Linux x86_64 output uses little-endian float64 values throughout.
 | Reference kernel | `6 * 23^2 = 3,174` | Values on the six cube faces |
 | Total | `15,453` | `123,624` bytes per record |
 
-The structure description is retained in the file but is not an input to the released BPR network. Preserve upstream storage and face conventions; do not add an axis permutation or reorder faces merely to match a visualization.
+The structure description is retained in the file but is not an input to the released CAPR network. Preserve upstream storage and face conventions; do not add an axis permutation or reorder faces merely to match a visualization.
 
 A minimal inspection with NumPy is:
 
@@ -92,10 +92,10 @@ kernels = records[:, 12279:].reshape(-1, 6, 1, 23, 23)
 
 ## Connection to CARE-RWCap
 
-For BPR, the recorded training recipe normalizes each dielectric cube by its spatial maximum (using divisor 1 for a zero maximum). The face-zero target is `abs(kernel) + 1e-10`, normalized over its 23-by-23 face. The archived split uses a NumPy PCG64 permutation with seed 20260805: 90,000 training samples and 10,000 validation samples. See [the model and loss](METHOD.md) and [training recipe](../configs/bpr_training_recipe.json).
+For CAPR, the recorded training recipe normalizes each dielectric cube by its spatial maximum (using divisor 1 for a zero maximum). The face-zero target is `abs(kernel) + 1e-10`, normalized over its 23-by-23 face. The archived split uses a NumPy PCG64 permutation with seed 20260805: 90,000 training samples and 10,000 validation samples. See [the model and loss](METHOD.md) and [training recipe](../configs/capr_training_recipe.json).
 
 CPGR uses signed Gradient predictions and introduces no trainable checkpoint. Gradient data supply numerical reference kernels for local evaluation. CER acts on the solver's output capacitance row and does not use GGFT data.
 
-**Generating data does not retrain or replace the bundled models.** This release provides BPR architecture/loss and the recorded recipe, but not a complete training-and-TensorRT-export entry. Newly generated files are inputs for further research; generating the same number of records does not establish identity with the archived training or validation samples.
+**Generating data does not retrain or replace the bundled models.** This release provides CAPR architecture/loss and the recorded recipe, but not a complete training-and-TensorRT-export entry. Newly generated files are inputs for further research; generating the same number of records does not establish identity with the archived training or validation samples.
 
 The optional [transition evaluator](LOCAL_VALIDATION.md) requires the original frozen files and verifies their identity. It will not accept these newly generated files as a reproduction unless they actually match. The archived full datasets are not bundled and currently have no public download endpoint. Public10 inference is available without them.

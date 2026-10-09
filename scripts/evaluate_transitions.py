@@ -17,7 +17,7 @@ DATA_IDENTITIES={
 
 
 def preflight(data_dir,modules,config):
-    required=['poisson','gradient'] if modules=='all' else ['poisson' if modules=='bpr' else 'gradient']
+    required=['poisson','gradient'] if modules=='all' else ['poisson' if modules in ('capr','bpr') else 'gradient']
     info={}
     for name in required:
         p=data_dir/(name+'.bin')
@@ -38,10 +38,11 @@ def preflight(data_dir,modules,config):
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--data-dir',type=Path,required=True,help='Directory containing the original poisson.bin/gradient.bin')
-    ap.add_argument('--module',choices=['bpr','cpgr','all'],default='all')
+    ap.add_argument('--module',choices=['capr','cpgr','all','bpr'],default='all', help='CAPR or CPGR; bpr is a legacy alias for capr')
     ap.add_argument('--output',type=Path,required=True,help='New output directory')
     ap.add_argument('--preflight-only',action='store_true',help='Verify datasets and split without importing GPU libraries')
     args=ap.parse_args()
+    if args.module=='bpr':args.module='capr'
     data=args.data_dir.resolve();out=args.output.resolve()
     if out.exists():ap.error('Output directory must be new')
     cfg=json.loads((ROOT/'configs/transition_validation.json').read_text())
@@ -62,17 +63,17 @@ def main():
             'gpu':ev.torch.cuda.get_device_name()}
         dump(out/'protocol.json',meta)
         result={}
-        if args.module in ['bpr','all']:
-            result['bpr']=ev.evaluate_bpr(ev.np.array(cfg['poisson_validation_indices']),out,cfg['batch_size'])
+        if args.module in ['capr','all']:
+            result['bpr']=ev.evaluate_capr(ev.np.array(cfg['poisson_validation_indices']),out,cfg['batch_size'])
         if args.module in ['cpgr','all']:
             ids=ev.np.arange(cfg['gradient_start'],cfg['gradient_end'])
             result['cpgr'],result['weight'],result['checks']=ev.evaluate_gradient(ids,out,cfg['batch_size'])
         dump(out/'summary.json',result)
         lines=['# Frozen local transition evaluation','','Precision: '+cfg['precision']+'. No end-to-end solve.','']
         if 'bpr' in result:
-            b=result['bpr'];lines+=['| BPR metric | DeepRWCap | BPR |','|---|---:|---:|']
+            b=result['bpr'];lines+=['| CAPR metric | DeepRWCap | CAPR |','|---|---:|---:|']
             for k in ['kl','action_error']:lines.append(f"| Mean {k} | {b['raw_'+k]['mean']:.10g} | {b['bpr_'+k]['mean']:.10g} |")
-            lines+=['',f"Mean TV(BPR,DeepRWCap): {b['bpr_vs_p0_tv']['mean']:.10g}; this measures refinement magnitude.",'']
+            lines+=['',f"Mean TV(CAPR,DeepRWCap): {b['bpr_vs_p0_tv']['mean']:.10g}; this measures refinement magnitude.",'']
         if 'cpgr' in result:
             lines+=['| Head | Active / total | Raw NL2 | CPGR NL2 | Relative change (%) | Win fraction |','|---|---:|---:|---:|---:|---:|']
             for name,b in result['cpgr'].items():

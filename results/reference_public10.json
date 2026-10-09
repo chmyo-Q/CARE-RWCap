@@ -1,6 +1,6 @@
 {
   "description": "Author reference: archived aligned 300-run batch dated 2026-09-19; recomputed from preserved solver outputs.",
-  "models": "Bundled paper_p0/BPR deployment engines; Full adds the bundled CPGR implementation.",
+  "models": "Bundled DeepRWCap/CAPR deployment engines; Full adds the bundled CPGR implementation.",
   "seeds": [
     2029,
     2030,
@@ -15,7 +15,7 @@
   ],
   "case_count": 10,
   "repetitions_per_case_arm": 10,
-  "endpoint": "P0 raw; BPR and Full strict-S24 (CER). Both raw/S24 are also provided below.",
+  "endpoint": "DeepRWCap raw; CAPR and CARE-RWCap strict-S24 (CER). Both raw/S24 are also provided below.",
   "interpretation": "Historical observations, not a guaranteed target or a new independent replication. Public cases were used during development.",
   "macro": {
     "p0": {

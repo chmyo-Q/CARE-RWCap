@@ -1,6 +1,6 @@
 # Frozen local transition validation
 
-This optional entry evaluates the deployed BPR and CPGR operators without training, new labels or end-to-end solves. Use the same supported Linux / RTX 4090 environment and build the extension first.
+This optional entry evaluates the deployed CAPR and CPGR operators without training, new labels or end-to-end solves. Use the same supported Linux / RTX 4090 environment and build the extension first.
 
 ```bash
 python scripts/evaluate_transitions.py --help
@@ -14,7 +14,9 @@ The data directory must contain the original `poisson.bin` and `gradient.bin`. E
 
 The exact archived Poisson validation order is in `configs/transition_validation.json`; Gradient uses indices `[90000,100000)`. There is no split or threshold search. The evaluator uses frozen FP16 engines, FP32 production CUDA projection and FP64 metrics. It records its actual environment and preserves failed outputs. A preflight success only confirms the datasets and split; it does not validate GPU execution.
 
-Outputs include `protocol.json`, `status.json`, `summary.json`, `summary.md` and paired sample records in compressed CSV. BPR reports KL (including mean, Q95 and Q99), six-probe Action MSE and TV(BPR,DeepRWCap), using the normalized probabilities actually sampled from the FP16 outputs. TV is refinement magnitude, not error against the reference. CPGR reports Gradient1/2 activation counts, active-only normalized L2, parity violations, exact-label parity and improvement fractions. The weight check uses one measure: normalized L1 error of effective six-face absolute mass. The seventh selector output is unchanged; this is not a claim that its neural prediction improves.
+Use `--module capr` for Poisson-only evaluation; `--module bpr` remains a compatibility alias. New Poisson sample files are named `capr_samples.csv.gz`. To preserve existing result readers, `summary.json` and CSV column names retain the historical `bpr` / `bpr_*` metric keys for CAPR; these are storage names for the same component.
+
+Outputs include `protocol.json`, `status.json`, `summary.json`, `summary.md` and paired sample records in compressed CSV. CAPR reports KL (including mean, Q95 and Q99), six-probe Action MSE and TV(CAPR,DeepRWCap), using the normalized probabilities actually sampled from the FP16 outputs. TV is refinement magnitude, not error against the reference. CPGR reports Gradient1/2 activation counts, active-only normalized L2, parity violations, exact-label parity and improvement fractions. The weight check uses one measure: normalized L1 error of effective six-face absolute mass. The seventh selector output is unchanged; this is not a claim that its neural prediction improves.
 
 The numerical functions preserve the frozen evaluator's formulas, label transformations and active sets. The renamed repository-relative entry passed CPU preflight/structural checks and GPU evaluation on the original reference files; see [VALIDATION.md](VALIDATION.md). Local metrics measure transition behavior and do not establish universal end-to-end improvement.
 
