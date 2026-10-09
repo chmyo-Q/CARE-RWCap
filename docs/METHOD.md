@@ -70,7 +70,7 @@ This identity explains the compensation factor relative to the original kernel n
 
 The production extension interposes the pinned `DNNSolverGrad` methods using `LD_PRELOAD`. The legacy environment names `S29_GRADIENT_PARITY_ENABLE` and `S29_GRADIENT_JOINT_ENABLE` are preserved for compatibility; the public runner enables both for CPGR. CPGR is not enabled in the `deeprwcap` and `capr` arms. This mechanism requires the shipped upstream C++ ABI.
 
-## CER: Conditional Endpoint Re-estimation (strict-S24)
+## CER: Conditional Endpoint Re-estimation
 
 Implementation: `src/readout/cer.py`. Historical alias S24 is retained to avoid conflating the rule with an unvalidated variant.
 
@@ -82,6 +82,19 @@ The solver must provide an already aggregated logical-conductor row. Extract the
 - Otherwise retain the raw self capacitance and report the fallback reason.
 
 The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate S24. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and strict-S24 capacitances. See [paper terminology and input contract](PAPER_MAPPING.md).
+
+For a parsed row with a finite positive raw self term, the exact applicability rule can be written as:
+
+```
+S = expected_logical_columns - {master}
+CER applies iff:
+    observed_logical_columns == expected_logical_columns
+    and S is nonempty
+    and all(coupling[j] <= 0 for j in S)
+    and sum(abs(coupling[j]) for j in S) > 0
+```
+
+The input-validation stage rejects duplicate logical records and nonfinite values before this gate. Thus an all-zero coupling row uses the raw fallback, whereas a malformed/nonfinite row is an error. These are different outcomes. The archived valid paper outputs do not require relaxing either check.
 
 ## Frozen recipe and interface evidence
 

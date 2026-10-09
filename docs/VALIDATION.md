@@ -1,6 +1,12 @@
 # Release validation
 
-Updated 2026-10-09. The v2 terminology update uses CAPR in the public interfaces, moves model files to `capr` / `deeprwcap` directories and installs the author's v2 overview. All 35 CPU tests pass; source predictions and loss match the previous implementation exactly on the checked inputs. All 18 checkpoint/engine files are byte-identical after relocation, the 9-run quick and 300-run paper plans are unchanged, and the training-seed tables reaggregate identically. This update did not rerun GPU solves or local transition inference.
+Updated 2026-10-09. The v2 terminology update uses CAPR in the public interfaces, moves model files to `capr` / `deeprwcap` directories and installs the author's v2 overview. All 37 current CPU tests pass; source predictions and loss match the previous implementation exactly on the checked inputs. All 18 checkpoint/engine files are byte-identical after relocation, the 9-run quick and 300-run paper plans are unchanged, and the training-seed tables reaggregate identically. This update did not rerun GPU solves or local transition inference.
+
+## Manuscript correspondence check (2026-10-09)
+
+The current source/checkpoint check and 37 CPU tests pass, including active-count pooling in the local report. The local Markdown report now exposes the paper's tail and parity metrics; its inference, saved metric values, JSON schema and validation set are unchanged. Reaggregation of archived local records reproduced 198 numerical summary fields. Re-parsing the 100 historical DeepRWCap and 300 training-seed solver outputs reproduced their saved capacitance errors. These checks do not generate new stochastic observations.
+
+The original aligned protocol's deployed engine/runtime inventory and the bundled files agree. The [paper mapping](PAPER_MAPPING.md) distinguishes supported table workflows from external study material. The additional layouts, memory studies, full retraining and clean installation remain outside this check.
 
 ## Previously completed GPU checks (2026-10-06)
 

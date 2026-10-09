@@ -5,8 +5,6 @@ import os
 from pathlib import Path
 import platform
 import subprocess
-import torch
-import torch_tensorrt
 from common import ROOT, dump, check_files
 
 ap = argparse.ArgumentParser(description=__doc__)
@@ -15,6 +13,9 @@ ap.add_argument('--arch', default='89', help='CUDA SM architecture; frozen engin
 args = ap.parse_args()
 if platform.system() != 'Linux':
     raise SystemExit('The frozen solver requires Linux x86_64.')
+import torch
+import torch_tensorrt
+
 check_files()
 if not args.arch.isdigit():
     raise ValueError('--arch must contain digits only')

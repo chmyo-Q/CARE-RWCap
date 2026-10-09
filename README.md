@@ -191,6 +191,8 @@ For a first CARE-RWCap run, follow **Quick start**. The framework figure, tradit
 
 The upstream solver core and traditional baselines are binary dependencies; our refinement and readout implementations are provided as source. Full training data/driver, additional-layout datasets, dedicated memory studies, all research logs and paper-figure scripts are not included.
 
+The [table-to-workflow map](docs/PAPER_MAPPING.md#manuscript-tables-and-available-workflows) identifies the available entry for each manuscript table and the studies requiring external material.
+
 An optional [local transition evaluator](docs/LOCAL_VALIDATION.md) is available for users who already have the original external reference datasets. Those datasets are not bundled or needed for public10 inference. See the complete [scope](docs/ARTIFACT_SCOPE.md).
 
 ## Citation and acknowledgments

@@ -35,6 +35,51 @@ def preflight(data_dir,modules,config):
     return info
 
 
+def render_summary(result, precision):
+    """Render the frozen metrics using the manuscript's active-only definitions."""
+    def change(raw, refined):
+        return f"{100*(refined/raw-1):+.4f}" if raw else 'N/A'
+
+    lines=['# Frozen local transition evaluation', '',
+           'Precision: '+precision+'. No end-to-end solve.', '']
+    if 'bpr' in result:
+        b=result['bpr']
+        lines += ['| CAPR metric | DeepRWCap | CAPR | Relative change (%) |',
+                  '|---|---:|---:|---:|']
+        for label, key, stat in [('Mean KL','kl','mean'), ('Q95 KL','kl','q95'),
+                                 ('Q99 KL','kl','q99'), ('Action MSE','action_error','mean')]:
+            raw=b['raw_'+key][stat]; refined=b['bpr_'+key][stat]
+            lines.append(f"| {label} | {raw:.10g} | {refined:.10g} | {change(raw,refined)} |")
+        lines += ['', f"Mean TV(CAPR,DeepRWCap): {b['bpr_vs_p0_tv']['mean']:.10g}; this measures refinement magnitude.", '']
+    if 'cpgr' in result:
+        heads=result['cpgr']
+        lines += ['| Head | Active / total | Raw NL2 | CPGR NL2 | Relative change (%) | Improved (%) |',
+                  '|---|---:|---:|---:|---:|---:|']
+        for name,b in heads.items():
+            raw=b['raw_l2']['mean']; refined=b['cpgr_l2']['mean']
+            lines.append(f"| {name} | {b['activated_samples']}/{b['validation_samples']} | {raw:.10g} | {refined:.10g} | {change(raw,refined)} | {100*b['l2_win_rate']:.4f} |")
+        active=sum(b['activated_samples'] for b in heads.values())
+        total=sum(b['validation_samples'] for b in heads.values())
+        if active:
+            raw=sum(b['activated_samples']*b['raw_l2']['mean'] for b in heads.values())/active
+            refined=sum(b['activated_samples']*b['cpgr_l2']['mean'] for b in heads.values())/active
+            wins=sum(b['activated_samples']*b['l2_win_rate'] for b in heads.values())/active
+            lines.append(f"| Overall | {active}/{total} | {raw:.10g} | {refined:.10g} | {change(raw,refined)} | {100*wins:.4f} |")
+        lines += ['', 'Overall pools strict-active head evaluations. A dielectric record evaluated by both heads counts once per head; no full-validation mean is substituted.', '',
+                  '| Head | Reference parity violation | Raw parity violation | CPGR parity violation |',
+                  '|---|---:|---:|---:|']
+        for name,b in heads.items():
+            lines.append(f"| {name} | {b['exact_parity']['mean']:.10g} | {b['raw_parity']['mean']:.10g} | {b['cpgr_parity']['mean']:.10g} |")
+        lines += ['']
+    if 'weight' in result:
+        b=result['weight']['active']; raw=b['raw_error']['mean']; refined=b['cpgr_error']['mean']
+        lines += ['| Weight metric (active configurations) | Raw | CPGR | Relative change (%) | Samples |',
+                  '|---|---:|---:|---:|---:|',
+                  f"| Effective six-face mass NL1 | {raw:.10g} | {refined:.10g} | {change(raw,refined)} | {b['samples']} |", '']
+    lines += ['Full activation, tail statistics and numerical checks are in summary.json; paired samples are retained in CSV.gz. Local improvements are not an E2E efficacy test.']
+    return '\n'.join(lines)+'\n'
+
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--data-dir',type=Path,required=True,help='Directory containing the original poisson.bin/gradient.bin')
@@ -69,18 +114,7 @@ def main():
             ids=ev.np.arange(cfg['gradient_start'],cfg['gradient_end'])
             result['cpgr'],result['weight'],result['checks']=ev.evaluate_gradient(ids,out,cfg['batch_size'])
         dump(out/'summary.json',result)
-        lines=['# Frozen local transition evaluation','','Precision: '+cfg['precision']+'. No end-to-end solve.','']
-        if 'bpr' in result:
-            b=result['bpr'];lines+=['| CAPR metric | DeepRWCap | CAPR |','|---|---:|---:|']
-            for k in ['kl','action_error']:lines.append(f"| Mean {k} | {b['raw_'+k]['mean']:.10g} | {b['bpr_'+k]['mean']:.10g} |")
-            lines+=['',f"Mean TV(CAPR,DeepRWCap): {b['bpr_vs_p0_tv']['mean']:.10g}; this measures refinement magnitude.",'']
-        if 'cpgr' in result:
-            lines+=['| Head | Active / total | Raw NL2 | CPGR NL2 | Relative change (%) | Win fraction |','|---|---:|---:|---:|---:|---:|']
-            for name,b in result['cpgr'].items():
-                lines.append(f"| {name} | {b['activated_samples']}/{b['validation_samples']} | {b['raw_l2']['mean']:.10g} | {b['cpgr_l2']['mean']:.10g} | {b['l2_relative_change_percent']:.5f} | {b['l2_win_rate']:.5f} |")
-            b=result['weight']['active'];lines+=['',f"Active six-face effective-mass NL1: {b['raw_error']['mean']:.10g} -> {b['cpgr_error']['mean']:.10g} ({b['samples']} configurations).",'']
-        lines+=['Full parity, activation, tail statistics and numerical checks are in summary.json; all paired samples are retained in CSV.gz. Local improvements are not an E2E efficacy test.']
-        (out/'summary.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+        (out/'summary.md').write_text(render_summary(result,cfg['precision']),encoding='utf-8')
         dump(out/'status.json',{'state':'completed','elapsed_seconds':time.time()-started})
     except BaseException as exc:
         dump(out/'status.json',{'state':'failed','error':type(exc).__name__,'message':str(exc),'elapsed_seconds':time.time()-started})

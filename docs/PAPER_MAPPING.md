@@ -14,6 +14,18 @@ CARE-RWCap is **Condition-Aware Refinement for Neural-Guided Floating Random Wal
 
 The algorithmic diagram shows repetition for each master and a resulting capacitance matrix. The released Python evaluator handles **one configured master per invocation**. It retains that solver output row and reports raw/CER self estimates; it is not a multi-master matrix-assembly command.
 
+## Formula-to-code correspondence (manuscript v2)
+
+| Paper definition | Implementation | Convention |
+|---|---|---|
+| CAPR Eqs. (7)–(12) | `src/capr/model.py`: `ResidualHead`, `CAPRPredictor.components`, `forward` | `max_log_dose = tau = 0.125`; the returned `dose` is the full strength `a_theta`, including `tau`. The anchor and Poisson face selector stay frozen. |
+| CAPR Eqs. (13)–(15) | `src/capr/loss.py`: `components`, `capr_loss` | Weights 10/2/0.5; top `ceil(0.25 * batch_size)` composite losses. `validation_score` is the separate checkpoint-selection score. |
+| CPGR Eqs. (16)–(19) | `cpp/cpgr/projection.cu` | Exact equality of FP32 dielectric entries; commuting even/even or even/odd in-face reflections. Projection precedes sampling normalization. |
+| CPGR Eqs. (20)–(24) | `projection.cu` and `cpp/cpgr/sampler.cpp` | The paper's `beta_f` is `ratio` / `parity_ratio` in code: projected/original L1 mass. Eligible face pairs are averaged before drawing the face. |
+| CER Eqs. (25)–(27) | `src/readout/parser.py`, `src/readout/cer.py`, `scripts/evaluate_readout.py` | Valid logical row, complete columns, nonempty off-diagonal set, nonpositive couplings and positive coupling sum. Invalid output is rejected; inapplicable valid output uses raw self-capacitance. |
+| SelfCapErr Eq. (28) | `scripts/evaluate_readout.py` | Relative absolute error in percent; the reference is used only after the readout decision. |
+| CPGR metrics Eqs. (29)–(30) | `scripts/transition_metrics.py`: `kernel_rows`, `summarize_kernel` | Reference kernels have unit L1 norm. NL2 uses the reference L2 scale; parity uses the kernel's own L2 scale. Both add `1e-12` to the denominator. No renormalization after projection. |
+
 ## Scope of “unchanged”
 
 CAPR preserves the **Poisson** face selector. CPGR keeps the Gradient network parameters frozen but can change **Gradient face probabilities** by averaging eligible opposite-face pairs. It also projects the signed conditional kernel and applies the L1 norm ratio. The seventh selector output, the global weight, is preserved. These distinctions are part of the deployed method.
@@ -38,6 +50,18 @@ The figure's “logical-conductor output formation” precedes CER and belongs t
 | Module comparisons | Raw/CER readouts for `deeprwcap`, `capr`, `care-rwcap` | Measures CER effects and CPGR conditional on CAPR. No standalone DeepRWCap+CPGR arm or complete factorial interaction. |
 | Runtime/workload | Solver elapsed/CPU time, walks, weighted hops and approximate steps | No peak-memory measurement or CER latency microbenchmark in this runner. |
 | Coupling-row error and additional layouts | Solver output row is retained; a custom single-master config is accepted | Coupling-row normalized L1 reporting and the five-layout data/protocol are not supplied as ready-to-run paper workflows. |
+
+### Manuscript tables and available workflows
+
+| Manuscript v2 result | Released workflow | Availability |
+|---|---|---|
+| Table I: public10 self-capacitance | `benchmark.py --profile paper`; `baselines.py --profile paper` for the CPU methods | New observations for all ten cases. The compact historical reference contains the three neural arms, not historical CPU-method logs. |
+| Tables II–III: local CAPR/CPGR | `evaluate_transitions.py --module all` | Frozen validation indices and metric code are included; original external reference datasets are required. |
+| Table IV: component comparisons | Raw/CER readouts from the three neural solver arms | Six observed configurations. A standalone DeepRWCap+CPGR solve is not part of this cohort; see [the actual observed configurations](../results/README.md#all-observed-configurations-in-the-original-batch). |
+| Table V: solver timing/workload | Per-run output and `summarize.py` | Elapsed time, walks and weighted hops are collected. Separate peak-memory studies are not reproduced by this runner. |
+| Table VI: additional layouts | Custom single-master configurations are supported | The five layouts, their reference-selection records and final repeated-run protocol are not bundled. |
+| Training-seed robustness | `summarize_training_seeds.py` | Reaggregates all released observations. The extra two trained model files and local multi-seed inference workflow are not bundled. |
+| Coupling-row NL1, visited-activation aggregate, tau sensitivity | No complete paper-specific aggregation/training entry | Solver rows and CPGR counters are retained where applicable; the specialized study data and workflows are outside this release. |
 
 ## Terminology and training
 
