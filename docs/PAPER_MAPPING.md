@@ -14,7 +14,7 @@ CARE-RWCap is **Condition-Aware Refinement for Neural-Guided Floating Random Wal
 
 The algorithmic diagram shows repetition for each master and a resulting capacitance matrix. The released Python evaluator handles **one configured master per invocation**. It retains that solver output row and reports raw/CER self estimates; it is not a multi-master matrix-assembly command.
 
-## Formula-to-code correspondence (manuscript v2)
+## Formula-to-code correspondence (manuscript v3)
 
 | Paper definition | Implementation | Convention |
 |---|---|---|
@@ -53,7 +53,7 @@ The figure's “logical-conductor output formation” precedes CER and belongs t
 
 ### Manuscript tables and available workflows
 
-| Manuscript v2 result | Released workflow | Availability |
+| Manuscript v3 result | Released workflow | Availability |
 |---|---|---|
 | Table I: public10 self-capacitance | `benchmark.py --profile paper`; `baselines.py --profile paper` for the CPU methods | New observations for all ten cases. The compact historical reference contains the three neural arms, not historical CPU-method logs. |
 | Tables II–III: local CAPR/CPGR | `evaluate_transitions.py --module all` | Frozen validation indices and metric code are included; original external reference datasets are required. |
@@ -67,7 +67,7 @@ The figure's “logical-conductor output formation” precedes CER and belongs t
 
 Historical identifiers remain only where needed for file/interface compatibility: **BPR / S29 RF_RISK = CAPR**, **Gradient-Joint = CPGR**, and **strict-S24 = CER**.
 
-The frozen CAPR recipe uses AdamW, learning rate 3e-4 and trust coefficient 2; validation selects epoch 25. Its full recipe and the distinction between training loss and validation score are in [METHOD.md](METHOD.md). The DeepRWCap is a locally trained DeepRWCap architecture, as documented in [BASELINE.md](BASELINE.md). CPGR and CER require no additional trained model.
+The frozen CAPR recipe uses AdamW, learning rate 3e-4 and trust coefficient 2; validation selects epoch 25. Its full recipe and the distinction between training loss and validation score are in [METHOD.md](METHOD.md). The baseline uses locally trained DeepRWCap weights, as documented in [BASELINE.md](BASELINE.md). CPGR and CER require no additional trained model.
 
 ## Frozen-version consistency
 

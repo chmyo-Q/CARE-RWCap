@@ -7,5 +7,7 @@ authors:
     given-names: Qihao
   - family-names: Guo
     given-names: Shikai
+  - family-names: Wang
+    given-names: Xinnian
 license: MIT
 repository-code: "https://github.com/chmyo-Q/CARE-RWCap"

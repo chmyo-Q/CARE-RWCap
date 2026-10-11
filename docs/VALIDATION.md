@@ -1,39 +1,38 @@
 # Release validation
 
-Updated 2026-10-09. The v2 terminology update uses CAPR in the public interfaces, moves model files to `capr` / `deeprwcap` directories and installs the author's v2 overview. All 37 current CPU tests pass; source predictions and loss match the previous implementation exactly on the checked inputs. All 18 checkpoint/engine files are byte-identical after relocation, the 9-run quick and 300-run paper plans are unchanged, and the training-seed tables reaggregate identically. This update did not rerun GPU solves or local transition inference.
+Updated 2026-10-11 against manuscript v3. The checks use an independent checkout on Ubuntu 24.04 with an **RTX 4090**, Python 3.12.13, CUDA Toolkit 12.6, Torch/Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7. Extensions were rebuilt from the released source in the existing matching neural environment.
 
-## Manuscript correspondence check (2026-10-09)
+## Completed checks
 
-The current source/checkpoint check and 37 CPU tests pass, including active-count pooling in the local report. The local Markdown report now exposes the paper's tail and parity metrics; its inference, saved metric values, JSON schema and validation set are unchanged. Reaggregation of archived local records reproduced 198 numerical summary fields. Re-parsing the 100 historical DeepRWCap and 300 training-seed solver outputs reproduced their saved capacitance errors. These checks do not generate new stochastic observations.
-
-The original aligned protocol's deployed engine/runtime inventory and the bundled files agree. The [paper mapping](PAPER_MAPPING.md) distinguishes supported table workflows from external study material. The additional layouts, memory studies, full retraining and clean installation remain outside this check.
-
-## Previously completed GPU checks (2026-10-06)
-
-The case1 single-run/quick examples and separate case7 smoke workflow were checked on Ubuntu 24.04 with an RTX 4090, Python 3.12, Torch/Torch-TensorRT 2.6.0+cu126, TensorRT 10.7 and CUDA Toolkit 12.6. Checks used the existing matching dependency environment and rebuilt the extensions from source.
-
-| Check | Result |
+| Workflow | Verification |
 |---|---|
-| CPU tests | 35 passed locally and on the server. Coverage includes parser/CER behavior, scheduling, separate example/smoke configurations, saved-output consistency, local-data preflight and GGFT file boundaries. |
-| Build and environment | Extension compilation and the supported-GPU environment check passed. |
-| Model loading | CAPR source predictions matched its archived TorchScript in the checked inputs; the frozen DeepRWCap anchor matched the supplied checkpoint. |
-| CPGR | Projection, selector, compensation and sampler-integration checks passed. The case7 solve recorded actual CPGR activation. |
-| Default example and smoke | The default Python command and shell example completed case1 solves. The separate two-solve smoke test used `configs/smoke_case7.json` and confirmed case7, CPGR activation and CER application. These check execution, not a statistical performance claim. |
-| Quick comparison | The fixed case1 batch completed all nine solves: three arms, initial seeds 2029–2031. All observations were summarized. Case1 was selected from prior improved examples; this small batch does not establish public10 performance. |
-| Readout commands | New `evaluate_readout.py` and compatible `evaluate.py` produced identical results from the same solver output. |
-| Saved-output compatibility | The renamed parser/readout reparsed 300 stored solver outputs without changes to the original numerical fields. New `cer_*` fields equal their retained `s24_*` aliases. |
-| Paper protocol | The full 300-run plan and excluded warmups are unchanged. All ten benchmark cases remain included. No new full public10 batch was required for these interface changes. |
-| Transition evaluation | The renamed entry completed on the original external datasets. All 207 numerical fields in its CAPR, CPGR and weight summary matched the preceding frozen evaluation. |
-| GGFT generation | The wrapper built the pinned upstream source and generated two Poisson and two Gradient records; headers and complete record counts passed. This validates the small-data workflow, not a new 100,000-sample training dataset. |
+| Build and environment | Python and Bash build entries, build prerequisites, runtime environment and installed dependency consistency passed. |
+| CPU checks | All 37 tests passed. These cover parsing/CER, scheduling, summaries, naming compatibility, data boundaries and frozen local-data checks. |
+| Model correspondence | The CAPR source matched its uncompiled TorchScript on the checked inputs, with maximum difference 0; its anchor matched the supplied DeepRWCap checkpoint. Parameter counts were 2,869 total and 1,466 trainable. |
+| CPGR numerics and integration | All reflection masks, both face types, selector averaging, compensation, zero-projection behavior and sampler integration passed. Asymmetric inputs retained upstream behavior. |
+| Single-case commands | The default Python command and Bash example completed case1 solves. |
+| Smoke | The case7 workflow completed DeepRWCap and CARE-RWCap solves, with CPGR activation and CER application verified. |
+| Quick | All nine case1 solves completed: three solver arms and initial seeds 2029–2031. Every planned observation was summarized. |
+| Readout | `evaluate_readout.py` and the compatible `evaluate.py` produced identical results on the same output. |
+| Paper plans | The three-arm plan contains 300 formal solves and three excluded warmups. CARE-only and CAPR/CARE subsets contain 100+1 and 200+2 solves. All ten public cases remain included. |
+| Public10 CARE | All 100 formal solves and one excluded warmup completed; all outputs passed re-parsing and configuration checks. The new macro CER error was 0.9053%, versus 0.8110% in the original cohort. Raw was 0.8507%; CER increased this batch's error by 0.0546 pp (pointwise 95% seed-block interval: [0.0117, 0.0994] pp). No new DeepRWCap or CAPR-only cohort was run, so this check does not re-estimate their paired performance differences. |
+| Saved results | The current reader reproduced all capacitances, errors, workload and solver times from the original 300 outputs. It also reparsed 100 additional-layout outputs and 300 training-seed outputs. These are record checks, not new inference. |
+| Local FP16 evaluation | Inference completed on the original frozen external Poisson/Gradient files. All 203 numerical CAPR, CPGR and weight-summary fields matched the saved evaluation. Active-only Gradient counts were 473 and 476; pooled statistics weight these counts. |
+| Saved local records | CPU reaggregation of 40,000 paired observations reproduced 198 numerical summary fields. |
+| Training-seed supplement | The released capacitance records reaggregated to 0.8112%, 0.8038% and 0.8414%, with mean ± sample SD of 0.8188 ± 0.0199%. |
+| GGFT | The wrapper rebuilt the pinned upstream source and generated two Poisson and two Gradient records. File headers and complete record counts passed. |
+| CLI and documentation | All 13 CLI help entries, 38 Python files and 105 relative documentation links were checked. No broken file links were found. |
 
-The frozen deployment engines, checkpoints, CPGR/seed-control numerical implementation and reference capacitances were not changed by this release update.
+A separate Python 3.12.3 environment containing NumPy 2.4.4 and no Torch also passed all 37 CPU tests, the 300+3 paper plan and saved training-seed reaggregation. This checks the CPU workflow independently of the neural environment; it is not a fresh neural installation.
 
-## Earlier results and remaining scope
+The release update changes documentation and citation metadata. The numerical source, 18 model files, reference capacitances and experiment settings remain unchanged.
 
-The historical paper cohort and the separately saved CAPR training-seed observations are described under [results](../results/README.md). Reaggregating those observations is not a new inference experiment. A separate public10 rerun completed on 2026-10-03 using RTX 4090 D; the incremental CPGR benefit did not retain the historical ranking. The strict public environment checker accepts RTX 4090; the 4090 D run is not a portability guarantee. See [the evaluation protocol](REPRODUCIBILITY.md).
+## Interpretation and limits
 
-Earlier FRW-AGF and MicroWalk case8 checks completed; FRW-FDM help/startup was checked, but its case8 solve was stopped before completion. The current change updates their default quick input to case7 and tests their orchestration with synthetic fixtures; it does not claim fresh traditional-solver case7 measurements.
+Functional checks establish that the supplied implementation and documented inference workflows work in the supported environment. They do not establish a guaranteed historical error value, cross-batch ranking or universal accuracy tolerance. Fixed initial seeds do not fix asynchronous trajectories. CPGR's incremental end-to-end gain has varied across checked batches; see [the evaluation protocol](REPRODUCIBILITY.md).
 
-A clean Docker build, complete retraining/export, all traditional-baseline batches, additional-layout experiments, peak GPU memory and CER microtiming are outside this verification. A fresh dependency installation was not completed in this check; the recorded runs used the existing matching environment.
+The original 300-run table remains a specific historical cohort. Raw/CER results are dependent readouts of the same solve. Its three solver arms identify CPGR's effect conditional on CAPR; they do not provide a standalone DeepRWCap+CPGR arm or a complete factorial interaction.
 
-Original local reference datasets remain external. The [GGFT workflow](DATA.md) generates new data and does not by itself reproduce those archived labels. Fixed solver initial seeds do not fix asynchronous trajectories or guarantee the historical error values. See [release scope](ARTIFACT_SCOPE.md) for the included workflows.
+The full traditional-baseline batches were not rerun in this check. Their CLI plans and orchestration are covered; earlier AGF/MicroWalk single-case checks completed, while an earlier FDM solve was stopped before completion. This release supplies these upstream executables for optional new measurements, not a freshly validated reproduction of every CPU table.
+
+A fresh **neural** dependency installation, clean Docker build, complete retraining/export, other GPU targets and dedicated peak-memory studies were not completed. The compact release does not include the additional-layout dataset or original local reference datasets. The GGFT example generates new data; it does not recreate the archived labels. See [release scope](ARTIFACT_SCOPE.md) for the available workflows.

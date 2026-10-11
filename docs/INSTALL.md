@@ -6,7 +6,7 @@ For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](CPU_BASELINES.md);
 
 ## Native Ubuntu installation
 
-The case1 examples and case7 smoke workflow passed in the existing matching environment with extensions built from source. A fresh dependency installation was not completed in the latest check. See [validation coverage](VALIDATION.md); the commands below are not a claim that a fresh operating-system installation was tested.
+The case1 examples and case7 smoke workflow passed in the existing matching neural environment with extensions built from source. A fresh installation of the full neural dependencies was not completed. The CPU tests also passed in a separate NumPy-only environment. See [validation coverage](VALIDATION.md); the commands below are not a claim that a fresh operating-system installation was tested.
 
 Use an Ubuntu 24.04 x86_64 machine with a working NVIDIA driver (`nvidia-smi`). The commands below install operating-system dependencies with administrator privileges. They do not replace the driver. Run them only on a machine you administer; a configured research server may already have these packages.
 

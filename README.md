@@ -56,7 +56,7 @@ python scripts/check_environment.py
 python scripts/run.py --arm care-rwcap --output runs/full_case1
 ```
 
-The default example is **case1**, using `configs/example.json` and the input under `benchmarks/public10/`. This illustrative case had improved mean error in earlier evaluations. A single realization does not estimate the ten-case average; the complete evaluation retains all ten cases.
+The default example is **case1**, using `configs/example.json` and the input under `benchmarks/public10/`. The smoke workflow uses case7 to exercise CPGR activation and CER.
 
 Every invocation needs a new output directory. The example uses initial seed 2029 and saves:
 
@@ -113,9 +113,7 @@ For a small repeated comparison, the quick profile uses **case1**, initial seeds
 python scripts/benchmark.py --profile quick --output runs/quick
 ```
 
-Case1 was selected as an illustrative case with lower CARE-RWCap mean error in prior evaluations. Its [archived ten-repeat](results/reference_public10.json) mean was **0.7542%**, versus **0.8875%** for DeepRWCap raw. The quick command evaluates all three predefined seeds and reports their new means; stochastic values and rankings can differ from the archive.
-
-Use the full profile for a ten-case performance comparison. The default single run also uses case1; the smoke test retains its separate case7 configuration. Each conditional module follows its usual activation or fallback rule in the case1 examples.
+Case1 was chosen as an illustrative example with lower CARE-RWCap mean error in the [archived ten-repeat evaluation](results/reference_public10.json): **0.7542%**, versus **0.8875%** for DeepRWCap raw. Quick reports every predefined seed; its new values and rankings can differ. Use the full profile for a ten-case performance comparison.
 
 Each arm retains both raw and CER readouts. Completed batches produce `summary.json` and `summary.md` with per-case statistics, equal-case macro SelfCapErr, same-readout differences, uncertainty, workload and timing. Incomplete batches retain their outputs but do not receive a complete aggregate.
 
@@ -177,7 +175,7 @@ docs/figures/                    Framework PNG and vector PDF
 
 ## Release scope
 
-For a first CARE-RWCap run, follow **Quick start**. The framework figure, traditional CPU baselines, training-seed result supplement and local transition evaluator are optional; they are not prerequisites for that run. The local transition evaluator requires external datasets that are not included.
+For a first CARE-RWCap run, follow **Quick start**. Traditional baselines, saved-result reaggregation and local transition evaluation are optional workflows.
 
 | What you want to do | Start here |
 |---|---|
@@ -188,16 +186,15 @@ For a first CARE-RWCap run, follow **Quick start**. The framework figure, tradit
 | Check what has actually been tested | [Validation status](docs/VALIDATION.md) |
 | Understand included and omitted material | [Release scope](docs/ARTIFACT_SCOPE.md) |
 
-
 The upstream solver core and traditional baselines are binary dependencies; our refinement and readout implementations are provided as source. Full training data/driver, additional-layout datasets, dedicated memory studies, all research logs and paper-figure scripts are not included.
 
 The [table-to-workflow map](docs/PAPER_MAPPING.md#manuscript-tables-and-available-workflows) identifies the available entry for each manuscript table and the studies requiring external material.
 
-An optional [local transition evaluator](docs/LOCAL_VALIDATION.md) is available for users who already have the original external reference datasets. Those datasets are not bundled or needed for public10 inference. See the complete [scope](docs/ARTIFACT_SCOPE.md).
+The optional [local transition evaluator](docs/LOCAL_VALIDATION.md) requires the original external reference datasets. They are not bundled or needed for public10 inference.
 
 ## Citation and acknowledgments
 
-The manuscript title is **CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**. [CITATION.cff](CITATION.cff) contains software citation metadata. The citation metadata follows the current manuscript. No publication DOI, volume or issue has been assigned in this repository.
+[CITATION.cff](CITATION.cff) contains the current manuscript title and authors. Publication details will be added when available.
 
 We thank the DeepRWCap authors for their neural solver, architectures, benchmark cases and baseline executables. If your work uses these upstream components, please also cite:
 
