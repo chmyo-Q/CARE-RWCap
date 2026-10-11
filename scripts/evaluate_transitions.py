@@ -22,7 +22,7 @@ def preflight(data_dir,modules,config):
     for name in required:
         p=data_dir/(name+'.bin')
         if not p.is_file():
-            raise FileNotFoundError(f'{p} is required. Reference datasets are not bundled; see docs/LOCAL_VALIDATION.md.')
+            raise FileNotFoundError(f'{p} is required. Reference datasets are not bundled; see docs/DATA.md#local-transition-evaluation.')
         if p.stat().st_size!=config['data_bytes'][name]:raise ValueError('Dataset size mismatch: '+name)
         h=hashlib.sha256()
         with p.open('rb') as f:

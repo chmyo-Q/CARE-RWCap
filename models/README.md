@@ -26,29 +26,16 @@ CAPR is the final S29 RF_RISK model: frozen DeepRWCap anchor, training seed 2029
 
 The `.pt` and uncompiled `.jit` files use FP32. They are supplied for inspection and loading, not as silent substitutes for the frozen deployment engines. `tests/check_models.py` demonstrates loading CAPR from source, checking its anchor against DeepRWCap, and comparing it with its uncompiled TorchScript. The remaining DeepRWCap architectures are available in the pinned upstream training source.
 
-See [baseline provenance and training-scope boundaries](../docs/BASELINE.md) and [paper terminology](../docs/PAPER_MAPPING.md).
+See [checkpoint lineage](../docs/METHOD.md#checkpoint-lineage) for the training-source boundaries.
 
 ## Recorded CAPR recipe
 
-The [recorded recipe](../configs/capr_training_recipe.json) and [implementation contract](../docs/IMPLEMENTATION_CONTRACT.md) identify the frozen RF_RISK training settings and deployment lineage. The public default remains training seed 2029, selected epoch 25. The [three-seed supplement](../results/training_seeds/README.md) publishes capacitance records for the previously selected seed2029/2039/2053 models (epochs 25/17/19); the extra two model files are not included in this compact result supplement.
+The [recorded recipe](../configs/capr_training_recipe.json) and [method](../docs/METHOD.md) identify the frozen RF_RISK training settings and deployment lineage. The public default remains training seed 2029, selected epoch 25. The [three-seed supplement](../results/training_seeds/README.md) publishes capacitance records for the previously selected seed-2029/2039/2053 models (epochs 25/17/19); the extra two model files are not included in this compact result supplement.
 
 ## File compatibility
 
-The manuscript and public commands use **CAPR (Condition-Aware Poisson Refinement)**. Earlier releases called this same frozen component BPR. The model directories now follow the paper terminology:
+Current code uses `CAPRPredictor`, `DeepRWCapPredictor` and `load_deeprwcap` from `capr.model`, with `capr.loss.capr_loss` and `readout.cer.cer_value`. Earlier BPR/S29 and strict-S24 names refer to the same frozen components.
 
-| Earlier location | Current location |
-|---|---|
-| `models/paper_p0/` | `models/deeprwcap/` |
-| `models/bpr/` | `models/capr/` |
-| `models/checkpoints/paper_p0/` | `models/checkpoints/deeprwcap/` |
-| `models/checkpoints/bpr/` | `models/checkpoints/capr/` |
+Compatibility imports under `src/bpr/` and `readout/frozen.py`, plus the former `evaluate.py` and `local_validation.py` commands, remain available. New workflows use `evaluate_readout.py` and `evaluate_transitions.py`. The model and state-dict contents are unchanged; older manually written `models/bpr/` and `models/paper_p0/` paths must use `models/capr/` and `models/deeprwcap/`.
 
-The file contents are unchanged. Update manually written model paths to the current locations; the bundled runners already use them.
-
-Run records retain the IDs `p0`, `bpr`, and `full`, corresponding to the public CLI names `deeprwcap`, `capr`, and `care-rwcap`. Existing `--arm bpr` commands remain accepted. Retaining record IDs also preserves the statistical comparison keys and their bootstrap streams; report tables display the current paper names.
-
-### Public Python names
-
-New code uses `CAPRPredictor`, `DeepRWCapPredictor` and `load_deeprwcap` from `capr.model`. `bpr.model.BPRPredictor` and `bpr.loss.bpr_loss` remain compatibility imports for `capr.model.CAPRPredictor` and `capr.loss.capr_loss`; no state-dict keys, tensor values or frozen engines were changed. New readout code uses `readout.cer.cer_value`, and parsing helpers live in `readout.parser`.
-
-The commands `evaluate_readout.py` and `evaluate_transitions.py` describe their tasks explicitly. The former `evaluate.py` and `local_validation.py` commands remain compatibility entry points. New per-run outputs expose `cer_*` fields; the equal-valued `s24_*` fields remain in JSON so existing result readers continue to work. Historical arm IDs and archived experiment records retain their original keys.
+Saved arm IDs `p0`, `bpr`, `full` correspond to CLI names `deeprwcap`, `capr`, `care-rwcap`; `--arm bpr` remains accepted. JSON retains equal-valued `s24_*` aliases alongside `cer_*`, and local result keys retain `bpr_*`. These storage names preserve existing readers and bootstrap streams; displayed tables use the current paper names.

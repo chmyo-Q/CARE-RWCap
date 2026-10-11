@@ -1,28 +1,6 @@
-# Environment and evaluation
+# Evaluation
 
-For concrete installation commands, see [INSTALL.md](INSTALL.md). For the status of verification, see [VALIDATION.md](VALIDATION.md).
-
-## Software environment
-
-| Component | Environment used for the supplied deployment |
-|---|---|
-| OS / architecture | Ubuntu 24.04 / Linux x86_64 |
-| GPU | NVIDIA GeForce RTX 4090, SM 8.9 |
-| NVIDIA driver | 570.124.04 |
-| Python | 3.12.13 |
-| CUDA toolkit | 12.6, nvcc 12.6.85 |
-| PyTorch / Torch-TensorRT | 2.6.0+cu126 / 2.6.0+cu126 |
-| TensorRT Python | 10.7.0.post1 |
-| System TensorRT libraries | 10.7.0.23-1+cuda12.6 |
-| System Protobuf | libprotobuf32t64 3.21.12-8.2ubuntu0.3 |
-| G++ | 13.3.0; LibTorch CXX11 ABI = 1 |
-| NumPy | 2.4.4 |
-
-Install CUDA Toolkit 12.6 and the matching system libraries using the NVIDIA/Ubuntu package repositories. Required runtime packages include `libnvinfer10`, `libnvinfer-plugin10`, `libnvonnxparsers10`, and `libprotobuf32t64`. The Python requirements file does not install these operating-system dependencies or the GPU driver.
-
-Use a Python 3.12 environment, install `requirements.txt`, and run `bash scripts/build.sh`. The build script discovers Torch headers and libraries from that active Python environment. It compiles for SM 89 by default. Changing `--arch` alone does **not** make the frozen TensorRT engines portable to another GPU or TensorRT version.
-
-The driver-reported CUDA compatibility level (12.8 on the tested machine) is not the installed toolkit version (12.6). Deployment engines are TensorRT FP16, whereas the supplied uncompiled TorchScript and state dictionaries are FP32. Do not silently replace a failed engine with a different model. Full engine recompilation and other GPU targets are not validated in this release.
+[Installation](INSTALL.md) · [Public10 commands](../benchmarks/public10/README.md) · [Historical results](../results/README.md)
 
 ## Commands and paths
 
@@ -30,7 +8,7 @@ Run commands from the repository root. Output directories are created fresh and 
 
 The runner controls library search paths and clears inherited method-switch variables. It preserves an explicitly set `CUDA_VISIBLE_DEVICES`; otherwise device 0 is used. Default `OMP_NUM_THREADS=1` and `MKL_NUM_THREADS=1` are separate from the solver's eight-worker setting.
 
-If a shared library fails to load, inspect `build/compile_*.log` or the run's `console.log`, then check the environment above. A successful CPGR-on run produces projection and selector counters; the smoke test checks that eligible constraints actually activated and that CUDA reported success.
+If a shared library fails to load, inspect `build/compile_*.log` or the run's `console.log`, then check the [deployment environment](INSTALL.md#deployment-environment). A successful CPGR-on run produces projection and selector counters; the smoke test checks that eligible constraints actually activated and that CUDA reported success.
 
 ## Seed and repetition
 
@@ -53,7 +31,7 @@ When comparing methods, keep model set, solver settings, inputs, reference value
 
 The default example reference is the frozen total self-capacitance for master `APpolysub` from public `case1.dspf` (`1.591776e-14 F`). The separate smoke configuration retains master `1` and its public case7 reference. References are used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
 
-## Scope of the checks
+## Smoke workflow
 
 `scripts/smoke_test.py` runs the unit/numerical checks, sampler integration, and one DeepRWCap and one CARE-RWCap solve using `configs/smoke_case7.json`. It explicitly checks case7, CPGR activation and CER application independently of the default single-run configuration. It saves a local summary under the requested output directory. These are functional checks in the stated GPU environment; they do not reproduce an entire paper table or validate retraining. Raw checkpoints are included for inspection and model loading, but full training data, a full training driver, and all-architecture export/compilation tooling are not provided.
 
@@ -78,3 +56,39 @@ For the traditional CPU programs, use the separate [baseline instructions](CPU_B
 ## CAPR training-seed supplement
 
 [Archived records and reaggregation](../results/training_seeds/README.md) cover training seeds 2029, 2039 and 2053 with 100 new CARE-RWCap solves per model. They reuse 100 DeepRWCap solves from the original aligned batch, matched by case and initial solver seed. This is not a simultaneous control experiment or common-path pairing. The script verifies coverage, matching references and saved errors, and recomputes all summaries from capacitance values. It does not perform new inference. The main inference runner and checkpoints remain unchanged.
+
+## Validation status
+
+Checked on 2026-10-11 using an independent source checkout in the supported Ubuntu 24.04 / RTX 4090 neural environment. The documentation was subsequently consolidated; the solver, models, numerical code and settings were not changed.
+
+| Workflow | Completed check |
+|---|---|
+| Build/environment | Python and Bash builds, prerequisite/runtime checks and installed dependency consistency passed. |
+| Tests/models | 37 CPU tests passed in the neural environment and a separate NumPy-only environment. CAPR source/uncompiled TorchScript maximum difference was 0; the anchor matched the bundled baseline. |
+| CPGR | All reflection masks, selector averaging, compensation, zero projection and sampler integration passed; asymmetric inputs retained upstream behavior. |
+| Examples | Default case1 Python/Bash commands, case7 smoke and all nine case1 quick solves completed. Smoke verified CPGR activation and CER application. |
+| Readout/plans | Current/compatible readout commands agreed; paper plans covered 300+3, CARE-only 100+1 and CAPR/CARE 200+2 solves. |
+| CARE public10 | 100 formal solves and one excluded warmup completed; all result/configuration checks passed. |
+| Historical records | Current readers reparsed the original 300, additional-layout 100 and training-seed 300 outputs. All original main capacitances, errors, workload and solver times matched. |
+| Local FP16 | 203 numerical summary fields matched the frozen evaluation; Gradient1/2 active counts were 473/476. CPU reaggregation of 40,000 paired observations matched 198 summary fields. |
+| Data generation | Pinned GGFT source rebuilt and generated two records per kind; headers and record counts passed. |
+
+The new CARE-only macro error was **0.9053%**, compared with **0.8110%** in the historical cohort. In the new batch raw error was **0.8507%**; CER increased it by 0.0546 pp (pointwise 95% seed-block interval [0.0117, 0.0994] pp). No new DeepRWCap or CAPR-only control cohort was run, so this check cannot re-estimate paired method gains. CPGR's incremental end-to-end benefit has varied across checked batches. Functional acceptance does not guarantee the historical mean or ranking.
+
+Full traditional-baseline batches were not rerun. Earlier AGF/MicroWalk single-case checks completed; an earlier FDM solve was stopped before completion. A fresh full neural installation, clean Docker build, complete retraining/export, other GPUs and dedicated peak-memory studies remain unvalidated. The separate NumPy-only environment checks CPU workflows, not a fresh neural installation.
+
+## Available experiments and release scope
+
+The package supports frozen-model inference and public10 evaluation. Architecture/loss, CPGR source, CER, all 18 model files, inputs/references, configs and tests are included; the upstream solver core and CPU baselines are binary dependencies. The figure shows repetition over masters, while each released invocation evaluates one selected master.
+
+| Manuscript experiment | Released workflow | Additional requirements or boundary |
+|---|---|---|
+| Table I: public10 SelfCapErr | `benchmark.py --profile paper`; optional `baselines.py` | All ten inputs/references included. Historical compact results contain the three neural arms. |
+| Tables II–III: local CAPR/CPGR | `evaluate_transitions.py` | Original external reference datasets required; see [local evaluation](DATA.md#local-transition-evaluation). |
+| Table IV: component comparisons | Three neural arms with raw/CER from each solve | Six observed configurations; no standalone DeepRWCap+CPGR arm or complete factorial interaction. |
+| Table V: time/workload | `run.py`, `summarize.py` | Solver time, walks and weighted hops; no peak-memory or CER-latency study. |
+| Table VI: additional layouts | Custom single-master configs supported | Five-layout inputs/references and repeated-run protocol not bundled. |
+| Training-seed study | `summarize_training_seeds.py` | Saved observations included; the two extra models and multi-model inference driver are not. |
+| Coupling NL1, visited activation, τ sensitivity | Output rows/CPGR counters retained where applicable | Specialized paper aggregation/training workflows not supplied. |
+
+Full training data/driver, all research logs and paper-figure scripts are outside this release. GGFT generates new data and does not recreate archived labels. The overview, inspectable checkpoints, CPU baselines, saved results, local evaluator and tests support optional research or inspection; only the runtime/deployment models, own extensions, layout and runner/config are needed for a single solve. Reference capacitance is needed to report error, not to estimate capacitance.

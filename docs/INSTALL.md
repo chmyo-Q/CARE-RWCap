@@ -1,12 +1,34 @@
 # Installation
 
-The supplied engines were deployed on **Ubuntu 24.04 x86_64, RTX 4090, CUDA 12.6, Python 3.12, Torch 2.6.0+cu126, Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7**. Start from this combination. Changing the compilation architecture does not make these engines portable. The recorded driver and compiler versions are in [REPRODUCIBILITY.md](REPRODUCIBILITY.md).
+The supplied engines were deployed on **Ubuntu 24.04 x86_64, RTX 4090, CUDA 12.6, Python 3.12, Torch 2.6.0+cu126, Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7**. Start from this combination. Changing the compilation architecture does not make these engines portable. The recorded deployment versions are listed below.
 
 For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](CPU_BASELINES.md); the neural installation below is not required.
 
+## Deployment environment
+
+| Component | Environment used for the supplied deployment |
+|---|---|
+| OS / architecture | Ubuntu 24.04 / Linux x86_64 |
+| GPU | NVIDIA GeForce RTX 4090, SM 8.9 |
+| NVIDIA driver | 570.124.04 |
+| Python | 3.12.13 |
+| CUDA toolkit | 12.6, nvcc 12.6.85 |
+| PyTorch / Torch-TensorRT | 2.6.0+cu126 / 2.6.0+cu126 |
+| TensorRT Python | 10.7.0.post1 |
+| System TensorRT libraries | 10.7.0.23-1+cuda12.6 |
+| System Protobuf | libprotobuf32t64 3.21.12-8.2ubuntu0.3 |
+| G++ | 13.3.0; LibTorch CXX11 ABI = 1 |
+| NumPy | 2.4.4 |
+
+Install CUDA Toolkit 12.6 and the matching system libraries using the NVIDIA/Ubuntu package repositories. Required runtime packages include `libnvinfer10`, `libnvinfer-plugin10`, `libnvonnxparsers10`, and `libprotobuf32t64`. The Python requirements file does not install these operating-system dependencies or the GPU driver.
+
+Use a Python 3.12 environment, install `requirements.txt`, and run `bash scripts/build.sh`. The build script discovers Torch headers and libraries from that active Python environment. It compiles for SM 89 by default. Changing `--arch` alone does **not** make the frozen TensorRT engines portable to another GPU or TensorRT version.
+
+The driver-reported CUDA compatibility level (12.8 on the tested machine) is not the installed toolkit version (12.6). Deployment engines are TensorRT FP16, whereas the supplied uncompiled TorchScript and state dictionaries are FP32. Do not silently replace a failed engine with a different model. Full engine recompilation and other GPU targets are not validated in this release.
+
 ## Native Ubuntu installation
 
-The case1 examples and case7 smoke workflow passed in the existing matching neural environment with extensions built from source. A fresh installation of the full neural dependencies was not completed. The CPU tests also passed in a separate NumPy-only environment. See [validation coverage](VALIDATION.md); the commands below are not a claim that a fresh operating-system installation was tested.
+The case1 examples and case7 smoke workflow passed in the existing matching neural environment with extensions built from source. A fresh installation of the full neural dependencies was not completed. The CPU tests also passed in a separate NumPy-only environment. See [validation coverage](EVALUATION.md#validation-status); the commands below are not a claim that a fresh operating-system installation was tested.
 
 Use an Ubuntu 24.04 x86_64 machine with a working NVIDIA driver (`nvidia-smi`). The commands below install operating-system dependencies with administrator privileges. They do not replace the driver. Run them only on a machine you administer; a configured research server may already have these packages.
 
@@ -58,7 +80,7 @@ docker run --rm --gpus all \
   care-rwcap:local python scripts/benchmark.py --profile quick --output runs/container_quick
 ```
 
-The container retains the RTX 4090 engine requirement. Its base image and package downloads require external network access. A clean build of this recipe has not yet been completed; see [validation status](VALIDATION.md).
+The container retains the RTX 4090 engine requirement. Its base image and package downloads require external network access. A clean build of this recipe has not yet been completed; see [validation status](EVALUATION.md#validation-status).
 
 ## Troubleshooting
 

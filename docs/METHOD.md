@@ -1,6 +1,6 @@
 # Method
 
-The [framework overview](figures/overview.png) follows the first Gradient transition (CPGR), subsequent Poisson transitions (CAPR), and same-solve endpoint readout (CER). The section order below groups the learned component before the runtime operators. See [paper-to-code mapping](PAPER_MAPPING.md) for stage order and the released single-master interface.
+The [overview](figures/overview.png) follows the first neural Gradient transition (CPGR), subsequent Poisson transitions (CAPR), conductor-hit accumulation, and endpoint readout (CER). The released runner evaluates one configured master per invocation and retains its capacitance row. The upstream runtime supplies neural/non-neural path selection, scheduling and stopping behavior.
 
 ## CAPR: Condition-Aware Poisson Refinement
 
@@ -59,6 +59,16 @@ CPGR operates in the gradient branch. It changes both the conditional signed ker
 4. Project the predicted signed kernel onto the eligible parity subspace. The horizontal reflection is even. The second reflection is even for faces 0/1 and odd for the other faces. Multiple applicable reflections are averaged jointly.
 5. Sample a location proportionally to the absolute projected kernel and apply its sign together with `rho = ||Pg||_1 / ||g||_1` to the walk weight.
 
+The strict selector masks use the rotated Gradient input convention:
+
+| Reflected input index | Mask bit | Zero-based opposite faces |
+|---|---:|---|
+| x (fastest index) | 1 | 4, 5 |
+| y | 2 | 2, 3 |
+| z | 4 | 0, 1 |
+
+Each eligible pair receives its arithmetic mean before `torch::multinomial` draws the face. Pair sums are preserved up to roundoff; inactive pairs and the seventh output remain unchanged. No original-to-corrected face-probability importance ratio is applied. The identity below concerns conditional in-face sampling, not preservation of the original joint face-and-position law.
+
 For an active, nonzero projection, this yields the conditional identity
 
 ```
@@ -72,7 +82,7 @@ The production extension interposes the pinned `DNNSolverGrad` methods using `LD
 
 ## CER: Conditional Endpoint Re-estimation
 
-Implementation: `src/readout/cer.py`. Historical file and field aliases are listed in [paper-to-code mapping](PAPER_MAPPING.md#terminology-and-training).
+Implementation: `src/readout/cer.py`, with parsing in `src/readout/parser.py`.
 
 The solver must provide an already aggregated logical-conductor row. Extract the expected logical conductor set and selected master from the layout. Names matching `digits__name` are mapped to `name`. For the selected matrix row:
 
@@ -81,7 +91,7 @@ The solver must provide an already aggregated logical-conductor row. Extract the
 - If all conditions hold, read the self capacitance as that absolute coupling sum.
 - Otherwise retain the raw self capacitance and report the fallback reason.
 
-The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate CER. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and CER capacitances. See [paper terminology and input contract](PAPER_MAPPING.md).
+The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate CER. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and CER capacitances.
 
 For a parsed row with a finite positive raw self term, the exact applicability rule can be written as:
 
@@ -96,6 +106,24 @@ CER applies iff:
 
 The input-validation stage rejects duplicate logical records and nonfinite values before this gate. Thus an all-zero coupling row uses the raw fallback, whereas a malformed/nonfinite row is an error. These are different outcomes. The archived valid paper outputs do not require relaxing either check.
 
-## Frozen recipe and interface evidence
+## Checkpoint lineage
 
-The [implementation contract](IMPLEMENTATION_CONTRACT.md) gives the source of each training setting, the exact Gradient opposite-face pairs, and the solver/CER boundary. The [CAPR recipe JSON](../configs/capr_training_recipe.json) records the historical settings; it is metadata and does not change the deployed model or act as a training entry point.
+The bundled DeepRWCap baseline uses upstream architectures with **locally trained seed-2029 weights**, not the official upstream pretrained files. Its Poisson predictor was selected at epoch 177 of a completed 200-epoch run; the other four predictors/selectors come from the corresponding archived model set. Their full local training histories and data are not bundled. Upstream training defaults are not a substitute for those local records.
+
+The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_seed2029_30e_20260909_180652`. Its training recipe comes from the archived launcher, implementation and run metadata. The released state dictionary, uncompiled TorchScript, FP16 engine and anchor were checked against the original aligned-batch files. The [recipe JSON](../configs/capr_training_recipe.json) is metadata, not a training entry point. See [model files](../models/README.md) for deployment order and inspectable artifacts.
+
+## Manuscript-to-source map
+
+| TCAD manuscript v3 definition | Source |
+|---|---|
+| CAPR parameterization, Eqs. (7)–(12) | `src/capr/model.py`: `ResidualHead`, `CAPRPredictor.components`, `forward` |
+| CAPR objective, Eqs. (13)–(15) | `src/capr/loss.py`: `components`, `capr_loss`; separate `validation_score` |
+| CPGR projection, Eqs. (16)–(19) | `cpp/cpgr/projection.cu` |
+| CPGR contribution, Eqs. (20)–(24) | `cpp/cpgr/projection.cu`, `sampler.cpp`; paper `beta_f` is code `ratio` |
+| CER, Eqs. (25)–(27) | `src/readout/parser.py`, `cer.py`; full applicability gate above |
+| SelfCapErr, Eq. (28) | `scripts/evaluate_readout.py` |
+| Local Gradient metrics, Eqs. (29)–(30) | `scripts/transition_metrics.py`: `kernel_rows`, `summarize_kernel` |
+
+The solver-output pipeline forms logical-conductor rows before CER. For example, archived case10 has 48 physical blocks and eight unique logical output columns. The released parser canonicalizes names but does not sum duplicate physical-fragment columns; the upstream accumulation core remains a binary dependency.
+
+Historical names BPR/S29, Gradient-Joint and strict-S24 correspond to CAPR, CPGR and CER. Current commands use the paper names; small compatibility imports and stored result keys remain to load existing artifacts. See [file compatibility](../models/README.md#file-compatibility).

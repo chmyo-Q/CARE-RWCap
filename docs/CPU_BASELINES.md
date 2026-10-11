@@ -34,4 +34,4 @@ The paper profile uses the same ten public inputs and reference self-capacitance
 
 Each run keeps `result.out`, `result.log`, `console.log`, its command/configuration and raw `metrics.json`. A completed batch writes `per_run.csv`, `per_case.csv`, `summary.json` and `summary.md`: raw SelfCapErr, sample SD over repeats, equal-case macro mean, walks, weighted hops/walk and solver elapsed/CPU seconds. Reference values only enter evaluation. **CER is not applied to traditional baselines.** GPU memory, host peak memory and matrix error are not measured by this minimal entry.
 
-The supplied binaries enable new baseline measurements; no historical CPU result table is synthesized or asserted by bundling them. Separate runs do not establish a controlled speedup against previously recorded neural timings. See [validation status](VALIDATION.md) for actual checks.
+The supplied binaries enable new baseline measurements; no historical CPU result table is synthesized or asserted by bundling them. Separate runs do not establish a controlled speedup against previously recorded neural timings. See [validation status](EVALUATION.md#validation-status) for actual checks.

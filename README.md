@@ -1,214 +1,122 @@
 # CARE-RWCap
-### Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction
 
-[Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](benchmarks/public10/README.md)
+**Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**
 
-## Introduction
+[Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](docs/EVALUATION.md) · [Data](docs/DATA.md)
 
-CARE-RWCap is a condition-aware refinement framework built on [DeepRWCap](https://github.com/THU-numbda/deepRWCap). It connects local transition refinement, signed sampling contributions and same-solve self-capacitance readout within a floating random walk (FRW) solver.
-
-This repository provides the core implementation, frozen deployment models, ten public benchmark inputs/references and three traditional CPU baselines.
+CARE-RWCap refines local transitions and endpoint readout in the [DeepRWCap](https://github.com/THU-numbda/deepRWCap) floating random walk solver. This repository provides the refinement source, frozen deployment models, ten public benchmarks and evaluation commands.
 
 ## Overview
 
-[![CARE-RWCap overview: physical input, first Gradient transition, subsequent Poisson transitions, conductor-hit accumulation and conditional endpoint readout](docs/figures/overview.png)](docs/figures/overview.pdf)
+[![CARE-RWCap framework](docs/figures/overview.png)](docs/figures/overview.pdf)
 
-*[Vector PDF](docs/figures/overview.pdf) · [Full-resolution PNG](docs/figures/overview.png)*
+1. **CPGR — Conditional Parity Gradient Refinement:** at eligible first neural Gradient transitions, average opposite-face probabilities, project signed kernels and compensate contributions under strict input symmetry. Gradient network parameters stay frozen.
+2. **CAPR — Condition-Aware Poisson Refinement:** refine subsequent Poisson in-face distributions through bounded residual reweighting, retaining the frozen anchor and Poisson face selector.
+3. **CER — Conditional Endpoint Re-estimation:** obtain raw and conditional coupling-based self-capacitance readouts from the same solve.
 
-Following the numbered stages in the figure:
+The runner evaluates one selected master per invocation. [Method](docs/METHOD.md) describes the operators, input/fallback rules and manuscript-to-source mapping.
 
-1. **CPGR — Conditional Parity Gradient Refinement.** At eligible neural first-Gradient transitions, strict input-reflection checks control parity projection and contribution compensation. The deployed joint operator also averages eligible opposite-face probabilities; the Gradient network parameters remain frozen.
-2. **CAPR — Condition-Aware Poisson Refinement.** Subsequent neural Poisson steps use bounded residual reweighting of the in-face conditional distribution, with the frozen anchor and original Poisson face selector.
-3. **CER — Conditional Endpoint Re-estimation.** After conductor-hit contributions are accumulated, the same solve supplies raw and conditional coupling-based self-capacitance readouts. Reference values are used only to evaluate error.
+## Install and run
 
-The figure describes the full framework; the released runner evaluates one selected master per invocation. The parser expects an already-aggregated logical-conductor row. Exact selector, input-validation and fallback behavior is explained in [paper-to-code mapping](docs/PAPER_MAPPING.md), with formulas in [METHOD.md](docs/METHOD.md).
-
-## Requirements
-
-| Component | Frozen neural deployment |
-|---|---|
-| Platform | Ubuntu 24.04, Linux x86_64 |
-| GPU | NVIDIA RTX 4090 |
-| Python | 3.12 |
-| CUDA Toolkit | 12.6 |
-| PyTorch / Torch-TensorRT | 2.6.0+cu126 |
-| TensorRT | 10.7 |
-
-The supplied deployment engines use FP16 and target this environment. Other GPU/library combinations are not validated. Follow the [installation guide](docs/INSTALL.md) for system libraries and Python dependencies; installing `requirements.txt` alone is insufficient.
-
-Traditional CPU baselines need only Linux x86_64 and Python 3.10+; they do not require the neural environment.
-
-## Quick start
-
-Clone the repository and follow [installation](docs/INSTALL.md) to configure the required system libraries and Python environment:
+The frozen FP16 engines target **Ubuntu 24.04 / Linux x86_64, RTX 4090, Python 3.12, CUDA Toolkit 12.6, Torch/Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7**. Other combinations are not validated. Follow [installation](docs/INSTALL.md) to prepare system libraries and Python dependencies first.
 
 ```bash
 git clone https://github.com/chmyo-Q/CARE-RWCap.git
 cd CARE-RWCap
-```
-
-After installation, build the extensions and run the bundled case1 example:
-
-```bash
 python scripts/check_environment.py --build-only
 python scripts/build.py
 python scripts/check_environment.py
 python scripts/run.py --arm care-rwcap --output runs/full_case1
 ```
 
-The default example is **case1**, using `configs/example.json` and the input under `benchmarks/public10/`. The smoke workflow uses case7 to exercise CPGR activation and CER.
+The default case1 example uses initial seed 2029. Each invocation needs a new output directory and saves `result.out`, `metrics.json`, `run.json` and logs. Metrics include raw/CER estimates, SelfCapErr, walks, hops and solver time. CER requires no extra solve.
 
-Every invocation needs a new output directory. The example uses initial seed 2029 and saves:
-
-| File | Contents |
-|---|---|
-| `result.out` | Solver capacitance and workload output |
-| `metrics.json` | Raw/CER estimates, errors, workload and solver timing |
-| `run.json` | Actual model selection, configuration and command |
-| `console.log`, `result.log` | Execution logs |
-
-CER adds no further solve. To check the implementation:
+Check the CPU logic or run the case7 smoke workflow:
 
 ```bash
 python -m unittest discover -s tests -p 'test_*.py'
 bash scripts/smoke_test.sh --output runs/smoke
 ```
 
-The first command needs NumPy but no GPU; the second requires the supported GPU environment. The smoke test explicitly uses `configs/smoke_case7.json` so that both CPGR activation and the CER coupling-sum branch are exercised. See [validation status](docs/VALIDATION.md) for completed checks and remaining limits.
+CPU tests need NumPy but no GPU. Smoke uses `configs/smoke_case7.json` to exercise CPGR activation and CER application; it needs the supported GPU environment.
 
-## Data and pretrained models
+## Evaluate public10
 
-All ten public geometries and reference files are included under `benchmarks/public10/`. Frozen settings, selected masters and reference self-capacitances are in `configs/paper_protocol.json`.
-
-| Directory | Contents |
-|---|---|
-| [DeepRWCap models](models/README.md) | Five FP16 engines for the locally trained DeepRWCap baseline |
-| `models/capr/` | CAPR Poisson engine; the other four engines are shared with DeepRWCap |
-| `models/checkpoints/` | Inspectable FP32 checkpoints and uncompiled TorchScript |
-| `benchmarks/public10/` | Public layouts and reference capacitances |
-
-The bundled DeepRWCap baseline uses the upstream architectures with locally trained weights; it is not the official upstream pretrained model set. CPGR and CER introduce no additional trained checkpoint. See [model provenance](models/README.md).
-
-For new local Poisson/Gradient data, the optional [GGFT generation workflow](docs/DATA.md) uses a fixed upstream source revision and a CPU-only entry, `scripts/generate_data.py`. It documents generation settings, the binary format and CAPR preprocessing. Generated data do not replace the frozen paper reference files or retrain the bundled models.
-
-## Public10 evaluation
-
-| `--arm` | Poisson model | CPGR | Main comparison readout |
+| `--arm` | Poisson predictor | CPGR | Main readout |
 |---|---|---|---|
 | `deeprwcap` | DeepRWCap | Off | Raw |
 | `capr` | CAPR | Off | CER |
 | `care-rwcap` | CAPR | On | CER |
 
 ```bash
+# Small comparison: case1, seeds 2029–2031, three arms (nine solves)
+python scripts/benchmark.py --profile quick --output runs/quick
+
 # Inspect the full plan without a GPU or any solves
 python scripts/benchmark.py --profile paper --plan-only --output runs/paper_plan
 
-# Ten cases × ten initial seeds × three arms, plus three excluded warmups
+# Ten cases × ten seeds × three arms, plus three excluded warmups
 python scripts/benchmark.py --profile paper --output runs/public10
 ```
 
-For a small repeated comparison, the quick profile uses **case1**, initial seeds **2029–2031**, and three arms: nine solves in total.
+Both raw and CER readouts are retained for every arm. The full protocol uses initial seeds 2029–2038 and includes all ten cases. Quick is an illustrative example, not a ten-case performance estimate. See [benchmark commands](benchmarks/public10/README.md) for subsets and output definitions, and [evaluation](docs/EVALUATION.md) for statistics and available paper workflows.
 
-```bash
-python scripts/benchmark.py --profile quick --output runs/quick
-```
+## Models and reference results
 
-Case1 was chosen as an illustrative example with lower CARE-RWCap mean error in the [archived ten-repeat evaluation](results/reference_public10.json): **0.7542%**, versus **0.8875%** for DeepRWCap raw. Quick reports every predefined seed; its new values and rankings can differ. Use the full profile for a ten-case performance comparison.
+The ten layouts/references and frozen settings are in `benchmarks/public10/` and `configs/paper_protocol.json`. [Models](models/README.md) describes all deployment engines and inspectable checkpoints. The bundled baseline uses DeepRWCap architectures with locally trained weights, not the official upstream pretrained files. CAPR replaces only the Poisson predictor; CPGR and CER add no trained checkpoint.
 
-Each arm retains both raw and CER readouts. Completed batches produce `summary.json` and `summary.md` with per-case statistics, equal-case macro SelfCapErr, same-readout differences, uncertainty, workload and timing. Incomplete batches retain their outputs but do not receive a complete aggregate.
-
-The protocol uses initial seeds **2029–2038**. The [historical reference](results/README.md) identifies the original 300-run cohort. Asynchronous execution can change trajectories, and the incremental CPGR gain has varied in direction across checked batches; the reference is not a guaranteed rerun target or ranking. See [evaluation details](docs/REPRODUCIBILITY.md).
-
-## Reference results
-
-The original public10 batch contains ten runs per case and solver arm. Macro SelfCapErr gives each case equal weight.
-
-| Configuration | Macro SelfCapErr (%) |
+| Historical configuration | Macro SelfCapErr (%) |
 |---|---:|
 | DeepRWCap, raw | 0.9278 |
 | CAPR + CER | 0.9001 |
 | CARE-RWCap: CAPR + CPGR + CER | 0.8110 |
 
-[Complete raw/CER results](results/README.md) identify the measured configurations and their shared-solve readouts. The [paper-to-code guide](docs/PAPER_MAPPING.md) lists which experiments the release supports.
+These are observations from the original 300-run cohort. [All observed raw/CER configurations](results/README.md) identify the measured arms. Fixed initial seeds do not fix asynchronous trajectories, and CPGR's incremental gain has varied across checked batches. New values and rankings can differ; the reference is not an accuracy acceptance target. [Validation status](docs/EVALUATION.md#validation-status) records actual checks, including the later CARE-only macro of 0.9053%.
 
-In a separate evaluation of three previously selected CAPR checkpoints, the CARE-RWCap macro errors were 0.8112%, 0.8038% and 0.8414% (mean ± sample SD: **0.8188 ± 0.0199%**). This study reused the historical DeepRWCap baseline. Its [records and protocol](results/training_seeds/README.md) include all 300 CARE-RWCap observations and 100 reused DeepRWCap observations. Recompute its tables without a GPU:
+## Optional workflows
+
+| Task | Entry and requirements |
+|---|---|
+| Generate Poisson/Gradient data | [Pinned upstream GGFT workflow](docs/DATA.md); CPU, Git and C++ compiler |
+| Evaluate local CAPR/CPGR mechanisms | [Local transition evaluation](docs/DATA.md#local-transition-evaluation); original external reference datasets and GPU |
+| Compare FRW-AGF, MicroWalk or FRW-FDM | [CPU baselines](docs/CPU_BASELINES.md); bundled upstream Linux x86_64 executables |
+| Reaggregate training-seed results | [Saved records](results/training_seeds/README.md); CPU-only command below |
 
 ```bash
 python scripts/summarize_training_seeds.py --output outputs/training_seed_summary
 ```
 
-This command reaggregates saved capacitances. The inference runner uses the bundled training-seed2029 model; the two additional model files are not included in the compact supplement.
-
-## Optional traditional baselines
-
-Upstream **FRW-AGF**, **MicroWalk** and **FRW-FDM** executables are bundled with their license and provenance. On Linux x86_64:
-
-```bash
-chmod +x third_party/deeprwcap/baselines/rwcap_*
-python3 scripts/baselines.py --method agf --output runs/agf_example
-python3 scripts/baselines.py --method microwalk --output runs/microwalk_example
-python3 scripts/baselines.py --method fdm --output runs/fdm_example
-
-# Optional public10 batch: 100 solves for the selected CPU baseline
-python3 scripts/baselines.py --method agf --profile paper --output runs/agf_public10
-```
-
-These use raw SelfCapErr without CER, with 16 solver threads by default; the neural protocol uses 8 workers. FRW-FDM can take longer. See [CPU baseline instructions](docs/CPU_BASELINES.md) for output definitions and validation coverage.
+The three saved training-seed macro errors are 0.8112%, 0.8038%, 0.8414% (mean ± sample SD: 0.8188 ± 0.0199%). This study reused the historical DeepRWCap control; the command reaggregates observations rather than rerunning the extra models.
 
 ## Repository structure
 
 ```text
-src/capr/                        CAPR architecture and loss
-src/readout/                     Output parser and CER
-cpp/cpgr/                        Projection, selector and compensation
-cpp/seed_control/                Initial neural-solver seed setup
-models/                          Frozen engines and inspectable checkpoints
-benchmarks/public10/             Public inputs and references
-configs/                         Evaluation settings
-scripts/                         Build, inference and evaluation
-third_party/deeprwcap/           Upstream runtime, CPU baselines and license
-results/                         Main reference and training-seed supplement
-tests/                           CPU and GPU implementation checks
-docs/                            Installation, method and evaluation details
-docs/figures/                    Framework PNG and vector PDF
+src/                       CAPR architecture/loss and CER parser/readout
+cpp/                       CPGR and initial-seed extensions
+models/                    Frozen engines and inspectable checkpoints
+benchmarks/public10/       Ten layouts and reference capacitances
+configs/                   Frozen execution and local-evaluation settings
+scripts/                   Build, inference and evaluation entries/helpers
+third_party/deeprwcap/     Upstream runtime, CPU baselines and license
+results/                   Historical reference and training-seed records
+tests/                     CPU/GPU implementation checks
+docs/                      Installation, method, evaluation and data guides
 ```
 
-## Release scope
+The upstream solver cores are binary dependencies. Full training data/driver, additional-layout datasets, dedicated memory studies and paper-figure scripts are not bundled. See [experiment coverage](docs/EVALUATION.md#available-experiments-and-release-scope) for the exact scope.
 
-For a first CARE-RWCap run, follow **Quick start**. Traditional baselines, saved-result reaggregation and local transition evaluation are optional workflows.
+## Citation and license
 
-| What you want to do | Start here |
-|---|---|
-| Install and run a case | [Installation](docs/INSTALL.md) and Quick start above |
-| Generate new Poisson/Gradient data | [GGFT source, format and generation](docs/DATA.md) |
-| Understand CAPR, CPGR and CER | [Method](docs/METHOD.md) and [paper-to-code mapping](docs/PAPER_MAPPING.md) |
-| Evaluate the ten public cases | [Benchmark commands](benchmarks/public10/README.md) and [protocol](docs/REPRODUCIBILITY.md) |
-| Check what has actually been tested | [Validation status](docs/VALIDATION.md) |
-| Understand included and omitted material | [Release scope](docs/ARTIFACT_SCOPE.md) |
-
-The upstream solver core and traditional baselines are binary dependencies; our refinement and readout implementations are provided as source. Full training data/driver, additional-layout datasets, dedicated memory studies, all research logs and paper-figure scripts are not included.
-
-The [table-to-workflow map](docs/PAPER_MAPPING.md#manuscript-tables-and-available-workflows) identifies the available entry for each manuscript table and the studies requiring external material.
-
-The optional [local transition evaluator](docs/LOCAL_VALIDATION.md) requires the original external reference datasets. They are not bundled or needed for public10 inference.
-
-## Citation and acknowledgments
-
-[CITATION.cff](CITATION.cff) contains the current manuscript title and authors. Publication details will be added when available.
-
-We thank the DeepRWCap authors for their neural solver, architectures, benchmark cases and baseline executables. If your work uses these upstream components, please also cite:
+[CITATION.cff](CITATION.cff) contains the manuscript title and authors; publication details will be added when available. Please also cite DeepRWCap when using its components:
 
 ```bibtex
 @article{rodriguez2026deeprwcap,
   title={DeepRWCap: Neural-Guided Random-Walk Capacitance Solver for IC Design},
   author={Rodriguez, Hector R. and Huang, Jiechen and Yu, Wenjian},
   journal={Proceedings of the AAAI Conference on Artificial Intelligence},
-  volume={40},
-  number={2},
-  pages={971--979},
-  year={2026},
+  volume={40}, number={2}, pages={971--979}, year={2026},
   doi={10.1609/aaai.v40i2.37066}
 }
 ```
 
-MIT; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Third-party terms are retained. For implementation or installation problems, open a GitHub issue with the command, environment and relevant log excerpt.
+MIT; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). We thank the DeepRWCap authors for the solver, architectures, benchmarks and baseline executables. For problems, open an issue with the command, environment and relevant log excerpt.
