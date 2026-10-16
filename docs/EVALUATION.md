@@ -75,7 +75,7 @@ Checked on 2026-10-11 using an independent source checkout in the supported Ubun
 
 The new CARE-only macro error was **0.9053%**, compared with **0.8110%** in the historical cohort. In the new batch raw error was **0.8507%**; CER increased it by 0.0546 pp (pointwise 95% seed-block interval [0.0117, 0.0994] pp). No new DeepRWCap or CAPR-only control cohort was run, so this check cannot re-estimate paired method gains. CPGR's incremental end-to-end benefit has varied across checked batches. Functional acceptance does not guarantee the historical mean or ranking.
 
-Full traditional-baseline batches were not rerun. Earlier AGF/MicroWalk single-case checks completed; an earlier FDM solve was stopped before completion. A fresh full neural installation, clean Docker build, complete retraining/export, other GPUs and dedicated peak-memory studies remain unvalidated. The separate NumPy-only environment checks CPU workflows, not a fresh neural installation.
+Full traditional-baseline batches were not rerun. Earlier AGF/MicroWalk single-case checks completed; an earlier FDM solve was stopped before completion. A fresh full neural installation, complete retraining/export, other GPUs and dedicated peak-memory studies remain unvalidated. The earlier unvalidated Docker recipe is no longer supplied. The separate NumPy-only environment checks CPU workflows, not a fresh neural installation.
 
 ## Available experiments and release scope
 
@@ -87,8 +87,12 @@ The package supports frozen-model inference and public10 evaluation. Architectur
 | Tables II–III: local CAPR/CPGR | `evaluate_transitions.py` | Original external reference datasets required; see [local evaluation](DATA.md#local-transition-evaluation). |
 | Table IV: component comparisons | Three neural arms with raw/CER from each solve | Six observed configurations; no standalone DeepRWCap+CPGR arm or complete factorial interaction. |
 | Table V: time/workload | `run.py`, `summarize.py` | Solver time, walks and weighted hops; no peak-memory or CER-latency study. |
-| Table VI: additional layouts | Custom single-master configs supported | Five-layout inputs/references and repeated-run protocol not bundled. |
+| Table VI: additional layouts | [Six candidates, screening and five frozen configs](../benchmarks/additional/README.md) | Ten seeds per arm; CER for both arms. Original two-tolerance references are included; historical full logs and a dedicated Table-VI aggregation entry are not. |
 | Training-seed study | `summarize_training_seeds.py` | Saved observations included; the two extra models and multi-model inference driver are not. |
 | Coupling NL1, visited activation, τ sensitivity | Output rows/CPGR counters retained where applicable | Specialized paper aggregation/training workflows not supplied. |
 
 Full training data/driver, all research logs and paper-figure scripts are outside this release. GGFT generates new data and does not recreate archived labels. The overview, inspectable checkpoints, CPU baselines, saved results, local evaluator and tests support optional research or inspection; only the runtime/deployment models, own extensions, layout and runner/config are needed for a single solve. Reference capacitance is needed to report error, not to estimate capacitance.
+
+## Manuscript v4 release update
+
+On 2026-10-16, the six additional-layout inputs, two-tolerance reference screening and five retained-layout execution configurations were recovered from the original study. The current reader reproduced all 100 archived outputs and the Table-VI means/SDs. The documented 100+2 command schedule was checked against the original run order. This update did not retrain models, regenerate references or execute new end-to-end solves.

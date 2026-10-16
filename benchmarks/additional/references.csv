@@ -1,0 +1,7 @@
+layout,description,master,reference_0_005_F,reference_0_0025_F,discrepancy_percent,threshold_percent,retained
+new001,elbow_with_offset_neighbors,S7_TARGET,2.94946e-14,2.962548e-14,0.44178187155111426,0.5,True
+new002,closed_frame_with_inner_islands,S7_TARGET,4.373008e-14,4.390211e-14,0.3918490478020335,0.5,True
+new003,staircase_with_staggered_neighbors,S7_TARGET,2.869276e-14,2.876897e-14,0.2649034706491238,0.5,True
+new004,two_connected_interdigitated_combs,S7_TARGET,4.434683e-14,4.466189e-14,0.7054336482401545,0.5,False
+new005,segmented_offset_bus,S7_TARGET,1.963262e-14,1.961437e-14,0.09304402843425032,0.5,True
+new006,cross_with_corner_islands,S7_TARGET,3.492083e-14,3.475095e-14,0.48884994510940605,0.5,True

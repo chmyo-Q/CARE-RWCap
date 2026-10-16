@@ -1,0 +1,14 @@
+{
+  "workers": 8,
+  "p": 0.01,
+  "c": 0.01,
+  "omp_threads": 1,
+  "mkl_threads": 1,
+  "case": "case8",
+  "master": "1",
+  "reference_F": 8.763291910000002e-16,
+  "c_ratio": 0.3,
+  "geometry": "benchmarks/public10/case8.cap3d",
+  "reference_source": "benchmarks/public10/ref/case8.dspf",
+  "seed": 9263799
+}

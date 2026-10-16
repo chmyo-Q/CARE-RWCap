@@ -67,20 +67,7 @@ python scripts/benchmark.py --profile quick --output runs/quick
 
 The [GGFT workflow](DATA.md) uses Python, Git, Make and a C++17/OpenMP compiler on Linux. It does not require the neural environment. Generated datasets are not needed for public10 inference.
 
-## Container recipe
-
-The Dockerfile expresses the same system/Python dependencies and builds the extensions. A CUDA-enabled Docker host also needs NVIDIA Container Toolkit. From the repository root:
-
-```bash
-docker build -t care-rwcap:local .
-docker run --rm --gpus all care-rwcap:local
-mkdir -p runs
-docker run --rm --gpus all \
-  -v "$PWD/runs:/opt/care-rwcap/runs" \
-  care-rwcap:local python scripts/benchmark.py --profile quick --output runs/container_quick
-```
-
-The container retains the RTX 4090 engine requirement. Its base image and package downloads require external network access. A clean build of this recipe has not yet been completed; see [validation status](EVALUATION.md#validation-status).
+The release supports the native Ubuntu workflow above. The earlier unvalidated container recipe was removed from the submission package; no Docker build/run workflow is supplied.
 
 ## Troubleshooting
 
@@ -94,4 +81,4 @@ The container retains the RTX 4090 engine requirement. Its base image and packag
 | Existing output directory | Choose a new directory. Do not mix runs or overwrite a previous comparison. |
 | Different numerical result with the same seed | Check inputs, models, configuration and readout first; then assess repeated-run distributions. Asynchronous execution is not bitwise deterministic. |
 
-Dependency references: [CUDA 12.6 installation](https://docs.nvidia.com/cuda/archive/12.6.3/cuda-installation-guide-linux/index.html), [PyTorch previous versions](https://pytorch.org/get-started/previous-versions/), [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
+Dependency references: [CUDA 12.6 installation](https://docs.nvidia.com/cuda/archive/12.6.3/cuda-installation-guide-linux/index.html), [PyTorch previous versions](https://pytorch.org/get-started/previous-versions/).

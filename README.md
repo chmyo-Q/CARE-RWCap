@@ -4,7 +4,7 @@
 
 [Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](docs/EVALUATION.md) · [Data](docs/DATA.md)
 
-CARE-RWCap refines local transitions and endpoint readout in the [DeepRWCap](https://github.com/THU-numbda/deepRWCap) floating random walk solver. This repository provides the refinement source, frozen deployment models, ten public benchmarks and evaluation commands.
+CARE-RWCap refines local transitions and endpoint readout in the [DeepRWCap](https://github.com/THU-numbda/deepRWCap) floating random walk solver. This repository provides the refinement source, frozen deployment models, ten public benchmarks, the additional-layout panel and evaluation commands.
 
 ## Overview
 
@@ -77,6 +77,7 @@ These are observations from the original 300-run cohort. [All observed raw/CER c
 
 | Task | Entry and requirements |
 |---|---|
+| Evaluate the five additional layouts | [Inputs, screening and frozen configurations](benchmarks/additional/README.md) |
 | Generate Poisson/Gradient data | [Pinned upstream GGFT workflow](docs/DATA.md); CPU, Git and C++ compiler |
 | Evaluate local CAPR/CPGR mechanisms | [Local transition evaluation](docs/DATA.md#local-transition-evaluation); original external reference datasets and GPU |
 | Compare FRW-AGF, MicroWalk or FRW-FDM | [CPU baselines](docs/CPU_BASELINES.md); bundled upstream Linux x86_64 executables |
@@ -94,7 +95,7 @@ The three saved training-seed macro errors are 0.8112%, 0.8038%, 0.8414% (mean �
 src/                       CAPR architecture/loss and CER parser/readout
 cpp/                       CPGR and initial-seed extensions
 models/                    Frozen engines and inspectable checkpoints
-benchmarks/public10/       Ten layouts and reference capacitances
+benchmarks/                Public10 and additional-layout inputs/references
 configs/                   Frozen execution and local-evaluation settings
 scripts/                   Build, inference and evaluation entries/helpers
 third_party/deeprwcap/     Upstream runtime, CPU baselines and license
@@ -103,7 +104,7 @@ tests/                     CPU/GPU implementation checks
 docs/                      Installation, method, evaluation and data guides
 ```
 
-The upstream solver cores are binary dependencies. Full training data/driver, additional-layout datasets, dedicated memory studies and paper-figure scripts are not bundled. See [experiment coverage](docs/EVALUATION.md#available-experiments-and-release-scope) for the exact scope.
+The upstream solver cores are binary dependencies. Full training data/driver, dedicated memory studies and paper-figure scripts are not bundled. See [experiment coverage](docs/EVALUATION.md#available-experiments-and-release-scope) for the exact scope.
 
 ## Citation and license
 

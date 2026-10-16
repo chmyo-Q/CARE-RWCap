@@ -1,0 +1,649 @@
+// S37 frozen new-layout confirmation
+<cap3d>
+<window>
+name s37new003
+v1(-20,-20,-0.1)
+v2(220,220,72.27)
+</window>
+<plate_medium>
+	name SUB_FILL
+	diel 1.000000
+	z_top 0.000000
+</plate_medium>
+<plate_medium>
+	name STI
+	diel 4.300000
+	z_top 0.310000
+</plate_medium>
+<plate_medium>
+	name OD_D1
+	diel 4.300000
+	z_top 0.335000
+</plate_medium>
+<plate_medium>
+	name GOX
+	diel 4.300000
+	z_top 0.337000
+</plate_medium>
+<plate_medium>
+	name ILD_1A
+	diel 7.100000
+	z_top 0.375000
+</plate_medium>
+<plate_medium>
+	name ILD_1B
+	diel 4.300000
+	z_top 0.695000
+</plate_medium>
+<plate_medium>
+	name ILD_1Bre
+	diel 4.300000
+	z_top 0.715000
+</plate_medium>
+<plate_medium>
+	name IMD_1A
+	diel 5.100000
+	z_top 0.745000
+</plate_medium>
+<plate_medium>
+	name IMD_1B
+	diel 3.200000
+	z_top 0.855000
+</plate_medium>
+<plate_medium>
+	name IMD_2A
+	diel 5.100000
+	z_top 0.905000
+</plate_medium>
+<plate_medium>
+	name IMD_2B
+	diel 3.200000
+	z_top 1.010000
+</plate_medium>
+<plate_medium>
+	name IMD_2C
+	diel 3.200000
+	z_top 1.210000
+</plate_medium>
+<plate_medium>
+	name IMD_3A
+	diel 5.100000
+	z_top 1.260000
+</plate_medium>
+<plate_medium>
+	name IMD_3B
+	diel 3.200000
+	z_top 1.365000
+</plate_medium>
+<plate_medium>
+	name IMD_3C
+	diel 3.200000
+	z_top 1.565000
+</plate_medium>
+<plate_medium>
+	name IMD_4A
+	diel 5.100000
+	z_top 1.615000
+</plate_medium>
+<plate_medium>
+	name IMD_4B
+	diel 3.200000
+	z_top 1.720000
+</plate_medium>
+<plate_medium>
+	name IMD_4C
+	diel 3.200000
+	z_top 1.920000
+</plate_medium>
+<plate_medium>
+	name IMD_5A
+	diel 5.100000
+	z_top 1.970000
+</plate_medium>
+<plate_medium>
+	name IMD_5B
+	diel 3.200000
+	z_top 2.075000
+</plate_medium>
+<plate_medium>
+	name IMD_5C
+	diel 3.200000
+	z_top 2.275000
+</plate_medium>
+<plate_medium>
+	name IMD_6A
+	diel 5.100000
+	z_top 2.350000
+</plate_medium>
+<plate_medium>
+	name K5_D1
+	diel 7.100000
+	z_top 2.384000
+</plate_medium>
+<plate_medium>
+	name IMD_6B
+	diel 4.300000
+	z_top 3.000000
+</plate_medium>
+<plate_medium>
+	name TOESre
+	diel 4.300000
+	z_top 3.070000
+</plate_medium>
+<plate_medium>
+	name IMD_6C
+	diel 7.100000
+	z_top 3.120000
+</plate_medium>
+<plate_medium>
+	name IMD_6D
+	diel 4.300000
+	z_top 3.850000
+</plate_medium>
+<plate_medium>
+	name PV_1
+	diel 7.100000
+	z_top 3.920000
+</plate_medium>
+<plate_medium>
+	name PV_2
+	diel 4.300000
+	z_top 5.120000
+</plate_medium>
+<plate_medium>
+	name PV_3
+	diel 4.300000
+	z_top 5.520000
+</plate_medium>
+<plate_medium>
+	name PV_4
+	diel 7.100000
+	z_top 6.020000
+</plate_medium>
+<plate_medium>
+	name TOP_FILL
+	diel 1.000000
+	z_top 72.270000
+</plate_medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(32.534940,44.121217,5.120000)
+		v1(50.666525,0,0)
+		v2(0,10.930242,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 7.000000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(72.161544,43.877820,5.120000)
+		v1(11.283318,0,0)
+		v2(0,51.821906,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 2.600000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(72.316120,84.437267,5.120000)
+		v1(50.844166,0,0)
+		v2(0,11.107883,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 3.900000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(112.301867,84.553013,5.120000)
+		v1(10.742673,0,0)
+		v2(0,51.281261,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 2.800000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(112.051347,124.707364,5.120000)
+		v1(51.113713,0,0)
+		v2(0,11.377430,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 6.000000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(23.571493,114.912170,5.120000)
+		v1(57.414039,0,0)
+		v2(0,9.401567,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 4.800000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(99.433949,39.345715,5.120000)
+		v1(60.351575,0,0)
+		v2(0,10.485986,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 6.000000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(144.161268,69.700341,5.120000)
+		v1(9.655232,0,0)
+		v2(0,35.693476,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 4.300000
+</medium>
+<medium>
+	name s7_conformal
+	<block>
+		layer 1
+		basepoint(85.401627,144.312018,5.120000)
+		v1(9.835384,0,0)
+		v2(0,25.516104,0)
+		hvector(0,0,1.850000)
+	</block>
+	diel 4.800000
+</medium>
+<conductor>
+	name GROUND
+	<block>
+		name 0
+		layer 2
+		basepoint(0.000000,0.000000,-0.100000)
+		v1(200.000000,0,0)
+		v2(0,200.000000,0)
+		hvector(0,0,0.100000)
+	</block>
+</conductor>
+<conductor>
+	name S7_TARGET
+	<block>
+		name 1
+		layer 3
+		basepoint(32.949452,44.535729,5.120000)
+		v1(49.837500,0,0)
+		v2(0,10.101218,0)
+		hvector(0,0,1.450000)
+	</block>
+	<block>
+		name 2
+		layer 3
+		basepoint(72.819453,44.535729,5.120000)
+		v1(9.967500,0,0)
+		v2(0,50.506088,0)
+		hvector(0,0,1.450000)
+	</block>
+	<block>
+		name 3
+		layer 3
+		basepoint(72.819453,84.940600,5.120000)
+		v1(49.837500,0,0)
+		v2(0,10.101218,0)
+		hvector(0,0,1.450000)
+	</block>
+	<block>
+		name 4
+		layer 3
+		basepoint(112.689453,84.940600,5.120000)
+		v1(9.967500,0,0)
+		v2(0,50.506088,0)
+		hvector(0,0,1.450000)
+	</block>
+	<block>
+		name 5
+		layer 3
+		basepoint(112.689453,125.345470,5.120000)
+		v1(49.837500,0,0)
+		v2(0,10.101218,0)
+		hvector(0,0,1.450000)
+	</block>
+</conductor>
+<conductor>
+	name N1
+	<block>
+		name 6
+		layer 3
+		basepoint(24.244094,115.584770,5.120000)
+		v1(56.068838,0,0)
+		v2(0,8.056366,0)
+		hvector(0,0,1.450000)
+	</block>
+</conductor>
+<conductor>
+	name N2
+	<block>
+		name 7
+		layer 3
+		basepoint(100.097615,40.009381,5.120000)
+		v1(59.024244,0,0)
+		v2(0,9.158655,0)
+		hvector(0,0,1.450000)
+	</block>
+</conductor>
+<conductor>
+	name N3
+	<block>
+		name 8
+		layer 3
+		basepoint(144.550325,70.089398,5.120000)
+		v1(8.877117,0,0)
+		v2(0,34.915361,0)
+		hvector(0,0,1.450000)
+	</block>
+</conductor>
+<conductor>
+	name N4
+	<block>
+		name 9
+		layer 3
+		basepoint(85.852975,144.763365,5.120000)
+		v1(8.932689,0,0)
+		v2(0,24.613409,0)
+		hvector(0,0,1.450000)
+	</block>
+</conductor>
+<layer>
+	name SUBSTRATE
+	id 2
+	type substrate
+</layer>
+<layer>
+	name STI
+	id 5
+	type dielectric
+</layer>
+<layer>
+	name OD
+	id 6
+	type interconnect
+	wmin 0.072000
+</layer>
+<layer>
+	name OD_D1
+	id 7
+	type dielectric
+</layer>
+<layer>
+	name GOX
+	id 8
+	type dielectric
+</layer>
+<layer>
+	name POLY
+	id 4
+	type interconnect
+	wmin 0.054000
+</layer>
+<layer>
+	name ILD_1A
+	id 9
+	type dielectric
+</layer>
+<layer>
+	name ILD_1B
+	id 10
+	type dielectric
+</layer>
+<layer>
+	name M1
+	id 11
+	type interconnect
+	wmin 0.081000
+</layer>
+<layer>
+	name ILD_1Bre
+	id 12
+	type dielectric
+</layer>
+<layer>
+	name IMD_1A
+	id 13
+	type dielectric
+</layer>
+<layer>
+	name IMD_1B
+	id 14
+	type dielectric
+</layer>
+<layer>
+	name IMD_2A
+	id 15
+	type dielectric
+</layer>
+<layer>
+	name IMD_2B
+	id 16
+	type dielectric
+</layer>
+<layer>
+	name M2
+	id 17
+	type interconnect
+	wmin 0.090000
+</layer>
+<layer>
+	name IMD_2C
+	id 18
+	type dielectric
+</layer>
+<layer>
+	name IMD_3A
+	id 19
+	type dielectric
+</layer>
+<layer>
+	name IMD_3B
+	id 20
+	type dielectric
+</layer>
+<layer>
+	name M3
+	id 21
+	type interconnect
+	wmin 0.090000
+</layer>
+<layer>
+	name IMD_3C
+	id 22
+	type dielectric
+</layer>
+<layer>
+	name IMD_4A
+	id 23
+	type dielectric
+</layer>
+<layer>
+	name IMD_4B
+	id 24
+	type dielectric
+</layer>
+<layer>
+	name M4
+	id 25
+	type interconnect
+	wmin 0.090000
+</layer>
+<layer>
+	name IMD_4C
+	id 26
+	type dielectric
+</layer>
+<layer>
+	name IMD_5A
+	id 27
+	type dielectric
+</layer>
+<layer>
+	name IMD_5B
+	id 28
+	type dielectric
+</layer>
+<layer>
+	name M5
+	id 29
+	type interconnect
+	wmin 0.090000
+</layer>
+<layer>
+	name IMD_5C
+	id 30
+	type dielectric
+</layer>
+<layer>
+	name IMD_6A
+	id 31
+	type dielectric
+</layer>
+<layer>
+	name K5_BOTTOM
+	id 32
+	type interconnect
+	wmin 2.520000
+</layer>
+<layer>
+	name K5_D1
+	id 33
+	type dielectric
+</layer>
+<layer>
+	name K5_TOP
+	id 34
+	type interconnect
+	wmin 1.800000
+</layer>
+<layer>
+	name IMD_6B
+	id 35
+	type dielectric
+</layer>
+<layer>
+	name M6
+	id 36
+	type interconnect
+	wmin 0.360000
+</layer>
+<layer>
+	name TOESre
+	id 37
+	type dielectric
+</layer>
+<layer>
+	name IMD_6C
+	id 38
+	type dielectric
+</layer>
+<layer>
+	name IMD_6D
+	id 39
+	type dielectric
+</layer>
+<layer>
+	name PV_1
+	id 40
+	type dielectric
+</layer>
+<layer>
+	name PV_2
+	id 41
+	type dielectric
+</layer>
+<layer>
+	name TM
+	id 3
+	type interconnect
+	wmin 2.700000
+</layer>
+<layer>
+	name PV_3
+	id 1
+	type dielectric
+</layer>
+<layer>
+	name PV_4
+	id 0
+	type dielectric
+</layer>
+<layer>
+	name TV
+	id 42
+	type via
+</layer>
+<layer>
+	name V5_K5_TOP
+	id 43
+	type via
+</layer>
+<layer>
+	name V5_K5_BOTTOM
+	id 44
+	type via
+</layer>
+<layer>
+	name VIA5
+	id 45
+	type via
+</layer>
+<layer>
+	name VIA4
+	id 46
+	type via
+</layer>
+<layer>
+	name VIA3
+	id 47
+	type via
+</layer>
+<layer>
+	name VIA2
+	id 48
+	type via
+</layer>
+<layer>
+	name VIA1
+	id 49
+	type via
+</layer>
+<layer>
+	name POLY_CT
+	id 50
+	type via
+</layer>
+<layer>
+	name OD_CT
+	id 51
+	type via
+</layer>
+<layer>
+	name SUB_CT
+	id 52
+	type via
+</layer>
+<task>
+<capacitance>
+S7_TARGET
+</capacitance>
+</task>
+<parameter>
+c-ratio 0.300000
+</parameter>
+</cap3d>

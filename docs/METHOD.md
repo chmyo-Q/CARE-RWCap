@@ -114,7 +114,7 @@ The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_
 
 ## Manuscript-to-source map
 
-| TCAD manuscript v3 definition | Source |
+| TCAD manuscript v4 definition | Source |
 |---|---|
 | CAPR parameterization, Eqs. (7)–(12) | `src/capr/model.py`: `ResidualHead`, `CAPRPredictor.components`, `forward` |
 | CAPR objective, Eqs. (13)–(15) | `src/capr/loss.py`: `components`, `capr_loss`; separate `validation_score` |
