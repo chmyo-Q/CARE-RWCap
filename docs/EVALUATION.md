@@ -96,3 +96,5 @@ Full training data/driver, all research logs and paper-figure scripts are outsid
 ## Manuscript v4 release update
 
 On 2026-10-16, the six additional-layout inputs, two-tolerance reference screening and five retained-layout execution configurations were recovered from the original study. The current reader reproduced all 100 archived outputs and the Table-VI means/SDs. The documented 100+2 command schedule was checked against the original run order. This update did not retrain models, regenerate references or execute new end-to-end solves.
+
+The case7 smoke configuration now reads the public10 input and reference directly. Its redundant copies were removed after byte-for-byte identity checks; case, seed, master, reference capacitance, solver settings and both operators are unchanged.
