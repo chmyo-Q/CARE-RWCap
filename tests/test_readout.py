@@ -5,12 +5,42 @@ import tempfile
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from common import ROOT
-from evaluate_readout import evaluate
+from evaluate_readout import evaluate, coupling_error
 from readout.cer import cer_value
 from readout.parser import logical
 
 
 class ReadoutTest(unittest.TestCase):
+    def test_coupling_metric_uses_shared_magnitudes_and_excludes_self(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ref=Path(directory)/'reference.dspf'
+            ref.write_text('*|NET A 1000\n*|NET B 1\n*|NET C 4\n*|NET D 100\nC1 A B 1\nC2 A C 4\nC3 A D 100\n')
+            result=coupling_error({'A':100.,'B':-2.,'C':5.},'A',ref)
+            self.assertAlmostEqual(result['normalized_l1_percent'],40.)
+            self.assertEqual(result['shared_offdiagonal_entries'],2)
+            self.assertEqual(result['reference_mass_F'],5.)
+            with self.assertRaisesRegex(ValueError,'shared coupling'):
+                coupling_error({'A':100.},'A',ref)
+
+    def test_coupling_spice_units_ground_and_upstream_averaging(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ref=Path(directory)/'reference.spice'
+            ref.write_text('** A 10fF (total)\nCp1 A 0 1fF\nCp2 A 0 3fF\n')
+            result=coupling_error({'A':10e-15,'GROUND':-3e-15},'A',ref)
+            self.assertAlmostEqual(result['normalized_l1_percent'],50.)
+            with self.assertRaisesRegex(ValueError,'master missing'):
+                coupling_error({'B':1.},'B',ref)
+
+    def test_optional_coupling_reference_never_changes_self_readout(self):
+        f=ROOT/'tests/fixtures'
+        with tempfile.TemporaryDirectory() as directory:
+            ref=Path(directory)/'reference.dspf'
+            ref.write_text('*|NET A 4e-15\n*|NET B 1e-15\n*|NET C 2e-15\nC1 A B 1e-15\nC2 A C 2e-15\n')
+            original=evaluate(f/'small.cap3d',f/'complete.out',4e-15)
+            extended=evaluate(f/'small.cap3d',f/'complete.out',4e-15,coupling_reference=ref)
+            self.assertAlmostEqual(extended.pop('coupling_error')['normalized_l1_percent'],0.)
+            self.assertEqual(extended,original)
+
     def test_complete_negative_couplings(self):
         self.assertEqual(cer_value({'A':4.,'B':-1.,'C':-2.}, {'A','B','C'}, 'A'),
                          (3.,'abs_coupling_sum'))

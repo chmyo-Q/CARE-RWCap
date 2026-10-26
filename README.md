@@ -81,6 +81,7 @@ These are observations from the original 300-run cohort. [All observed raw/CER c
 | Generate Poisson/Gradient data | [Pinned upstream GGFT workflow](docs/DATA.md); CPU, Git and C++ compiler |
 | Evaluate local CAPR/CPGR mechanisms | [Local transition evaluation](docs/DATA.md#local-transition-evaluation); original external reference datasets and GPU |
 | Compare FRW-AGF, MicroWalk or FRW-FDM | [CPU baselines](docs/CPU_BASELINES.md); bundled upstream Linux x86_64 executables |
+| Compute coupling-entry error from a saved solve | [Optional readout flag](docs/EVALUATION.md#optional-coupling-entry-evaluation); bundled DSPF/SPICE references |
 | Reaggregate training-seed results | [Saved records](results/training_seeds/README.md); CPU-only command below |
 
 ```bash

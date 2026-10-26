@@ -2,6 +2,41 @@
 
 The [overview](figures/overview.png) follows the first neural Gradient transition (CPGR), subsequent Poisson transitions (CAPR), conductor-hit accumulation, and endpoint readout (CER). The released runner evaluates one configured master per invocation and retains its capacitance row. The upstream runtime supplies neural/non-neural path selection, scheduling and stopping behavior.
 
+## CPGR: Conditional Parity Gradient Refinement
+
+Implementation: `cpp/cpgr/projection.cu`, `selector.cuh`, and `sampler.cpp`.
+
+CPGR operates in the gradient branch. It changes both the conditional signed kernel and, under the corresponding exact input symmetry, opposite-face selection probabilities. The pretrained gradient networks are unchanged.
+
+1. Rotate the input to the gradient-axis/face convention used by the upstream solver.
+2. Detect reflection symmetries by exact equality of the discrete dielectric input. This is a structural condition, not an approximate numerical threshold on predicted kernels.
+3. Average each eligible pair of opposite-face probabilities. Preserve the seventh selector output, the global weight.
+4. Project the predicted signed kernel onto the eligible parity subspace. The horizontal reflection is even. The second reflection is even for faces 0/1 and odd for the other faces. Multiple applicable reflections are averaged jointly.
+5. Sample a location proportionally to the absolute projected kernel and apply its sign together with `rho = ||Pg||_1 / ||g||_1` to the walk weight.
+
+The strict selector masks use the rotated Gradient input convention:
+
+| Reflected input index | Mask bit | Zero-based opposite faces |
+|---|---:|---|
+| x (fastest index) | 1 | 4, 5 |
+| y | 2 | 2, 3 |
+| z | 4 | 0, 1 |
+
+Each eligible pair receives its arithmetic mean before `torch::multinomial` draws the face. Pair sums are preserved up to roundoff; inactive pairs and the seventh output remain unchanged. No original-to-corrected face-probability importance ratio is applied. The identity below concerns conditional in-face sampling, not preservation of the original joint face-and-position law.
+
+The paper's contribution coefficient is `W_f = eta_f * w`: `w` is selector output 7 and `eta_0=-1` (other faces use +1). The upstream `post_process_gradient_launcher` restores this face-0 sign before the sampler computes `sampleSign`. The returned path-weight column is `fpw[:,6:7] * sampleSign * parity_ratio`; center permittivity is returned separately. No additional face-probability importance ratio is introduced.
+
+For an active, nonzero projection, this yields the conditional identity
+
+```
+E[ sign((Pg)_J) * rho * f(J) ] = sum_j (Pg)_j f(j) / ||g||_1,
+    J ~ |Pg| / ||Pg||_1.
+```
+
+This identity explains the compensation factor relative to the original kernel normalization. It does not imply the projected prediction equals the exact physical kernel, nor guarantee a lower end-to-end error for every layout. If the projection is zero, the implementation retains the original sampling proposal and sets its compensating weight to zero. With no eligible symmetry, the kernel and correction are unchanged (`rho=1`).
+
+The production extension interposes the pinned `DNNSolverGrad` methods using `LD_PRELOAD`. The legacy environment names `S29_GRADIENT_PARITY_ENABLE` and `S29_GRADIENT_JOINT_ENABLE` are preserved for compatibility; the public runner enables both for CPGR. CPGR is not enabled in the `deeprwcap` and `capr` arms. This mechanism requires the shipped upstream C++ ABI.
+
 ## CAPR: Condition-Aware Poisson Refinement
 
 Implementation: `src/capr/model.py`; public class: `CAPRPredictor`; historical alias: `ResidualFactorizedPredictor`.
@@ -47,39 +82,6 @@ The final recipe uses 100,000 Poisson samples, face-zero targets `abs(kernel)+1e
 
 The fixed local evaluation uses the deployed engines. The archived CAPR training settings are recorded in [capr_training_recipe.json](../configs/capr_training_recipe.json). The source-FP32 to deployed-FP16 paths differ numerically for DeepRWCap and CAPR; deployment-level gains should not all be attributed to the residual adapter without a precision-controlled comparison.
 
-## CPGR: Conditional Parity Gradient Refinement
-
-Implementation: `cpp/cpgr/projection.cu`, `selector.cuh`, and `sampler.cpp`.
-
-CPGR operates in the gradient branch. It changes both the conditional signed kernel and, under the corresponding exact input symmetry, opposite-face selection probabilities. The pretrained gradient networks are unchanged.
-
-1. Rotate the input to the gradient-axis/face convention used by the upstream solver.
-2. Detect reflection symmetries by exact equality of the discrete dielectric input. This is a structural condition, not an approximate numerical threshold on predicted kernels.
-3. Average each eligible pair of opposite-face probabilities. Preserve the seventh selector output, the global weight.
-4. Project the predicted signed kernel onto the eligible parity subspace. The horizontal reflection is even. The second reflection is even for faces 0/1 and odd for the other faces. Multiple applicable reflections are averaged jointly.
-5. Sample a location proportionally to the absolute projected kernel and apply its sign together with `rho = ||Pg||_1 / ||g||_1` to the walk weight.
-
-The strict selector masks use the rotated Gradient input convention:
-
-| Reflected input index | Mask bit | Zero-based opposite faces |
-|---|---:|---|
-| x (fastest index) | 1 | 4, 5 |
-| y | 2 | 2, 3 |
-| z | 4 | 0, 1 |
-
-Each eligible pair receives its arithmetic mean before `torch::multinomial` draws the face. Pair sums are preserved up to roundoff; inactive pairs and the seventh output remain unchanged. No original-to-corrected face-probability importance ratio is applied. The identity below concerns conditional in-face sampling, not preservation of the original joint face-and-position law.
-
-For an active, nonzero projection, this yields the conditional identity
-
-```
-E[ sign((Pg)_J) * rho * f(J) ] = sum_j (Pg)_j f(j) / ||g||_1,
-    J ~ |Pg| / ||Pg||_1.
-```
-
-This identity explains the compensation factor relative to the original kernel normalization. It does not imply the projected prediction equals the exact physical kernel, nor guarantee a lower end-to-end error for every layout. If the projection is zero, the implementation retains the original sampling proposal and sets its compensating weight to zero. With no eligible symmetry, the kernel and correction are unchanged (`rho=1`).
-
-The production extension interposes the pinned `DNNSolverGrad` methods using `LD_PRELOAD`. The legacy environment names `S29_GRADIENT_PARITY_ENABLE` and `S29_GRADIENT_JOINT_ENABLE` are preserved for compatibility; the public runner enables both for CPGR. CPGR is not enabled in the `deeprwcap` and `capr` arms. This mechanism requires the shipped upstream C++ ABI.
-
 ## CER: Conditional Endpoint Re-estimation
 
 Implementation: `src/readout/cer.py`, with parsing in `src/readout/parser.py`.
@@ -110,16 +112,16 @@ The input-validation stage rejects duplicate logical records and nonfinite value
 
 The bundled DeepRWCap baseline uses upstream architectures with **locally trained seed-2029 weights**, not the official upstream pretrained files. Its Poisson predictor was selected at epoch 177 of a completed 200-epoch run; the other four predictors/selectors come from the corresponding archived model set. Their full local training histories and data are not bundled. Upstream training defaults are not a substitute for those local records.
 
-The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_seed2029_30e_20260909_180652`. Its training recipe comes from the archived launcher, implementation and run metadata. The released state dictionary, uncompiled TorchScript, FP16 engine and anchor were checked against the original aligned-batch files. The [recipe JSON](../configs/capr_training_recipe.json) is metadata, not a training entry point. See [model files](../models/README.md) for deployment order and inspectable artifacts.
+The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_seed2029_30e_20260909_180652`. Its training recipe comes from the archived launcher, implementation and run metadata. The released state dictionary, uncompiled TorchScript, FP16 engine and anchor were checked against the original aligned-batch files. The [recipe JSON](../configs/capr_training_recipe.json) is metadata, not a training entry point. Its post-hoc sensitivity section records the five refinement bounds and validation-selected epochs. The original main model remains fixed; the later validation sweep does not establish that the historical main bound was selected by that sweep. See [model files](../models/README.md) for deployment order and inspectable artifacts.
 
 ## Manuscript-to-source map
 
-| TCAD manuscript v4 definition | Source |
+| TCAD manuscript v7 definition | Source |
 |---|---|
-| CAPR parameterization, Eqs. (7)–(12) | `src/capr/model.py`: `ResidualHead`, `CAPRPredictor.components`, `forward` |
-| CAPR objective, Eqs. (13)–(15) | `src/capr/loss.py`: `components`, `capr_loss`; separate `validation_score` |
-| CPGR projection, Eqs. (16)–(19) | `cpp/cpgr/projection.cu` |
-| CPGR contribution, Eqs. (20)–(24) | `cpp/cpgr/projection.cu`, `sampler.cpp`; paper `beta_f` is code `ratio` |
+| CPGR projection, Eqs. (6)–(9) | `cpp/cpgr/projection.cu` |
+| CPGR contribution, Eqs. (10)–(14) | `cpp/cpgr/projection.cu`, `sampler.cpp`; paper `beta_f` is code `ratio` |
+| CAPR parameterization, Eqs. (15)–(21) | `src/capr/model.py`: `ResidualHead`, `CAPRPredictor.components`, `forward` |
+| CAPR objective, Eqs. (22)–(24) | `src/capr/loss.py`: `components`, `capr_loss`; separate `validation_score` |
 | CER, Eqs. (25)–(27) | `src/readout/parser.py`, `cer.py`; full applicability gate above |
 | SelfCapErr, Eq. (28) | `scripts/evaluate_readout.py` |
 | Local Gradient metrics, Eqs. (29)–(30) | `scripts/transition_metrics.py`: `kernel_rows`, `summarize_kernel` |

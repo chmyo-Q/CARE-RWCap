@@ -4,11 +4,66 @@ import argparse
 import math
 from pathlib import Path
 from common import dump
-from readout.parser import geometry, parse_output
+from readout.parser import geometry, logical, parse_output
 from readout.cer import cer_value
 
 
-def evaluate(geom, output, reference=None, master=None):
+def coupling_error(values, master, reference_source):
+    """Reference-covered off-diagonal magnitude NL1, in percent (v7 IV-D).
+
+    DSPF/SPICE loading follows DeepRWCap's public run_script.py conventions,
+    including ground naming and averaging a repeated reciprocal entry.
+    """
+    path = Path(reference_source)
+    if path.suffix.lower() not in ('.dspf', '.spice'):
+        raise ValueError('Coupling reference must be a DSPF or SPICE file')
+    lines = path.read_text(encoding='utf-8').splitlines()
+
+    def capacitance(text):
+        scale = 1e-12 if text.endswith('pF') else 1e-15 if text.endswith('fF') else 1.
+        value = float(text[:-2] if scale != 1. else text) * scale
+        if not math.isfinite(value):
+            raise ValueError('Nonfinite reference capacitance')
+        return value
+
+    matrix = {}
+    for line in lines:
+        tokens = line.split()
+        if line.startswith('*|NET ') or (line.startswith('** ') and '(total)' in line):
+            matrix[tokens[1]] = {tokens[1]: capacitance(tokens[2])}
+    for line in lines:
+        if not (line.startswith('Cp') if path.suffix.lower() == '.spice' else line.startswith('C')):
+            continue
+        tokens = line.split()
+        a, b = tokens[1], 'GROUND' if tokens[2] == '0' else tokens[2]
+        value = capacitance(tokens[3])
+        if a not in matrix:
+            raise ValueError('Reference coupling has no declared conductor: ' + a)
+        if b in matrix[a]:
+            value = (matrix[a][b] + value) / 2
+        matrix[a][b] = value
+        if b in matrix:
+            matrix[b][a] = value
+    matches = [row for name, row in matrix.items() if logical(name) == master]
+    if len(matches) != 1:
+        raise ValueError('Reference master missing or ambiguous')
+    reference = {logical(name): value for name, value in matches[0].items()}
+    if len(reference) != len(matches[0]):
+        raise ValueError('Ambiguous logical reference columns')
+    shared = (set(values) & set(reference)) - {master}
+    denominator = math.fsum(abs(reference[name]) for name in shared)
+    if not shared or denominator <= 0:
+        raise ValueError('No positive reference mass on shared coupling entries')
+    if not all(math.isfinite(values[name]) for name in shared):
+        raise ValueError('Nonfinite output coupling')
+    numerator = math.fsum(abs(abs(values[name]) - abs(reference[name])) for name in shared)
+    return {'normalized_l1_percent': 100 * numerator / denominator,
+            'shared_offdiagonal_entries': len(shared),
+            'reference_mass_F': denominator,
+            'scope': 'Off-diagonal entries present in both reference and output; magnitudes, self excluded.'}
+
+
+def evaluate(geom, output, reference=None, master=None, coupling_reference=None):
     layout_master, expected = geometry(Path(geom))
     if master is not None and master != layout_master:
         raise ValueError('Configured master disagrees with layout capacitance task')
@@ -34,6 +89,8 @@ def evaluate(geom, output, reference=None, master=None):
     # Preserve historical JSON fields while exposing the paper terminology.
     row.update({key.replace('s24_', 'cer_', 1): value
                 for key, value in list(row.items()) if key.startswith('s24_')})
+    if coupling_reference is not None:
+        row['coupling_error'] = coupling_error(values, master, coupling_reference)
     return row
 
 
@@ -42,9 +99,11 @@ def main():
     ap.add_argument('--geometry', type=Path, required=True)
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--reference', type=float)
+    ap.add_argument('--coupling-reference', type=Path,
+                    help='Optional DSPF/SPICE reference for v7 coupling-magnitude NL1; does not affect CER')
     ap.add_argument('--json', type=Path, required=True)
     a = ap.parse_args()
-    result = evaluate(a.geometry, a.output, a.reference)
+    result = evaluate(a.geometry, a.output, a.reference, coupling_reference=a.coupling_reference)
     dump(a.json, result)
     import json
     print(json.dumps({k:v for k,v in result.items() if not k.startswith('s24_')}, indent=2))

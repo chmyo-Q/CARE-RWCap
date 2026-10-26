@@ -51,5 +51,29 @@
     "selected_epoch": "Original RF_RISK/run.json",
     "deployment": "paper_final_aligned_20260919 frozen model inventory",
     "limit": "Optimizer/lr are recovered from the archived launcher/source, not recorded in S29_A1_PROTOCOL.json or inferable from best.pt. No optimizer-state replay is claimed."
+  },
+  "post_hoc_sensitivity": {
+    "scope": "Separate single-training-seed validation study; does not replace the main checkpoint or establish its historical selection process.",
+    "refinement_bounds": [
+      0.05,
+      0.1,
+      0.125,
+      0.15,
+      0.2
+    ],
+    "training_seed": 2029,
+    "epochs": 30,
+    "batch_size": 16,
+    "selection_criterion": "Same original FP32 risk-aware validation score; not a deployment metric ranking.",
+    "selected_epochs": {
+      "0.05": 25,
+      "0.10": 25,
+      "0.125": 25,
+      "0.15": 27,
+      "0.20": 30
+    },
+    "deployment_metrics": "Frozen FP16 evaluation on the same ordered 10,000 Poisson validation records.",
+    "relative_span_definition": "100*(maximum-minimum)/value_at_0.125 over bounds 0.10,0.125,0.15.",
+    "release_boundary": "Recorded configuration only; the five retraining checkpoints and full training driver are not bundled."
   }
 }
