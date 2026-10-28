@@ -1,6 +1,6 @@
 # Method
 
-The [overview](figures/overview.png) follows the first neural Gradient transition (CPGR), subsequent Poisson transitions (CAPR), conductor-hit accumulation, and endpoint readout (CER). The released runner evaluates one configured master per invocation and retains its capacitance row. The upstream runtime supplies neural/non-neural path selection, scheduling and stopping behavior.
+The [overview](figures/overview.png), also available as a [vector PDF](figures/overview.pdf), is the author-supplied Fig. 1 of manuscript v8. It follows the first neural Gradient transition (CPGR), subsequent Poisson transitions (CAPR), conductor-hit accumulation, and endpoint readout (CER). These two formats document the same figure and are not runtime inputs. The released runner evaluates one configured master per invocation and retains its capacitance row. The upstream runtime supplies neural/non-neural path selection, scheduling and stopping behavior.
 
 ## CPGR: Conditional Parity Gradient Refinement
 
@@ -128,4 +128,4 @@ The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_
 
 The solver-output pipeline forms logical-conductor rows before CER. For example, archived case10 has 48 physical blocks and eight unique logical output columns. The released parser canonicalizes names but does not sum duplicate physical-fragment columns; the upstream accumulation core remains a binary dependency.
 
-Historical names BPR/S29, Gradient-Joint and strict-S24 correspond to CAPR, CPGR and CER. Current commands use the paper names; small compatibility imports and stored result keys remain to load existing artifacts. See [file compatibility](../models/README.md#file-compatibility).
+Historical names BPR/S29, Gradient-Joint and strict-S24 correspond to CAPR, CPGR and CER. Current imports and commands use the paper names; stored result keys and checkpoint class aliases are retained. See [file compatibility](../models/README.md#file-compatibility).

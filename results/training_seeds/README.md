@@ -29,6 +29,6 @@ The output directory must not already exist. The script uses only the standard l
 - `repeat_results.csv`: all 300 CARE-RWCap repeat-level capacitances/errors and matched baseline values, copied without rounding from the accepted experiment archive.
 - `baseline_runs.csv`: the 100 reused DeepRWCap raw capacitance records.
 - `protocol.json`: intervention, training/solver seeds, selected epochs and comparison boundaries.
-- `case_summary.csv`, `seed_summary.csv`, `aggregate.json`, `SUMMARY.md`: generated from the released records by the command above.
+The command writes `case_summary.csv`, `seed_summary.csv`, `aggregate.json` and `SUMMARY.md` into the chosen output directory. These derived tables are not stored again in this input directory.
 
 The numerical records were checked against the original solver outputs before release. This compact supplement does not contain the original solver logs or the two additional model files. The command independently reaggregates the released capacitance records; it does not rerun all three models. The default inference workflow continues to use the bundled training-seed2029 model. See the [frozen CAPR recipe](../../configs/capr_training_recipe.json) and [release scope](../../docs/EVALUATION.md#available-experiments-and-release-scope).

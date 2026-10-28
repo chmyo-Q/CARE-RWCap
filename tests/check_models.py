@@ -6,13 +6,6 @@ from common import ROOT, dump
 import torch
 from capr.model import CAPRPredictor, load_deeprwcap, DeepRWCapPredictor
 
-# Existing imports must resolve to exactly the same class/objective.
-from bpr.model import BPRPredictor, ResidualFactorizedPredictor
-from bpr.loss import bpr_loss
-from capr.loss import capr_loss
-assert BPRPredictor is CAPRPredictor is ResidualFactorizedPredictor
-assert bpr_loss is capr_loss
-
 torch.set_num_threads(1)
 torch.manual_seed(2029)
 model=CAPRPredictor().eval()

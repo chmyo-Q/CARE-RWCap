@@ -36,6 +36,6 @@ The [recorded recipe](../configs/capr_training_recipe.json) and [method](../docs
 
 Current code uses `CAPRPredictor`, `DeepRWCapPredictor` and `load_deeprwcap` from `capr.model`, with `capr.loss.capr_loss` and `readout.cer.cer_value`. Earlier BPR/S29 and strict-S24 names refer to the same frozen components.
 
-Compatibility imports under `src/bpr/` and `readout/frozen.py`, plus the former `evaluate.py` and `local_validation.py` commands, remain available. New workflows use `evaluate_readout.py` and `evaluate_transitions.py`. The model and state-dict contents are unchanged; older manually written `models/bpr/` and `models/paper_p0/` paths must use `models/capr/` and `models/deeprwcap/`.
+Use `src/capr/` and `src/readout/cer.py`, with `scripts/evaluate_readout.py` for saved solver outputs and `scripts/evaluate_transitions.py` for local mechanisms. The former `bpr` Python package, `readout.frozen`, `scripts/evaluate.py` and `scripts/local_validation.py` have been removed. The former `validation` helper is also removed; use `input_checks` for configuration, plan and counter checks. Update older imports and commands to these current interfaces. Model contents and state-dict keys are unchanged.
 
 Saved arm IDs `p0`, `bpr`, `full` correspond to CLI names `deeprwcap`, `capr`, `care-rwcap`; `--arm bpr` remains accepted. JSON retains equal-valued `s24_*` aliases alongside `cer_*`, and local result keys retain `bpr_*`. These storage names preserve existing readers and bootstrap streams; displayed tables use the current paper names.
