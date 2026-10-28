@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One isolated end-to-end run using the released paper models."""
+"""Run a selected method on one capacitance-extraction case."""
 import argparse
 import json
 from pathlib import Path
@@ -7,13 +7,13 @@ import subprocess
 from common import ROOT, dump, model_paths, runtime_env, check_files
 from evaluate_readout import evaluate
 from input_checks import validate_config, validate_cpgr_counts
-from naming import normalize_arm, CLI_ARMS, ARM_LABELS
+from method_names import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--config', type=Path, default=ROOT/'configs/example.json')
 ap.add_argument('--arm', type=normalize_arm, choices=['p0', 'bpr', 'full'], default='care-rwcap', metavar=CLI_ARMS)
 ap.add_argument('--output', type=Path, required=True, help='New directory; existing directories are never overwritten')
-ap.add_argument('--seed', type=int, help='Override initial solver seed; does not fix asynchronous trajectories')
+ap.add_argument('--seed', type=int, help='Override initial solver seed')
 a = ap.parse_args()
 check_files()
 cfg = json.loads(a.config.read_text(encoding='utf-8'))

@@ -2,7 +2,7 @@
 
 ## Deployment
 
-`deeprwcap/` contains the five TensorRT FP16 models actually used as the paper baseline, in this solver order:
+`deeprwcap/` contains the five TensorRT FP16 baseline models, in this solver order:
 
 1. `PoissonSelector_tensorrt_fp16.jit`
 2. `PoissonPredictor_tensorrt_fp16.jit`
@@ -12,11 +12,11 @@
 
 `capr/PoissonPredictor_tensorrt_fp16.jit` is the final CAPR predictor. CAPR uses this file and shares the other four engines with `deeprwcap/`. CPGR adds no learned checkpoint; it modifies the runtime gradient sampling path.
 
-These files were frozen for the paper's aligned evaluation. They target RTX 4090 / Torch-TensorRT 2.6.0+cu126 / TensorRT 10.7.0. The `.jit` extension does not mean a TensorRT engine is portable across arbitrary hardware or library versions.
+These files were frozen for the paper's aligned evaluation. They target RTX 4090 / Torch-TensorRT 2.6.0+cu126 / TensorRT 10.7.0. Use them with the deployment environment in [INSTALL.md](../docs/INSTALL.md).
 
 ## Provenance
 
-The DeepRWCap models were trained locally with seed 2029 using the DeepRWCap architecture. They are **not** the five official pretrained deployment files from the upstream repository. The DeepRWCap Poisson predictor comes from the completed 200-epoch training run, with its best checkpoint selected at epoch 177; the other four models come from the corresponding verified seed-2029 model archive. Do not substitute the upstream pretrained models while labeling it the bundled paper baseline.
+The bundled DeepRWCap weights were trained locally with seed 2029 using the upstream architectures. The DeepRWCap Poisson predictor comes from the completed 200-epoch training run, with its best checkpoint selected at epoch 177; the other four models come from the corresponding verified seed-2029 model archive.
 
 CAPR is the final S29 RF_RISK model: frozen DeepRWCap anchor, training seed 2029, 30-epoch schedule, validation-selected epoch 25. Its checkpoint, uncompiled TorchScript, and deployed engine are included. The architecture and loss are under `src/capr/`; the training recipe is documented in [METHOD.md](../docs/METHOD.md).
 
@@ -24,9 +24,9 @@ CAPR is the final S29 RF_RISK model: frozen DeepRWCap anchor, training seed 2029
 
 `checkpoints/deeprwcap/` contains the original five `*_best.pt` state dictionaries and their uncompiled `*_best.jit` TorchScript files. `checkpoints/capr/` contains `best.pt` and `PoissonPredictor_best.jit`.
 
-The `.pt` and uncompiled `.jit` files use FP32. They are supplied for inspection and loading, not as silent substitutes for the frozen deployment engines. `tests/check_models.py` demonstrates loading CAPR from source, checking its anchor against DeepRWCap, and comparing it with its uncompiled TorchScript. The remaining DeepRWCap architectures are available in the pinned upstream training source.
+The `.pt` and uncompiled `.jit` files use FP32. They support model inspection and source-level loading; the inference runner loads the FP16 engines. `tests/check_models.py` demonstrates loading CAPR from source, checking its anchor against DeepRWCap, and comparing it with its uncompiled TorchScript. The remaining DeepRWCap architectures are available in the pinned upstream training source.
 
-See [checkpoint lineage](../docs/METHOD.md#checkpoint-lineage) for the training-source boundaries.
+See [checkpoint lineage](../docs/METHOD.md#checkpoint-lineage) for training and checkpoint selection.
 
 ## Recorded CAPR recipe
 
@@ -36,6 +36,6 @@ The [recorded recipe](../configs/capr_training_recipe.json) and [method](../docs
 
 Current code uses `CAPRPredictor`, `DeepRWCapPredictor` and `load_deeprwcap` from `capr.model`, with `capr.loss.capr_loss` and `readout.cer.cer_value`. Earlier BPR/S29 and strict-S24 names refer to the same frozen components.
 
-Use `src/capr/` and `src/readout/cer.py`, with `scripts/evaluate_readout.py` for saved solver outputs and `scripts/evaluate_transitions.py` for local mechanisms. The former `bpr` Python package, `readout.frozen`, `scripts/evaluate.py` and `scripts/local_validation.py` have been removed. The former `validation` helper is also removed; use `input_checks` for configuration, plan and counter checks. Update older imports and commands to these current interfaces. Model contents and state-dict keys are unchanged.
+Use `src/capr/` and `src/readout/cer.py`, with `scripts/evaluate_readout.py` for saved solver outputs and `scripts/evaluate_transitions.py` for local mechanisms. Configuration and plan checks are in `input_checks.py`. Older code should use these current interfaces; checkpoint parameter keys remain unchanged.
 
 Saved arm IDs `p0`, `bpr`, `full` correspond to CLI names `deeprwcap`, `capr`, `care-rwcap`; `--arm bpr` remains accepted. JSON retains equal-valued `s24_*` aliases alongside `cer_*`, and local result keys retain `bpr_*`. These storage names preserve existing readers and bootstrap streams; displayed tables use the current paper names.

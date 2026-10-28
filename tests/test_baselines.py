@@ -1,4 +1,4 @@
-"""CPU baseline orchestration checks using explicitly synthetic solver output."""
+"""Test CPU baseline execution with mock solver outputs."""
 import json
 import os
 from pathlib import Path

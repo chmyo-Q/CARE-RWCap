@@ -1,4 +1,4 @@
-"""Paper-facing names must preserve the archived experiment and statistics."""
+"""Test method aliases and table labels."""
 import json
 from pathlib import Path
 import sys
@@ -8,7 +8,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 from benchmark import make_plan
-from naming import normalize_arm
+from method_names import normalize_arm
 from summarize import save_summary
 
 

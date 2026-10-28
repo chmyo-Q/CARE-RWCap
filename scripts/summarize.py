@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Summarize all planned observations; never present an incomplete batch as a full result."""
+"""Aggregate benchmark outputs and compute paired comparisons."""
 import argparse
 import json
 import math
 from pathlib import Path
 import statistics
 from common import ROOT, dump
-from naming import ARM_LABELS, comparison_label
+from method_names import ARM_LABELS, comparison_label
 from input_checks import validate_plan
-from statistics_report import attribution, workload
+from benchmark_stats import attribution, workload
 from evaluate_readout import evaluate
 
 
@@ -44,7 +44,7 @@ def summarize(directory):
             run=json.loads((path.parent/'run.json').read_text())
             if run['arm']!=item['arm'] or run['configuration']!=item['config']:
                 raise ValueError('Run configuration disagrees with plan')
-            # A stale/edited metrics file must not silently become a paper result.
+            # Re-read solver output before using cached metrics.
             cfg=item['config']
             parsed=evaluate(ROOT/cfg['geometry'],path.parent/'result.out',cfg.get('reference_F'),cfg['master'])
             for k in ['raw_capacitance_F','s24_capacitance_F','raw_self_error_percent','s24_self_error_percent',
@@ -100,7 +100,7 @@ def summarize(directory):
                     's24_difference_vs_p0_s24_pp':macro[arm]['s24_macro_error_percent']-macro['p0']['s24_macro_error_percent'],
                     'relative_change_percent':100*delta/baseline if baseline else None,
                     'seed_block_difference_pp':describe(block_deltas),
-                    'note':'Negative favors this arm. Blocks share initial seeds, not guaranteed common trajectories; no significance claim.'}
+                    'note':'Negative favors this method. Differences are averaged within matched initial-seed blocks.'}
     reference_path=Path(__file__).resolve().parents[1]/'results/reference_public10.json'
     reference_comparison={}
     if complete and plan['cases']==[f'case{i}' for i in range(1,11)] and reference_path.exists():
@@ -115,7 +115,7 @@ def summarize(directory):
         'failed':status.get('failed'),'per_case':per_case,'macro':macro,'differences':differences,
         'historical_comparison':reference_comparison,
         'module_comparisons':module_comparisons,'resources':resources,
-        'scope':'Fixed-benchmark, pointwise seed-block intervals; no multiplicity correction or accuracy pass/fail target. Shared seeds do not imply common trajectories.'}
+        'scope':'Pointwise bootstrap intervals over matched initial-seed blocks on the fixed public benchmark.'}
 
 
 def save_summary(directory,report):

@@ -4,7 +4,7 @@ Six candidate layouts were screened before end-to-end evaluation; five were reta
 
 ## References and screening
 
-[references.csv](references.csv) records FRW-FDM self-capacitances at stopping tolerances 0.005 and 0.0025. Both reference solves use 16 threads and `c_ratio=0.30`, with `p=c` set to the stated tolerance. The final reference is the raw target self term from the 0.0025 result. Discrepancy is `100 * abs(C_0.005 - C_0.0025) / C_0.0025`; retain a layout if this is at most 0.5%. New004 has discrepancy 0.7054% and was excluded before the end-to-end comparison. The records are copied from the preserved reference study, not regenerated. The two-tolerance discrepancy is a consistency check, not a confidence interval or proof of exact capacitance.
+[references.csv](references.csv) records FRW-FDM self-capacitances at stopping tolerances 0.005 and 0.0025. Both reference solves use 16 threads and `c_ratio=0.30`, with `p=c` set to the stated tolerance. The final reference is the raw target self term from the 0.0025 result. Discrepancy is `100 * abs(C_0.005 - C_0.0025) / C_0.0025`; retain a layout if this is at most 0.5%. New004 has discrepancy 0.7054% and was excluded before the end-to-end comparison. The supplied references are the saved estimates from this two-tolerance consistency check.
 
 | Layout | Arrangement | Discrepancy (%) | Retained |
 |---|---|---:|:---:|
@@ -53,6 +53,6 @@ for repeat in {1..10}; do
 done
 ```
 
-This runs 100 formal solves and two excluded warmups. It stops on a failed command; existing results are preserved. Keep all predetermined cases and seeds. Each run records its actual models, command, metrics and configuration.
+This runs 100 formal solves and two excluded warmups. It stops on a failed command; existing results are preserved. Each run saves its models, command, metrics and configuration.
 
-For Table VI, compute each layout's mean and sample SD of `cer_self_error_percent` across its ten repeats; macro-average the five means and report their across-layout sample SD. The archived cohort gave DeepRWCap+CER 1.4334% and CARE-RWCap 1.3346%, with improvements in three of five layouts. Sharing initial seeds does not force identical asynchronous trajectories; new observations can differ. The compact package supplies inputs, references and execution configurations, not the complete historical log archive or a dedicated Table-VI bootstrap/figure entry. Do not feed this directory to the public10 summary command: it does not have that command's plan/status schema or endpoint definition.
+For Table VI, compute each layout's mean and sample SD of `cer_self_error_percent` across its ten repeats; macro-average the five means and report their across-layout sample SD. The archived cohort gave DeepRWCap+CER 1.4334% and CARE-RWCap 1.3346%, with improvements in three of five layouts. Use the per-run `metrics.json` files for these layout statistics. The public10 `summarize.py` command expects a different plan format and readout convention. The shared initial seeds control initialization; asynchronous trajectories can vary between batches.

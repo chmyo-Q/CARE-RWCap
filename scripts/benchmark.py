@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a predetermined public benchmark; default is a small functional check."""
+"""Run the quick or full public10 benchmark."""
 import argparse
 import itertools
 import json
@@ -9,7 +9,7 @@ import subprocess
 import sys
 from common import ROOT, dump, check_files
 from input_checks import validate_plan, validate_config
-from naming import normalize_arm, CLI_ARMS, ARM_LABELS
+from method_names import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ARMS=('p0','bpr','full')
 

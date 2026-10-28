@@ -1,4 +1,4 @@
-"""Guard the published supplement against incomplete or mismatched records."""
+"""Test training-seed aggregation and record consistency."""
 import csv
 import json
 import shutil

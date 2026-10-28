@@ -1,4 +1,4 @@
-"""Reject incomplete or ambiguous experiment specifications before aggregation."""
+"""Validate run configurations, batch plans and CPGR counters."""
 import math
 from pathlib import PurePosixPath
 

@@ -1,8 +1,4 @@
-"""Frozen deployment metric definitions; ported from the validated evaluator.
-
-Only file locations and CLI are adapted. No training, labels or thresholds change.
-GPU imports are kept out of the public CLI's --help and preflight paths.
-"""
+"""Local metrics for Poisson predictions, signed Gradient kernels and face weights."""
 from pathlib import Path
 import ctypes,csv,gzip,hashlib,json
 import numpy as np

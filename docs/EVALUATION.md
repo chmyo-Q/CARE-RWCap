@@ -1,34 +1,34 @@
 # Evaluation
 
-[Installation](INSTALL.md) · [Public10 commands](../benchmarks/public10/README.md) · [Historical results](../results/README.md)
+[Installation](INSTALL.md) · [Public10 commands](../benchmarks/public10/README.md) · [Paper results](../results/README.md)
 
 ## Commands and paths
 
-Run commands from the repository root and choose a new output directory for each invocation. Input and model paths are repository-relative; each run creates its own `models.txt`. The runner manages library paths, clears inherited method switches and preserves an explicit `CUDA_VISIBLE_DEVICES` (otherwise device 0). OMP/MKL threads default to 1, independently of the solver's eight workers.
+Run commands from the repository root. Each invocation creates a new output directory containing its configuration, model list, logs and results. The runner sets library paths and method switches, preserves `CUDA_VISIBLE_DEVICES` when supplied, and otherwise uses GPU 0. OMP/MKL threads default to 1; the FRW solver uses eight workers.
 
-For build or loading errors, inspect `build/compile_*.log` or the run's `console.log` and check the [deployment environment](INSTALL.md#deployment-environment). CPGR runs save projection/selector counters; the smoke workflow checks CUDA status and activation.
+For build errors, inspect `build/compile_*.log`. For runtime errors, start with the run's `console.log` and the [deployment environment](INSTALL.md#deployment-environment).
 
 ## Seed and repetition
 
-The default case1 example uses initial seed **2029** and `-n 8 -p 0.01 -c 0.01 --c-ratio 0.95`. Case7 smoke uses its own configuration with `--c-ratio 0.3`. The initial-seed extension initializes Torch CPU/CUDA generators and the exported solver-core seed before the main program, with a record of the actual initialization.
+The default case1 command uses initial seed **2029** and `-n 8 -p 0.01 -c 0.01 --c-ratio 0.95`. Case7 smoke uses `--c-ratio 0.3`. The seed-control extension initializes the Torch CPU/CUDA generators and solver-core seed before each process starts.
 
-The paper protocol uses ten seed blocks, **2029–2038**, assigning the same initial seed to each case and method in a block. These are solver seeds, distinct from the CAPR training seed. `configs/paper_protocol.json` supplies all case settings, references and the predetermined order; `configs/example.json` supplies the single-run default. The full profile excludes three case8 warmups at seed 2040.
+The paper profile uses seeds **2029–2038**, with the same initial seed for corresponding cases and methods. `configs/paper_protocol.json` contains the case settings and references. Execution follows a fixed shuffled order, preceded by one excluded case8 warmup per method at seed 2040. Training seed and solver seed are separate parameters.
 
-Fixed initial seeds do not fix asynchronous thread scheduling, inference batches or assignment of random draws to paths. Runs need not be bitwise equal, and no universal tolerance guarantees a historical aggregate or ranking. Compare complete batches under fixed models, references, readouts and settings, retaining all predetermined observations. Public10 was used during development and is not an unseen test set.
+Asynchronous thread scheduling and inference batching affect the assignment of random draws to trajectories. Repeated solves can therefore differ with the same initial seed. Use complete repeated batches with the same models, references, settings and readout when comparing methods. Public10 was used during development; it is a fixed benchmark rather than an unseen test set.
 
 ## Metrics
 
-- SelfCapErr (%) = `100 * abs(C / C_ref - 1)`. Raw and CER are retained separately; references affect errors, not estimates or CER activation.
-- The historical main comparison selects DeepRWCap raw, CAPR+CER and CARE-RWCap CER. Macro error equally averages the ten per-case mean errors, each from ten repeats. Within-case sample SD and between-case SD of case means are labeled separately.
-- Walks and hops/walk come from solver output. Approximate steps are their product rounded to an integer; hops/walk is already rounded by the solver.
-- Elapsed and CPU seconds are solver-reported values, excluding wrapper launch/model loading. Memory and CER micro-latency require separate measurement; this evaluator does not infer them from timing.
-- Coupling-magnitude NL1 (%) = `100 * sum(abs(abs(pred_j)-abs(ref_j))) / sum(abs(ref_j))`, using shared off-diagonal entries of the selected-master and reference rows. Exclude self, average within each case, then equally across cases, as in manuscript v8 IV-D.
+- **SelfCapErr (%):** `100 * abs(C / C_ref - 1)`. Each solve retains raw and CER readouts. Reference capacitance is used only to compute error.
+- **Macro error:** equal-weight mean of the per-case mean errors. Each public10 case has ten repeats. Tables distinguish within-case sample SD from the across-case SD of case means.
+- **Workload:** total walks and walk-weighted hops/walk from solver output. Approximate steps are `round(walks * hops_per_walk)`; the reported hops value is already rounded.
+- **Time:** solver-reported elapsed and CPU seconds. Python startup and model loading are outside these values.
+- **Coupling NL1 (%):** `100 * sum(abs(abs(pred_j)-abs(ref_j))) / sum(abs(ref_j))`, over shared off-diagonal entries in the selected-master and reference rows. Average across repeats within each case, then equally across cases.
 
-The default master is case1 `APpolysub`, with reference `1.591776e-14 F` from its DSPF. Smoke uses case7 master `1`. Parser fixtures in `tests/fixtures/` are synthetic readout inputs, not benchmark layouts.
+The main paper endpoints are DeepRWCap raw, CAPR+CER and CARE-RWCap CER. Default case1 uses master `APpolysub` and reference `1.591776e-14 F`; smoke uses case7 master `1`.
 
 ## Optional coupling-entry evaluation
 
-Reuse a saved case1 solve; no additional solver run is needed:
+Calculate coupling error from a saved case1 output:
 
 ```bash
 python scripts/evaluate_readout.py --geometry benchmarks/public10/case1.cap3d \
@@ -37,50 +37,55 @@ python scripts/evaluate_readout.py --geometry benchmarks/public10/case1.cap3d \
   --json runs/full_case1/coupling_metrics.json
 ```
 
-Read `coupling_error.normalized_l1_percent`. JSON also records shared-entry count and reference mass. DSPF/SPICE parsing follows upstream benchmark conventions; missing masters and zero shared reference mass are errors. Omitting the flag preserves the default raw/CER readout.
+The result is `coupling_error.normalized_l1_percent`; the JSON also includes the shared-entry count and reference mass. DSPF/SPICE parsing follows the upstream benchmark format. The command requires a reference master with positive coupling mass on the shared entries.
 
 ## Smoke workflow
 
-`scripts/smoke_test.py` checks readout, model loading, kernels and sampler integration, then runs DeepRWCap and CARE-RWCap with `configs/smoke_case7.json`. It requires actual CPGR activation and CER application, and saves its summary in the output directory. This is a functional check, not a paper-table or training reproduction.
+`scripts/smoke_test.py` checks model loading, CPGR kernels and sampler integration, then runs DeepRWCap and CARE-RWCap on case7. It checks CUDA status, CPGR activation and CER application, and writes a summary to the chosen output directory.
 
 ## Public10 batch evaluation
 
-The [batch runner](../benchmarks/public10/README.md) supplies all ten inputs and references and the original three-arm order. `--plan-only` needs no GPU. The summary reparses every `result.out`, checks saved metrics/configurations, rejects duplicate or incomplete grids and withholds complete-table comparisons if records are missing or inconsistent. There is no automatic retry or result-based exclusion. Zero Gradient visits remain valid for cases that do not use that branch.
+The [batch runner](../benchmarks/public10/README.md) runs all ten inputs in the prescribed three-method order. `--plan-only` writes the schedule without loading Torch or starting a solve. The summary rereads `result.out` and compares it with the saved configuration and metrics. Incomplete batches retain their outputs and coverage information; complete-table statistics require the full planned grid. A solver failure stops the batch for inspection.
 
-## Component attribution and record checks
+## Paired comparisons
 
-The summary reports same-readout contrasts alongside whole-method endpoints. Raw/CER are dependent readouts of one solve; the three-arm protocol measures CPGR conditional on CAPR, not standalone CPGR or the full CAPR-by-CPGR interaction. The [historical reference](../results/README.md) identifies its original cohort; cross-cohort percentage scaling cannot supply a missing observation.
+`benchmark_stats.py` averages error differences across the fixed cases within each initial-seed block, then computes percentile bootstrap intervals using 20,000 resamples and NumPy PCG64 seed 20260919. Intervals are pointwise, unadjusted across comparisons, and use initial-seed blocks as the sampling unit. A single block has no interval estimate. Shared initial seeds control initialization, not common trajectories.
 
-For each initial seed, differences are averaged equally over fixed cases. `statistics_report.py` uses NumPy PCG64 seed 20260919 and 20,000 percentile bootstrap resamples of those blocks; one-seed intervals are omitted. Intervals are pointwise, with no multiple-comparison adjustment or automatic significance claim. Stream indices reproduce the original successive draws: CAPR-CER vs DeepRWCap-raw 0, CARE vs DeepRWCap-raw 1, CARE vs CAPR-CER 2, other contrasts 3. Each stream block contains `draws × number_of_seeds` indices. Matched initial seeds do not imply common random paths.
+The original bootstrap stream indices are retained: CAPR-CER vs DeepRWCap-raw uses 0, CARE vs DeepRWCap-raw uses 1, CARE vs CAPR-CER uses 2, and other contrasts use 3. Each stream block contains `draws × number_of_seeds` indices.
 
-For FRW-AGF/MicroWalk/FRW-FDM, use the separate [CPU baseline instructions](CPU_BASELINES.md). Those programs do not load neural engines or apply CER.
+Raw and CER are readouts of the same solve. The three solver configurations provide CPGR comparisons conditional on CAPR; standalone DeepRWCap+CPGR requires a separate solver arm. The [results table](../results/README.md) lists the configurations observed in the original batch.
 
 ## CAPR training-seed supplement
 
-[Saved records](../results/training_seeds/README.md) cover training seeds 2029, 2039 and 2053, with 100 CARE solves per model and reused historical DeepRWCap records matched by case/initial seed. This is not a contemporaneous control or common-path study. The CPU-only command recomputes errors from capacitances and generates CSV/JSON/Markdown tables; derived tables are not duplicated in the repository. The extra two models are not bundled.
+[Training-seed records](../results/training_seeds/README.md) contain 100 CARE solves for each of seeds 2029, 2039 and 2053. The DeepRWCap control is reused from the original experiment and matched by case and initial solver seed. The summary command reads capacitance records and generates CSV/JSON/Markdown tables. The across-model SD includes residual FRW variation.
 
-## Validation status
+## Tested workflows
 
-The numerical implementation was checked on 2026-10-11 in the supported Ubuntu 24.04 / RTX 4090 environment: source builds, environment checks, model/anchor equivalence, all CPGR masks and compensation, sampler integration, case1 examples, case7 smoke and nine case1 quick solves passed. The CARE-only batch completed 100 formal solves plus one excluded warmup; GGFT generated two records per kind. Local FP16 evaluation matched the frozen summary. These GPU records precede the interface/documentation cleanup; no new GPU solves were run for that cleanup.
+Builds, environment checks, model loading, CPGR kernels, sampler integration, case1 examples, case7 smoke and the nine-run quick profile were tested on Ubuntu 24.04 / RTX 4090. Local FP16 evaluation used the original transition datasets. GGFT was tested with two records per kind. The current CPU suite has 40 tests; all 11 CLI help entries and the public10 plans also pass.
 
-The later CARE-only macro was **0.9053%** versus historical **0.8110%**. Its raw error was **0.8507%**; CER increased error by 0.0546 pp (pointwise 95% seed-block interval [0.0117, 0.0994] pp). No contemporaneous DeepRWCap/CAPR control was run, so this batch cannot re-estimate paired gains. CPGR's incremental end-to-end effect has varied between checked batches. Functional success does not establish stable accuracy gains.
+The original 300-run results and the later 100-run CARE-only check used the same model files:
 
-After cleanup on 2026-10-28, all **40 CPU tests**, **11 CLI help entries**, source/checkpoint loading and the coupling command passed. The original main/additional execution orders were unchanged. Current readers reproduced the 300 main and 100 additional saved outputs; 40,000 local paired observations and the training-seed records reaggregated correctly. Coupling NL1 was 1.7500% for DeepRWCap, 1.7297% for CAPR and 1.6228% for CARE. The five-bound post-hoc archive supports the stated ≤1.26% neighborhood span; it does not establish the historical main hyperparameter selection process.
+| Batch | DeepRWCap raw (%) | CARE raw (%) | CARE CER (%) |
+|---|---:|---:|---:|
+| Original three-method experiment | 0.9278 | 0.8356 | 0.8110 |
+| Later CARE-only check | — | 0.8507 | 0.9053 |
 
-A fresh full neural installation, complete retraining/export, other GPUs and dedicated memory studies remain unvalidated. CPU tests also passed previously in a separate NumPy-only environment. Full traditional-baseline batches were not rerun for release checks; earlier AGF/MicroWalk single-case checks completed, while an earlier FDM check stopped before completion. No Docker workflow is supplied.
+In the later check, CER increased macro error by 0.0546 pp, with a pointwise 95% seed-block interval of [0.0117, 0.0994] pp. Its DeepRWCap/CAPR control arms were not rerun. CPGR's incremental end-to-end gain has also varied across checked batches; the original ordering is not consistent across all batches.
 
-## Available experiments and release scope
+These checks used the configured research server. A fresh neural dependency installation, other GPUs and full training/export have not been tested. Earlier AGF/MicroWalk single-case checks completed; an earlier FDM check stopped before completion. Dedicated memory measurements use a separate protocol from the runner's timing output.
 
-| Manuscript experiment | Released workflow | Requirements or boundary |
+## Experiment commands
+
+| Experiment | Command or material | Inputs and outputs |
 |---|---|---|
-| Table I: public10 | `benchmark.py --profile paper`; optional `baselines.py` | Ten inputs/references included; three neural arms. |
-| Table II: CPGR; Table III: CAPR | `evaluate_transitions.py` | Original external reference datasets required; see [local evaluation](DATA.md#local-transition-evaluation). |
-| Table IV: components | Three solver arms, raw/CER from each | Six observed readouts; no standalone DeepRWCap+CPGR or complete factorial interaction. |
-| Table V: time/workload | `run.py`, `summarize.py` | Solver time, walks, weighted hops; no memory/latency study. |
-| Table VI: additional layouts | [Six candidates, screening and five configs](../benchmarks/additional/README.md) | Ten seeds per arm, both use CER; original references included; no dedicated Table-VI bootstrap/figure entry. |
-| Training seeds | `summarize_training_seeds.py` | Reaggregates saved observations; extra models/inference driver not bundled. |
-| Coupling NL1 | `evaluate_readout.py --coupling-reference` | Saved output plus bundled DSPF/SPICE reference. |
-| Visited activation | CPGR counters | No dedicated trajectory-aggregation entry. |
-| τ sensitivity | `capr_training_recipe.json` | Settings only; extra training driver/data/checkpoints not bundled. |
+| Public10 SelfCapErr | `benchmark.py --profile paper` | Bundled layouts, references and models; raw/CER errors, workload and timing. |
+| Local CPGR/CAPR | `evaluate_transitions.py` | Original external transition datasets; [data instructions](DATA.md#local-transition-evaluation). |
+| Component comparisons | Three solver methods with raw/CER readouts | Six configurations listed in [results](../results/README.md). |
+| Additional layouts | [Five layout configs and execution schedule](../benchmarks/additional/README.md) | Bundled inputs and references; both methods use CER. |
+| Training-seed tables | `summarize_training_seeds.py` | Saved capacitance CSVs; extra seed-2039/2053 model files are external to this package. |
+| Coupling NL1 | `evaluate_readout.py --coupling-reference` | Saved solver output and DSPF/SPICE reference. |
+| CPU baselines | `baselines.py` | Bundled upstream executables; [instructions](CPU_BASELINES.md). |
+| Gradient activation | CPGR counters in run outputs | Projection and face-selector counts. |
+| τ sensitivity | `capr_training_recipe.json` | Five-bound post-hoc settings and checkpoint-selection epochs. |
 
-The release includes core refinement source, 18 model files, inputs/references, configurations and tests. Solver cores and CPU baselines are upstream binary dependencies. Each invocation evaluates one master; the overview depicts repetition across masters. Full training data/driver, all research logs and paper-figure scripts are outside this release. GGFT generates new data rather than recreating archived labels. See [model interfaces](../models/README.md#file-compatibility) for migration from the removed legacy imports/commands.
+Each inference command evaluates one master conductor. The code provides CAPR architecture/loss, CPGR, CER and their deployment workflows. The training recipe records the settings used for CAPR; the complete training/export driver and transition datasets are external. Solver execution uses the prebuilt DeepRWCap runtime. See [models](../models/README.md) for checkpoint files and Python interfaces.

@@ -1,4 +1,4 @@
-"""Repository-relative configuration and the frozen Linux runtime environment."""
+"""Shared paths, model files and runtime environment."""
 import json
 import os
 from pathlib import Path

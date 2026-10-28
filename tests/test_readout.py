@@ -1,4 +1,4 @@
-"""Exercise readout decisions without a reference influencing activation."""
+"""Test capacitance parsing and CER selection."""
 import sys
 import unittest
 import tempfile

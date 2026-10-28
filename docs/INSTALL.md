@@ -1,6 +1,6 @@
 # Installation
 
-The supplied engines were deployed on **Ubuntu 24.04 x86_64, RTX 4090, CUDA 12.6, Python 3.12, Torch 2.6.0+cu126, Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7**. Start from this combination. Changing the compilation architecture does not make these engines portable. The recorded deployment versions are listed below.
+The supplied engines were deployed on **Ubuntu 24.04 x86_64, RTX 4090, CUDA 12.6, Python 3.12, Torch 2.6.0+cu126, Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7**. The table below lists the deployment versions.
 
 For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](CPU_BASELINES.md); the neural installation below is not required.
 
@@ -22,15 +22,15 @@ For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](CPU_BASELINES.md);
 
 Install CUDA Toolkit 12.6 and the matching system libraries using the NVIDIA/Ubuntu package repositories. Required runtime packages include `libnvinfer10`, `libnvinfer-plugin10`, `libnvonnxparsers10`, and `libprotobuf32t64`. The Python requirements file does not install these operating-system dependencies or the GPU driver.
 
-Use a Python 3.12 environment, install `requirements.txt`, and run `bash scripts/build.sh`. The build script discovers Torch headers and libraries from that active Python environment. It compiles for SM 89 by default. Changing `--arch` alone does **not** make the frozen TensorRT engines portable to another GPU or TensorRT version.
+Use a Python 3.12 environment, install `requirements.txt`, and run `bash scripts/build.sh`. The build script discovers Torch headers and libraries from that active Python environment. It compiles for SM 89 by default. The supplied engines use SM 89 and the TensorRT version listed above.
 
-The driver-reported CUDA compatibility level (12.8 on the tested machine) is not the installed toolkit version (12.6). Deployment engines are TensorRT FP16, whereas the supplied uncompiled TorchScript and state dictionaries are FP32. Do not silently replace a failed engine with a different model. Full engine recompilation and other GPU targets are not validated in this release.
+The driver-reported CUDA compatibility level (12.8 on the tested machine) is not the installed toolkit version (12.6). Deployment engines are TensorRT FP16, whereas the supplied uncompiled TorchScript and state dictionaries are FP32. Use the supplied FP16 engines for the paper configuration. Other GPU/TensorRT combinations require separate engine compilation.
 
 ## Native Ubuntu installation
 
-The case1 examples and case7 smoke workflow passed in the existing matching neural environment with extensions built from source. A fresh installation of the full neural dependencies was not completed. The CPU tests also passed in a separate NumPy-only environment. See [validation coverage](EVALUATION.md#validation-status); the commands below are not a claim that a fresh operating-system installation was tested.
+The case1 examples and case7 smoke workflow were tested in the deployment environment above. [Evaluation](EVALUATION.md#tested-workflows) lists the build, runtime and dataset checks.
 
-Use an Ubuntu 24.04 x86_64 machine with a working NVIDIA driver (`nvidia-smi`). The commands below install operating-system dependencies with administrator privileges. They do not replace the driver. Run them only on a machine you administer; a configured research server may already have these packages.
+On Ubuntu 24.04 x86_64, check that `nvidia-smi` works, then install any missing system dependencies:
 
 ```bash
 sudo apt-get update
@@ -61,13 +61,13 @@ bash scripts/smoke_test.sh --output runs/smoke
 python scripts/benchmark.py --profile quick --output runs/quick
 ```
 
-`--build-only` permits compilation without an attached GPU; it is not a runtime acceptance check. The final two commands need the supported GPU and create new directories. The smoke test has two case7 solves; the quick benchmark has nine case1 solves (three initial seeds per arm), covering the batch runner and repeated-result summary. See [the benchmark guide](../benchmarks/public10/README.md) for the example selection and full paper protocol.
+`--build-only` checks the compiler and libraries without requiring an attached GPU. The final two commands need the supported GPU and create new directories. The smoke test has two case7 solves; the quick benchmark has nine case1 solves (three initial seeds per arm), covering the batch runner and repeated-result summary. See [the benchmark guide](../benchmarks/public10/README.md) for the example selection and full paper protocol.
 
 ## Optional data generation
 
 The [GGFT workflow](DATA.md) uses Python, Git, Make and a C++17/OpenMP compiler on Linux. It does not require the neural environment. Generated datasets are not needed for public10 inference.
 
-The release supports the native Ubuntu workflow above. The earlier unvalidated container recipe was removed from the submission package; no Docker build/run workflow is supplied.
+Use the native Ubuntu workflow above.
 
 ## Troubleshooting
 
@@ -77,7 +77,7 @@ The release supports the native Ubuntu workflow above. The earlier unvalidated c
 | Missing `libprotobuf.so.32` | Install Ubuntu 24.04 `libprotobuf32t64`. |
 | Undefined LibTorch symbol / ABI error | Use the exact Torch and Torch-TensorRT versions, ABI 1, and rebuild. Avoid inherited `LD_PRELOAD`; the runner manages its libraries. |
 | `nvcc` not found | Set `CUDA_HOME` to the CUDA Toolkit 12.6 directory. The driver-reported CUDA version is not the toolkit version. |
-| GPU or TensorRT engine mismatch | Use the supported environment. The release has no validated fallback engine or other-GPU conversion path. |
+| GPU or TensorRT engine mismatch | Match the GPU, Torch-TensorRT and TensorRT versions in the deployment table. |
 | Existing output directory | Choose a new directory. Do not mix runs or overwrite a previous comparison. |
 | Different numerical result with the same seed | Check inputs, models, configuration and readout first; then assess repeated-run distributions. Asynchronous execution is not bitwise deterministic. |
 

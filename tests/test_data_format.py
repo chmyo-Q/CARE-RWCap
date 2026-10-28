@@ -1,4 +1,4 @@
-"""Check the GGFT file boundary without invoking the numerical solver."""
+"""Test GGFT headers and record layout."""
 from pathlib import Path
 import struct
 import sys

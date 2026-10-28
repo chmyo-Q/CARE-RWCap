@@ -33,7 +33,7 @@ E[ sign((Pg)_J) * rho * f(J) ] = sum_j (Pg)_j f(j) / ||g||_1,
     J ~ |Pg| / ||Pg||_1.
 ```
 
-This identity explains the compensation factor relative to the original kernel normalization. It does not imply the projected prediction equals the exact physical kernel, nor guarantee a lower end-to-end error for every layout. If the projection is zero, the implementation retains the original sampling proposal and sets its compensating weight to zero. With no eligible symmetry, the kernel and correction are unchanged (`rho=1`).
+The identity gives the conditional expectation under projected-kernel sampling. End-to-end error also depends on the subsequent transitions and conductor endpoints. If the projection is zero, the implementation retains the original sampling proposal and sets its compensating weight to zero. With no eligible symmetry, the kernel and correction are unchanged (`rho=1`).
 
 The production extension interposes the pinned `DNNSolverGrad` methods using `LD_PRELOAD`. The legacy environment names `S29_GRADIENT_PARITY_ENABLE` and `S29_GRADIENT_JOINT_ENABLE` are preserved for compatibility; the public runner enables both for CPGR. CPGR is not enabled in the `deeprwcap` and `capr` arms. This mechanism requires the shipped upstream C++ ABI.
 
@@ -72,15 +72,15 @@ batch_loss = mean(L) + 0.5 * mean(largest ceil(0.25 * batch_size) values of L)
 
 The six probes on the `[-1,1]²` grid are `x`, `y`, `xy`, `cos(πx)`, `cos(πy)`, and `cos(πx)cos(πy)`. Each is centered and normalized by its maximum absolute value. `src/capr/loss.py` implements these expressions, including the log clamps used during training.
 
-The validation selection score is **different from the training tail loss**:
+Validation uses the following checkpoint-selection score:
 
 ```
 mean(K) + 10 mean(A) + 2 mean(T) + 0.5 * (q95(K) + 10 q95(A))
 ```
 
-The final recipe uses 100,000 Poisson samples, face-zero targets `abs(kernel)+1e-10` normalized to unit sum, a 90,000/10,000 split using NumPy PCG64 permutation with seed 20260805, and training seed 2029. Adapter optimization uses AdamW (learning rate 3e-4, weight decay 1e-6), batch size 16, 30 epochs, gradient norm clipping at 1, and cosine decay to 5e-6. Epoch shuffling uses a Torch generator seeded with `2029 + epoch`; worker count is 0. Validation selects epoch 25. Full training data and the training driver are not bundled.
+The final recipe uses 100,000 Poisson samples, face-zero targets `abs(kernel)+1e-10` normalized to unit sum, a 90,000/10,000 split using NumPy PCG64 permutation with seed 20260805, and training seed 2029. Adapter optimization uses AdamW (learning rate 3e-4, weight decay 1e-6), batch size 16, 30 epochs, gradient norm clipping at 1, and cosine decay to 5e-6. Epoch shuffling uses a Torch generator seeded with `2029 + epoch`; worker count is 0. Validation selects epoch 25. The training settings are listed in the recipe below.
 
-The fixed local evaluation uses the deployed engines. The archived CAPR training settings are recorded in [capr_training_recipe.json](../configs/capr_training_recipe.json). The source-FP32 to deployed-FP16 paths differ numerically for DeepRWCap and CAPR; deployment-level gains should not all be attributed to the residual adapter without a precision-controlled comparison.
+The fixed local evaluation uses the deployed engines. The archived CAPR training settings are recorded in [capr_training_recipe.json](../configs/capr_training_recipe.json). Local evaluation uses the FP16 deployment engines. FP32 checkpoint and FP16 engine outputs can differ numerically.
 
 ## CER: Conditional Endpoint Re-estimation
 
@@ -93,7 +93,7 @@ The solver must provide an already aggregated logical-conductor row. Extract the
 - If all conditions hold, read the self capacitance as that absolute coupling sum.
 - Otherwise retain the raw self capacitance and report the fallback reason.
 
-The evaluator rejects nonfinite matrices and missing/nonpositive master self capacitance. It does not use the reference capacitance to activate CER. The readout arithmetic is preserved for valid, unique logical rows. The parser now rejects duplicate logical columns and duplicate master blocks instead of silently overwriting them; it does not sum physical-fragment entries. Re-evaluation of all 300 archived valid outputs confirmed unchanged raw and CER capacitances.
+The parser requires finite values, a positive master self term and unique logical columns/master blocks. The solver provides the aggregated row; CER uses only that row and the layout conductor set. Reference capacitance is used when computing error.
 
 For a parsed row with a finite positive raw self term, the exact applicability rule can be written as:
 
@@ -106,13 +106,13 @@ CER applies iff:
     and sum(abs(coupling[j]) for j in S) > 0
 ```
 
-The input-validation stage rejects duplicate logical records and nonfinite values before this gate. Thus an all-zero coupling row uses the raw fallback, whereas a malformed/nonfinite row is an error. These are different outcomes. The archived valid paper outputs do not require relaxing either check.
+The input-validation stage rejects duplicate logical records and nonfinite values before this gate. Thus an all-zero coupling row uses the raw fallback, whereas a malformed/nonfinite row is an error.
 
 ## Checkpoint lineage
 
-The bundled DeepRWCap baseline uses upstream architectures with **locally trained seed-2029 weights**, not the official upstream pretrained files. Its Poisson predictor was selected at epoch 177 of a completed 200-epoch run; the other four predictors/selectors come from the corresponding archived model set. Their full local training histories and data are not bundled. Upstream training defaults are not a substitute for those local records.
+The DeepRWCap baseline uses the upstream architectures and locally trained seed-2029 weights. Its Poisson predictor was selected at epoch 177 of a completed 200-epoch run; the other four predictors/selectors come from the corresponding archived model set. See [models](../models/README.md) for the included weights and deployment files.
 
-The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_seed2029_30e_20260909_180652`. Its training recipe comes from the archived launcher, implementation and run metadata. The released state dictionary, uncompiled TorchScript, FP16 engine and anchor were checked against the original aligned-batch files. The [recipe JSON](../configs/capr_training_recipe.json) is metadata, not a training entry point. Its post-hoc sensitivity section records the five refinement bounds and validation-selected epochs. The original main model remains fixed; the later validation sweep does not establish that the historical main bound was selected by that sweep. See [model files](../models/README.md) for deployment order and inspectable artifacts.
+The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_seed2029_30e_20260909_180652`. Its training recipe comes from the archived launcher, implementation and run metadata. The released state dictionary, uncompiled TorchScript, FP16 engine and anchor were checked against the original aligned-batch files. The [recipe JSON](../configs/capr_training_recipe.json) records the optimizer, data split and selection rule. Its post-hoc sensitivity section records the five refinement bounds and validation-selected epochs. The sensitivity sweep was performed after the main model was fixed. See [model files](../models/README.md) for deployment order and inspectable artifacts.
 
 ## Manuscript-to-source map
 
@@ -126,6 +126,6 @@ The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_
 | SelfCapErr, Eq. (28) | `scripts/evaluate_readout.py` |
 | Local Gradient metrics, Eqs. (29)–(30) | `scripts/transition_metrics.py`: `kernel_rows`, `summarize_kernel` |
 
-The solver-output pipeline forms logical-conductor rows before CER. For example, archived case10 has 48 physical blocks and eight unique logical output columns. The released parser canonicalizes names but does not sum duplicate physical-fragment columns; the upstream accumulation core remains a binary dependency.
+The solver-output pipeline forms logical-conductor rows before CER. For example, archived case10 has 48 physical blocks and eight unique logical output columns. The parser reads these logical-conductor columns; physical-block accumulation takes place in the upstream solver.
 
 Historical names BPR/S29, Gradient-Joint and strict-S24 correspond to CAPR, CPGR and CER. Current imports and commands use the paper names; stored result keys and checkpoint class aliases are retained. See [file compatibility](../models/README.md#file-compatibility).

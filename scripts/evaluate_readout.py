@@ -100,7 +100,7 @@ def main():
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--reference', type=float)
     ap.add_argument('--coupling-reference', type=Path,
-                    help='Optional DSPF/SPICE reference for coupling-magnitude NL1; does not affect CER')
+                    help='DSPF/SPICE reference for coupling-magnitude NL1')
     ap.add_argument('--json', type=Path, required=True)
     a = ap.parse_args()
     result = evaluate(a.geometry, a.output, a.reference, coupling_reference=a.coupling_reference)

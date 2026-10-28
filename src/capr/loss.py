@@ -1,4 +1,4 @@
-"""Final CAPR loss and validation selection rule; no dataset/training driver."""
+"""CAPR training loss and checkpoint-selection score."""
 import math
 import torch
 

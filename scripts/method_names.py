@@ -1,4 +1,4 @@
-"""Paper names at the user interface; stable IDs in archived run records."""
+"""Map CLI method names to saved arm IDs and table labels."""
 import re
 
 ARM_LABELS = {
@@ -17,5 +17,5 @@ def normalize_arm(value):
 
 
 def comparison_label(value):
-    # Render after statistics are computed: archived keys also select RNG streams.
+    # Keep stored IDs for bootstrap streams; map labels for display.
     return re.sub(r'\b(p0|bpr|full)\b', lambda m: ARM_LABELS[m.group()], value)

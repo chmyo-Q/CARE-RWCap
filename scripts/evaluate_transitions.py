@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate frozen local transitions using existing external reference datasets."""
+"""Evaluate CAPR and CPGR on local transition reference data."""
 import argparse
 import hashlib
 import json
@@ -22,7 +22,7 @@ def preflight(data_dir,modules,config):
     for name in required:
         p=data_dir/(name+'.bin')
         if not p.is_file():
-            raise FileNotFoundError(f'{p} is required. Reference datasets are not bundled; see docs/DATA.md#local-transition-evaluation.')
+            raise FileNotFoundError(f'{p} is required. Set --data-dir to the original reference files; see docs/DATA.md#local-transition-evaluation.')
         if p.stat().st_size!=config['data_bytes'][name]:raise ValueError('Dataset size mismatch: '+name)
         h=hashlib.sha256()
         with p.open('rb') as f:

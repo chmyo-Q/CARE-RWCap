@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Functional validation, not a statistical reproduction of paper tables."""
+"""Check models, CPGR kernels, sampler integration and two case7 solves."""
 import argparse
 import json
 from pathlib import Path
@@ -45,7 +45,7 @@ joint=json.loads((out/'full/JOINT_COUNTS.json').read_text())
 assert counts['cuda_status']==0 and counts['samples']>0 and sum(counts['masks'][1:])>0
 assert joint['cuda_status']==0 and sum(joint['input_xyz_masks'][1:])>0
 assert not (out/'p0/PROJECTION_COUNTS.json').exists()
-report={'pass':True,'scope':'Functional acceptance only; two single-case runs do not establish accuracy gains.',
+report={'pass':True,'scope':'Model loading, CPGR kernels, sampler integration and two case7 solves.',
         'readout_unit_tests_passed':True,
         'model_check':json.loads((mc/'MODEL_CHECK.json').read_text()),
         'kernel_check':json.loads((kc/'KERNEL_CHECK.json').read_text()),

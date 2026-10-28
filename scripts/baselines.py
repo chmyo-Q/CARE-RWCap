@@ -33,7 +33,7 @@ def make_plan(method, profile='quick', workers=16):
             'binary': f'third_party/deeprwcap/baselines/rwcap_{method}',
             'workers': workers, 'seeds': seeds, 'cases': [c['case'] for c in cases], 'runs': runs,
             'endpoint': 'raw selected-master SelfCapErr; CER not applied',
-            'seed_policy': 'Request upstream --seed; no guarantee of deterministic parallel trajectories.',
+            'seed_policy': 'Initial seed passed through upstream --seed; parallel scheduling can vary.',
             'failure_policy': 'Stop and preserve outputs; no automatic retry or exclusion.'}
 
 
@@ -112,7 +112,7 @@ def summarize(output, plan):
               'mean_total_walks_across_cases': sum(r['walks'] for r in rows)/len(plan['seeds']),
               'walk_weighted_hops_per_walk': sum(r['walks']*r['hops_per_walk'] for r in rows)/sum(r['walks'] for r in rows),
               'mean_total_steps_approx_across_cases': sum(r['total_steps_approx'] for r in rows)/len(plan['seeds']),
-              'scope': 'This batch only. Raw readout; no CER, peak-memory measurement or automatic speedup claim.'}
+              'scope': 'Raw capacitance readout with solver timing and workload for this batch.'}
     table(output/'per_run.csv', rows)
     table(output/'per_case.csv', per_case)
     dump(output/'summary.json', report)

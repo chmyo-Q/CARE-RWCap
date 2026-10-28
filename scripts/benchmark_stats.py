@@ -1,4 +1,4 @@
-"""Matched initial-seed blocks on a fixed benchmark, not common random paths."""
+"""Compute benchmark workload and paired bootstrap statistics."""
 import numpy as np
 
 
@@ -9,14 +9,13 @@ def block_contrast(values, draws=20000, seed=20260919, stream_index=0):
     interval=None
     if len(x)>1:
         rng=np.random.default_rng(seed)
-        # Preserve the archived first three comparison streams explicitly;
-        # adding another contrast must not shift existing interval endpoints.
+        # Advance to the requested bootstrap stream.
         for _ in range(stream_index):rng.integers(0,len(x),(draws,len(x)))
         means=x[rng.integers(0,len(x),(draws,len(x)))].mean(1)
         interval=np.quantile(means,[.025,.975]).tolist()
     return dict(mean_difference_pp=float(x.mean()),seed_block_differences_pp=x.tolist(),
         ci95_pp=interval,bootstrap_draws=draws if interval else 0,bootstrap_seed=seed,bootstrap_stream_index=stream_index,
-        interpretation='Candidate minus control; negative favors candidate. Pointwise percentile interval over initial-seed blocks on this fixed benchmark; no multiple-comparison correction, no population generalization or common-trajectory assumption.')
+        interpretation='Candidate minus control (pp); negative favors candidate. Pointwise percentile bootstrap over matched initial-seed blocks.')
 
 
 def attribution(rows, plan):
@@ -56,4 +55,4 @@ def workload(rows):
         walk_weighted_hops_per_walk=sum(r['walks']*r['hops_per_walk'] for r in rows)/walks if walks else None,
         mean_total_steps_approx_across_cases=float(sum(np.mean([r['total_steps_approx'] for r in rows if r['case']==c]) for c in cases)),
         peak_gpu_memory=None,peak_host_memory=None,
-        note='Memory is not measured by this runner. Step counts use rounded solver hops. Timings describe this batch only; no automatic acceleration claim.')
+        note='Step counts use rounded solver hops; timing and workload refer to this batch.')

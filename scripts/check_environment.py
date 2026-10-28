@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the supported frozen-engine environment before compiling or running."""
+"""Check compiler, libraries and GPU requirements."""
 import platform
 import subprocess
 import sys

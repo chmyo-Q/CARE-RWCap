@@ -1,4 +1,4 @@
-"""CPU-only scheduling/statistics tests with explicitly synthetic observations."""
+"""Test scheduling and aggregation with mock benchmark outputs."""
 import copy
 import json
 from pathlib import Path
@@ -23,7 +23,7 @@ class BenchmarkTest(unittest.TestCase):
         dump(directory/'status.json',{'state':'completed','failed':None})
         for item in plan['runs']:
             d=directory/item['directory'];d.mkdir(parents=True)
-            # All numbers are artificial; no solver or performance claim.
+            # Mock capacitance values for scheduler and summary tests.
             v=1.0 if item['arm']=='p0' else .8
             cfg=item['config'];master,nets=geometry(ROOT/cfg['geometry']);ref=cfg['reference_F']
             text=[f'Master {master}',f'Capacitance on {master} = {ref*(1+v/100):.17g}']

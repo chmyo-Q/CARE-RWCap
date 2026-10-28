@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute the archived CAPR training-seed supplement, without a solver/GPU."""
+"""Generate CAPR training-seed tables from saved capacitance records."""
 import argparse
 import csv
 import json
@@ -125,7 +125,7 @@ def main():
         lines.append(f"| {r['training_seed']} | {r['macro_selfcaperr_percent']:.7f} | {r['delta_pp']:+.7f} | {r['relative_change_percent']:+.4f} | {r['wins']}/{r['cases']} |")
     lines += ['', f"Mean +/- sample SD (n=3): {aggregate['mean_macro_selfcaperr_percent']:.7f} +/- {aggregate['sample_sd_macro_selfcaperr_percent']:.7f}%.",
         '', aggregate['comparison']+'. '+aggregate['uncertainty']+'.',
-        '', 'This command reaggregates released capacitance records; it does not rerun inference or reparse original solver logs.']
+        '', 'Tables recomputed from the saved capacitance records.']
     (args.output/'SUMMARY.md').write_text('\n'.join(lines)+'\n', encoding='utf-8')
     print(json.dumps(aggregate, indent=2))
 
