@@ -26,7 +26,7 @@ When comparing methods, keep model set, solver settings, inputs, reference value
 - The aligned three-arm table used DeepRWCap raw, CAPR + CER, and CAPR + CPGR + CER. Its mean is the unweighted mean of the ten per-case mean errors (each case has ten repetitions). Case-to-case standard deviation and within-case repeat variation are different statistics and must be labeled separately.
 - Walks and hops/walk come from the solver's output. Approximate steps are their product, rounded to an integer; hops/walk is already rounded by the solver.
 - Elapsed and CPU seconds are values reported by the solver. They are not measurements of Python launch, model loading, or the complete wrapper wall time.
-- Coupling-magnitude NL1 (%) = `100 * sum(abs(abs(pred_j)-abs(ref_j))) / sum(abs(ref_j))`, over off-diagonal entries shared by the selected-master output and its reference row. Self is excluded. The optional readout flag below computes this metric without another solve. Average run values within each benchmark, then equally across benchmarks, as in v7 IV-D.
+- Coupling-magnitude NL1 (%) = `100 * sum(abs(abs(pred_j)-abs(ref_j))) / sum(abs(ref_j))`, over off-diagonal entries shared by the selected-master output and its reference row. Self is excluded. The optional readout flag below computes this metric without another solve. Average run values within each benchmark, then equally across benchmarks, as in manuscript v8, Section IV-D.
 - The minimal evaluator does not measure GPU memory or CER microbenchmark latency; these require dedicated protocols and are not inferred from solver timing.
 
 The default example reference is the frozen total self-capacitance for master `APpolysub` from public `case1.dspf` (`1.591776e-14 F`). The separate smoke configuration retains master `1` and its public case7 reference. References are used only for error computation. Parser fixtures under `tests/fixtures/` are synthetic readout inputs, not physical benchmark geometries.
@@ -42,7 +42,7 @@ python scripts/evaluate_readout.py --geometry benchmarks/public10/case1.cap3d \
   --json runs/full_case1/coupling_metrics.json
 ```
 
-`coupling_error.normalized_l1_percent` uses v7's reference-covered off-diagonal magnitude metric. The JSON also records the number of shared entries and reference mass. This option does not change raw/CER estimates or applicability. DSPF/SPICE reference parsing follows the upstream benchmark conventions. Missing reference masters or zero shared reference mass are rejected rather than reported as zero error. Default readout behavior is unchanged when the flag is absent.
+`coupling_error.normalized_l1_percent` uses the manuscript's reference-covered off-diagonal magnitude metric. The JSON also records the number of shared entries and reference mass. This option does not change raw/CER estimates or applicability. DSPF/SPICE reference parsing follows the upstream benchmark conventions. Missing reference masters or zero shared reference mass are rejected rather than reported as zero error. Default readout behavior is unchanged when the flag is absent.
 
 ## Smoke workflow
 
@@ -114,10 +114,10 @@ On 2026-10-16, the six additional-layout inputs, two-tolerance reference screeni
 
 The case7 smoke configuration now reads the public10 input and reference directly. Its redundant copies were removed after byte-for-byte identity checks; case, seed, master, reference capacitance, solver settings and both operators are unchanged.
 
-## Manuscript v7 alignment
+## Manuscript alignment
 
-Updated 2026-10-26: method order and formula references now follow CPGR (6–14), CAPR (15–24), CER (25–27), and metrics (28–30); the author-supplied overview matches v7 Fig. 1. The reference-magnitude coupling reader was checked on all 300 original outputs: DeepRWCap 1.7500%, CAPR 1.7297%, CARE-RWCap 1.6228%. Reading these saved results is not a new solver experiment.
+Checked on 2026-10-28 against manuscript v8: method order and formula references follow CPGR (6-14), CAPR (15-24), CER (25-27), and metrics (28-30). The author-supplied overview matches Fig. 1. The reference-magnitude coupling reader agrees with independent calculations on all 300 original outputs: DeepRWCap 1.7500%, CAPR 1.7297%, CARE-RWCap 1.6228%. The additional-layout reader matches all 100 original outputs, and 40,000 saved local observations reproduce the local summaries.
 
-All 40 current CPU tests, 13 CLI help entries, source/checkpoint loading and the new coupling command passed. The earlier Linux/RTX 4090 neural checks remain the GPU verification record; this documentation and optional readout update did not run new GPU solves or retrain any model.
+All 40 CPU tests, 13 CLI help entries, source/checkpoint loading and the coupling command passed. The original and released execution orders agree. These checks re-read saved results; no model training or new GPU solves were performed. The earlier Linux/RTX 4090 neural checks remain the GPU verification record.
 
 The five-bound post-hoc validation archive supports the stated 1.26% maximum neighborhood span. It does not retroactively establish how the original main hyperparameter was chosen. The three-arm archive still supplies no standalone DeepRWCap+CPGR arm; the released observed-configurations table does not substitute a cross-cohort estimate for that missing observation.

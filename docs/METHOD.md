@@ -116,7 +116,7 @@ The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_
 
 ## Manuscript-to-source map
 
-| TCAD manuscript v7 definition | Source |
+| TCAD manuscript v8 definition | Source |
 |---|---|
 | CPGR projection, Eqs. (6)–(9) | `cpp/cpgr/projection.cu` |
 | CPGR contribution, Eqs. (10)–(14) | `cpp/cpgr/projection.cu`, `sampler.cpp`; paper `beta_f` is code `ratio` |

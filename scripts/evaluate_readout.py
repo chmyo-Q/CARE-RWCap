@@ -9,7 +9,7 @@ from readout.cer import cer_value
 
 
 def coupling_error(values, master, reference_source):
-    """Reference-covered off-diagonal magnitude NL1, in percent (v7 IV-D).
+    """Reference-covered off-diagonal magnitude NL1, in percent (manuscript IV-D).
 
     DSPF/SPICE loading follows DeepRWCap's public run_script.py conventions,
     including ground naming and averaging a repeated reciprocal entry.
@@ -100,7 +100,7 @@ def main():
     ap.add_argument('--output', type=Path, required=True)
     ap.add_argument('--reference', type=float)
     ap.add_argument('--coupling-reference', type=Path,
-                    help='Optional DSPF/SPICE reference for v7 coupling-magnitude NL1; does not affect CER')
+                    help='Optional DSPF/SPICE reference for coupling-magnitude NL1; does not affect CER')
     ap.add_argument('--json', type=Path, required=True)
     a = ap.parse_args()
     result = evaluate(a.geometry, a.output, a.reference, coupling_reference=a.coupling_reference)

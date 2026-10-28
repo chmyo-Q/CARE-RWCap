@@ -1,6 +1,6 @@
 # Additional layouts
 
-Six candidate layouts were screened before end-to-end evaluation; five were retained. These are the layouts of Table VI and Fig. 4 of manuscript v4. `new004` remains included to document the reference-screening exclusion and has no end-to-end configuration.
+Six candidate layouts were screened before end-to-end evaluation; five were retained. These are the layouts of Table VI and Fig. 4 of manuscript v8. `new004` remains included to document the reference-screening exclusion and has no end-to-end configuration.
 
 ## References and screening
 
