@@ -25,6 +25,6 @@ These six readouts come from three solver configurations: DeepRWCap, CAPR and CA
 
 ## Run records
 
-The reference above identifies the original 300-run batch. A later CARE-only batch using the same models gave 0.9053% CER error; its control arms were not rerun. CPGR's incremental gain has varied across checked batches.
+The reference above identifies the original 300-run batch.
 
 The [training-seed records](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/results/training_seeds/README.md) identify their own evaluation batch and reused baseline.
