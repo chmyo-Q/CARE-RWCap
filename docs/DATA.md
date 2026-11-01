@@ -120,6 +120,6 @@ Outputs include `protocol.json`, `status.json`, `summary.json`, `summary.md` and
 
 The Markdown summary includes mean/Q95/Q99 KL, Action MSE, relative changes and TV for CAPR; strict-active per-head and pooled NL2, improvement percentages and reference/raw/refined parity for CPGR; and the single effective-face-mass NL1 measure for weight compensation. The pooled NL2 uses active-count weighting (473 and 476 in the archived reference), not an equal-weight average of the two head means. A negative relative change denotes a reduction; the paper's reduction column uses the opposite sign.
 
-See [validation status](EVALUATION.md#tested-workflows) for the checks on the original reference files.
+See [installation check](EVALUATION.md#installation-check) for the checks on the original reference files.
 
 Local activation uses each head's canonical validation states as the denominator. Solver-visited activation uses Gradient calls collected during FRW solving.

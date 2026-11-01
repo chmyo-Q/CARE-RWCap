@@ -28,7 +28,7 @@ The driver-reported CUDA compatibility level (12.8 on the tested machine) is not
 
 ## Native Ubuntu installation
 
-The case1 examples and case7 smoke workflow were tested in the deployment environment above. [Evaluation](EVALUATION.md#tested-workflows) lists the build, runtime and dataset checks.
+The case1 examples and case7 smoke workflow were tested in the deployment environment above. [Evaluation](EVALUATION.md#installation-check) lists the build, runtime and dataset checks.
 
 On Ubuntu 24.04 x86_64, check that `nvidia-smi` works, then install any missing system dependencies:
 

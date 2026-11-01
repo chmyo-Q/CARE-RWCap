@@ -59,20 +59,9 @@ Raw and CER are readouts of the same solve. The three solver configurations prov
 
 [Training-seed records](../results/training_seeds/README.md) contain 100 CARE solves for each of seeds 2029, 2039 and 2053. The DeepRWCap control is reused from the original experiment and matched by case and initial solver seed. The summary command reads capacitance records and generates CSV/JSON/Markdown tables. The across-model SD includes residual FRW variation.
 
-## Tested workflows
+## Installation check
 
-The deployment workflow uses Ubuntu 24.04 and RTX 4090. Run the CPU tests and case7 smoke command in the README to check an installation.
-
-The original 300-run results and the later 100-run CARE-only check used the same model files:
-
-| Batch | DeepRWCap raw (%) | CARE raw (%) | CARE CER (%) |
-|---|---:|---:|---:|
-| Original three-method experiment | 0.9278 | 0.8356 | 0.8110 |
-| Later CARE-only check | — | 0.8507 | 0.9053 |
-
-In the later check, CER increased macro error by 0.0546 pp, with a pointwise 95% seed-block interval of [0.0117, 0.0994] pp. Its DeepRWCap/CAPR control arms were not rerun. CPGR's incremental end-to-end gain has also varied across checked batches; the original ordering is not consistent across all batches.
-
-The installation was checked on the configured research server. Other GPUs and a fresh full dependency installation require separate validation.
+Use the CPU tests and case7 smoke command in the README to check an installation. The deployment environment is listed in [INSTALL.md](INSTALL.md#deployment-environment).
 
 ## Experiment commands
 

@@ -34,4 +34,4 @@ The paper profile uses the same ten public inputs and reference self-capacitance
 
 Each run keeps `result.out`, `result.log`, `console.log`, its command/configuration and raw `metrics.json`. A completed batch writes `per_run.csv`, `per_case.csv`, `summary.json` and `summary.md`: raw SelfCapErr, sample SD over repeats, equal-case macro mean, walks, weighted hops/walk and solver elapsed/CPU seconds. Reference values only enter evaluation. **CER is not applied to traditional baselines.** Outputs contain capacitance errors, workload and solver timing.
 
-For runtime comparisons, run the methods on the same machine and report their thread counts. See [validation status](EVALUATION.md#tested-workflows) for the tested workflows.
+For runtime comparisons, run the methods on the same machine and report their thread counts. See [installation check](EVALUATION.md#installation-check) for the tested workflows.
