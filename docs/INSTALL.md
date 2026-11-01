@@ -2,7 +2,7 @@
 
 The supplied engines were deployed on **Ubuntu 24.04 x86_64, RTX 4090, CUDA 12.6, Python 3.12, Torch 2.6.0+cu126, Torch-TensorRT 2.6.0+cu126 and TensorRT 10.7**. The table below lists the deployment versions.
 
-For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](CPU_BASELINES.md); the neural installation below is not required.
+For CPU-only FRW-AGF/MicroWalk/FRW-FDM use [CPU_BASELINES.md](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/docs/CPU_BASELINES.md); the neural installation below is not required.
 
 ## Deployment environment
 
@@ -65,7 +65,7 @@ python scripts/benchmark.py --profile quick --output runs/quick
 
 ## Optional data generation
 
-The [GGFT workflow](DATA.md) uses Python, Git, Make and a C++17/OpenMP compiler on Linux. It does not require the neural environment. Generated datasets are not needed for public10 inference.
+The [GGFT workflow](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/docs/DATA.md) uses Python, Git, Make and a C++17/OpenMP compiler on Linux. It does not require the neural environment. Generated datasets are not needed for public10 inference.
 
 Use the native Ubuntu workflow above.
 
@@ -82,3 +82,16 @@ Use the native Ubuntu workflow above.
 | Different numerical result with the same seed | Check inputs, models, configuration and readout first; then assess repeated-run distributions. Asynchronous execution is not bitwise deterministic. |
 
 Dependency references: [CUDA 12.6 installation](https://docs.nvidia.com/cuda/archive/12.6.3/cuda-installation-guide-linux/index.html), [PyTorch previous versions](https://pytorch.org/get-started/previous-versions/).
+
+## Optional research tools
+
+The research archive matches release `v0.1.0-core`. Install the archive linked in the README into this checkout. It adds these commands:
+
+| Command | Purpose | Requirements |
+|---|---|---|
+| `python scripts/baselines.py --help` | FRW-AGF, MicroWalk, FRW-FDM | Linux CPU; bundled supplemental executables |
+| `python scripts/generate_data.py --help` | GGFT data generation | Pinned upstream checkout, Make and C++ compiler |
+| `python scripts/evaluate_transitions.py --help` | CAPR/CPGR local evaluation | Deployment GPU environment and original external reference datasets |
+| `python scripts/summarize_training_seeds.py --output outputs/training_seeds` | Generate training-seed tables | Saved records in the archive; Python standard library |
+
+The archive restores the original repository-relative paths. The default run, public10 benchmark and smoke commands work without this archive. Three FP32 files remain in the main package for the smoke model check; the archive supplies the remaining nine. See the supplemental DATA and CPU_BASELINES guides after extraction.

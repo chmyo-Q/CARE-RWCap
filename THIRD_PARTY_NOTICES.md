@@ -14,11 +14,11 @@ CARE-RWCap uses the prebuilt DeepRWCap solver and libraries in `third_party/deep
 
 ## Optional GGFT data generation
 
-`scripts/generate_data.py` uses an external DeepRWCap checkout at revision [9cb7fc6](https://github.com/THU-numbda/deepRWCap/tree/9cb7fc69ed5fb54ce03be6fa8556402e10451be6). GGFT and its Eigen dependency are built from that checkout. Retain the upstream and Eigen notices when using or redistributing those sources. See [the generation instructions](docs/DATA.md).
+`scripts/generate_data.py` uses an external DeepRWCap checkout at revision [9cb7fc6](https://github.com/THU-numbda/deepRWCap/tree/9cb7fc69ed5fb54ce03be6fa8556402e10451be6). GGFT and its Eigen dependency are built from that checkout. Retain the upstream and Eigen notices when using or redistributing those sources. See [the generation instructions](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/docs/DATA.md).
 
 ## Traditional CPU baselines
 
-`third_party/deeprwcap/baselines/rwcap_agf`, `rwcap_microwalk` and `rwcap_fdm` are copied unchanged from DeepRWCap revision [9cb7fc6](https://github.com/THU-numbda/deepRWCap/tree/9cb7fc69ed5fb54ce03be6fa8556402e10451be6), directory `executable/baselines/`. They retain the same upstream MIT license at `third_party/deeprwcap/LICENSE`. This baseline revision differs from the neural-runtime revision listed above.
+The optional research package includes `third_party/deeprwcap/baselines/rwcap_agf`, `rwcap_microwalk` and `rwcap_fdm` are copied unchanged from DeepRWCap revision [9cb7fc6](https://github.com/THU-numbda/deepRWCap/tree/9cb7fc69ed5fb54ce03be6fa8556402e10451be6), directory `executable/baselines/`. They retain the same upstream MIT license at `third_party/deeprwcap/LICENSE`. This baseline revision differs from the neural-runtime revision listed above.
 
 ## concurrentqueue
 

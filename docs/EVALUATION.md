@@ -57,7 +57,7 @@ Raw and CER are readouts of the same solve. The three solver configurations prov
 
 ## CAPR training-seed supplement
 
-[Training-seed records](../results/training_seeds/README.md) contain 100 CARE solves for each of seeds 2029, 2039 and 2053. The DeepRWCap control is reused from the original experiment and matched by case and initial solver seed. The summary command reads capacitance records and generates CSV/JSON/Markdown tables. The across-model SD includes residual FRW variation.
+[Training-seed records](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/results/training_seeds/README.md) contain 100 CARE solves for each of seeds 2029, 2039 and 2053. The DeepRWCap control is reused from the original experiment and matched by case and initial solver seed. The summary command reads capacitance records and generates CSV/JSON/Markdown tables. The across-model SD includes residual FRW variation.
 
 ## Installation check
 
@@ -68,13 +68,15 @@ Use the CPU tests and case7 smoke command in the README to check an installation
 | Experiment | Command or material | Inputs and outputs |
 |---|---|---|
 | Public10 SelfCapErr | `benchmark.py --profile paper` | Bundled layouts, references and models; raw/CER errors, workload and timing. |
-| Local CPGR/CAPR | `evaluate_transitions.py` | Original external transition datasets; [data instructions](DATA.md#local-transition-evaluation). |
+| Local CPGR/CAPR | `evaluate_transitions.py` | Original external transition datasets; [data instructions](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/docs/DATA.md#local-transition-evaluation). |
 | Component comparisons | Three solver methods with raw/CER readouts | Six configurations listed in [results](../results/README.md). |
 | Additional layouts | [Five layout configs and execution schedule](../benchmarks/additional/README.md) | Bundled inputs and references; both methods use CER. |
 | Training-seed tables | `summarize_training_seeds.py` | Saved capacitance CSVs; extra seed-2039/2053 model files are external to this package. |
 | Coupling NL1 | `evaluate_readout.py --coupling-reference` | Saved solver output and DSPF/SPICE reference. |
-| CPU baselines | `baselines.py` | Bundled upstream executables; [instructions](CPU_BASELINES.md). |
+| CPU baselines | `baselines.py` | Bundled upstream executables; [instructions](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/docs/CPU_BASELINES.md). |
 | Gradient activation | CPGR counters in run outputs | Projection and face-selector counts. |
 | τ sensitivity | `capr_training_recipe.json` | Five-bound post-hoc settings and checkpoint-selection epochs. |
 
 Each inference command evaluates one master conductor. The code provides CAPR architecture/loss, CPGR, CER and their deployment workflows. The training recipe records the settings used for CAPR; the complete training/export driver and transition datasets are external. Solver execution uses the prebuilt DeepRWCap runtime. See [models](../models/README.md) for checkpoint files and Python interfaces.
+
+Research-tool commands in this guide require the [optional archive](INSTALL.md#optional-research-tools). Core commands are run.py, benchmark.py, summarize.py and evaluate_readout.py.

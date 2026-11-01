@@ -22,7 +22,7 @@ CAPR is the final S29 RF_RISK model: frozen DeepRWCap anchor, training seed 2029
 
 ## Inspectable checkpoint files
 
-`checkpoints/deeprwcap/` contains the original five `*_best.pt` state dictionaries and their uncompiled `*_best.jit` TorchScript files. `checkpoints/capr/` contains `best.pt` and `PoissonPredictor_best.jit`.
+The main package retains CAPR best.pt, CAPR uncompiled TorchScript and the DeepRWCap Poisson predictor state dictionary for tests/check_models.py. The [optional research archive](../docs/INSTALL.md#optional-research-tools) supplies the other nine FP32 baseline files.
 
 The `.pt` and uncompiled `.jit` files use FP32. They support model inspection and source-level loading; the inference runner loads the FP16 engines. `tests/check_models.py` demonstrates loading CAPR from source, checking its anchor against DeepRWCap, and comparing it with its uncompiled TorchScript. The remaining DeepRWCap architectures are available in the pinned upstream training source.
 
@@ -30,7 +30,7 @@ See [checkpoint lineage](../docs/METHOD.md#checkpoint-lineage) for training and 
 
 ## Recorded CAPR recipe
 
-The [recorded recipe](../configs/capr_training_recipe.json) and [method](../docs/METHOD.md) identify the frozen RF_RISK training settings and deployment lineage. The public default remains training seed 2029, selected epoch 25. The [three-seed supplement](../results/training_seeds/README.md) publishes capacitance records for the previously selected seed-2029/2039/2053 models (epochs 25/17/19); the extra two model files are not included in this compact result supplement.
+The [recorded recipe](../configs/capr_training_recipe.json) and [method](../docs/METHOD.md) identify the frozen RF_RISK training settings and deployment lineage. The public default remains training seed 2029, selected epoch 25. The [three-seed supplement](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/results/training_seeds/README.md) publishes capacitance records for the previously selected seed-2029/2039/2053 models (epochs 25/17/19); the extra two model files are not included in this compact result supplement.
 
 ## File compatibility
 

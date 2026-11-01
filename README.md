@@ -2,7 +2,7 @@
 
 **Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction**
 
-[Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](docs/EVALUATION.md) · [Data](docs/DATA.md)
+[Installation](docs/INSTALL.md) · [Method](docs/METHOD.md) · [Evaluation](docs/EVALUATION.md) · [Data](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/docs/DATA.md)
 
 CARE-RWCap refines local transitions and endpoint readout in the [DeepRWCap](https://github.com/THU-numbda/deepRWCap) floating random walk solver. It includes the refinement code, pretrained models, ten public benchmarks, five additional evaluation layouts and scripts for running the experiments.
 
@@ -65,13 +65,16 @@ Each solve saves both raw and CER readouts. The quick profile runs case1 with th
 
 The [model guide](models/README.md) describes the FP16 engines and FP32 checkpoints. The baseline weights were trained locally using the DeepRWCap architectures. [Paper results](results/README.md) identifies the original experiment and readout definitions.
 
-Additional commands:
+## Optional research tools
 
-- [Five additional layouts](benchmarks/additional/README.md)
-- [Local transition evaluation and GGFT data generation](docs/DATA.md)
-- [FRW-AGF, MicroWalk and FRW-FDM](docs/CPU_BASELINES.md)
-- [Training-seed result tables](results/training_seeds/README.md)
-- [Coupling error and evaluation settings](docs/EVALUATION.md)
+The [research-tools package](https://github.com/chmyo-Q/CARE-RWCap/releases/download/v0.1.0-core/CARE-RWCap-research-tools.zip) adds CPU baselines, GGFT generation, local transition evaluation, training-seed records and the remaining FP32 baseline checkpoints. Install it into the repository root:
+
+```bash
+curl -fL https://github.com/chmyo-Q/CARE-RWCap/releases/download/v0.1.0-core/CARE-RWCap-research-tools.zip -o /tmp/CARE-RWCap-research-tools.zip
+unzip /tmp/CARE-RWCap-research-tools.zip -d .
+```
+
+See [Installation](docs/INSTALL.md#optional-research-tools) for the added commands and data requirements.
 
 ## Code layout
 
