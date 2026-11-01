@@ -1,6 +1,6 @@
 # Paper reference results
 
-`reference_public10.json` contains the original experiment from 2026-09-19: ten cases, seeds 2029–2038 and ten repeats per case/method. The file was generated from the saved solver outputs.
+`reference_public10.json` contains the paper experiment: ten cases, seeds 2029–2038 and ten repeats per case/method. The file was generated from the saved solver outputs.
 
 | Arm | Readout used in the historical main comparison | Macro SelfCapErr (%) |
 |---|---|---:|
@@ -24,7 +24,5 @@ The JSON includes per-case raw/CER means and repeat SDs. Macro means equally wei
 These six readouts come from three solver configurations: DeepRWCap, CAPR and CAPR+CPGR. The original batch has no standalone DeepRWCap+CPGR arm. Error reductions use unrounded means.
 
 ## Run records
-
-The reference above identifies the original 300-run batch.
 
 The [training-seed records](https://github.com/chmyo-Q/CARE-RWCap/blob/6cb1510b7a0a7c8996afd31d1683d7580e020694/results/training_seeds/README.md) identify their own evaluation batch and reused baseline.
