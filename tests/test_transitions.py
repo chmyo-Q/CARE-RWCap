@@ -8,7 +8,7 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from common import ROOT
 from evaluate_transitions import preflight, render_summary
-from input_checks import validate_cpgr_counts
+from _internal.input_checks import validate_cpgr_counts
 
 
 class LocalInputTests(unittest.TestCase):

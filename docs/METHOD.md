@@ -124,7 +124,7 @@ The final CAPR checkpoint is the RF_RISK adapter selected at epoch 25 in `train_
 | CAPR objective, Eqs. (22)–(24) | `src/capr/loss.py`: `components`, `capr_loss`; separate `validation_score` |
 | CER, Eqs. (25)–(27) | `src/readout/parser.py`, `cer.py`; full applicability gate above |
 | SelfCapErr, Eq. (28) | `scripts/evaluate_readout.py` |
-| Local Gradient metrics, Eqs. (29)–(30) | `scripts/transition_metrics.py`: `kernel_rows`, `summarize_kernel` |
+| Local Gradient metrics, Eqs. (29)–(30) | `scripts/_internal/transition_metrics.py`: `kernel_rows`, `summarize_kernel` |
 
 The solver-output pipeline forms logical-conductor rows before CER. For example, archived case10 has 48 physical blocks and eight unique logical output columns. The parser reads these logical-conductor columns; physical-block accumulation takes place in the upstream solver.
 

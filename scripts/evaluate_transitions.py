@@ -99,7 +99,7 @@ def main():
         dump(out/'status.json',{'state':'preflight_complete','gpu_executed':False});return
     started=time.time();dump(out/'status.json',{'state':'running'})
     try:
-        import transition_metrics as ev
+        from _internal import transition_metrics as ev
         ev.DATA=data
         os.chdir(out)
         ev.torch.set_num_threads(4);ev.torch.set_grad_enabled(False)

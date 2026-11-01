@@ -61,7 +61,7 @@ Raw and CER are readouts of the same solve. The three solver configurations prov
 
 ## Tested workflows
 
-Builds, environment checks, model loading, CPGR kernels, sampler integration, case1 examples, case7 smoke and the nine-run quick profile were tested on Ubuntu 24.04 / RTX 4090. Local FP16 evaluation used the original transition datasets. GGFT was tested with two records per kind. The current CPU suite has 40 tests; all 11 CLI help entries and the public10 plans also pass.
+The deployment workflow uses Ubuntu 24.04 and RTX 4090. Run the CPU tests and case7 smoke command in the README to check an installation.
 
 The original 300-run results and the later 100-run CARE-only check used the same model files:
 
@@ -72,7 +72,7 @@ The original 300-run results and the later 100-run CARE-only check used the same
 
 In the later check, CER increased macro error by 0.0546 pp, with a pointwise 95% seed-block interval of [0.0117, 0.0994] pp. Its DeepRWCap/CAPR control arms were not rerun. CPGR's incremental end-to-end gain has also varied across checked batches; the original ordering is not consistent across all batches.
 
-These checks used the configured research server. A fresh neural dependency installation, other GPUs and full training/export have not been tested. Earlier AGF/MicroWalk single-case checks completed; an earlier FDM check stopped before completion. Dedicated memory measurements use a separate protocol from the runner's timing output.
+The installation was checked on the configured research server. Other GPUs and a fresh full dependency installation require separate validation.
 
 ## Experiment commands
 

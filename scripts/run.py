@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 from common import ROOT, dump, model_paths, runtime_env, check_files
 from evaluate_readout import evaluate
-from input_checks import validate_config, validate_cpgr_counts
-from method_names import normalize_arm, CLI_ARMS, ARM_LABELS
+from _internal.input_checks import validate_config, validate_cpgr_counts
+from _internal.method_names import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--config', type=Path, default=ROOT/'configs/example.json')

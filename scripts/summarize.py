@@ -6,9 +6,9 @@ import math
 from pathlib import Path
 import statistics
 from common import ROOT, dump
-from method_names import ARM_LABELS, comparison_label
-from input_checks import validate_plan
-from benchmark_stats import attribution, workload
+from _internal.method_names import ARM_LABELS, comparison_label
+from _internal.input_checks import validate_plan
+from _internal.benchmark_stats import attribution, workload
 from evaluate_readout import evaluate
 
 

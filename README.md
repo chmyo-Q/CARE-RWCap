@@ -61,51 +61,32 @@ python scripts/benchmark.py --profile paper --output runs/public10
 
 Each solve saves both raw and CER readouts. The quick profile runs case1 with three seeds; the paper profile runs all ten cases with seeds 2029–2038. See [benchmark commands](benchmarks/public10/README.md) for arm selection and outputs, and [evaluation](docs/EVALUATION.md) for metric definitions.
 
-## Models and reference results
+## Models and experiments
 
-The ten layouts/references and settings are in `benchmarks/public10/` and `configs/paper_protocol.json`. [Models](models/README.md) describes all deployment engines and FP32 checkpoints. The baseline weights were trained locally using the DeepRWCap architectures. CAPR replaces only the Poisson predictor; CPGR and CER add no trained checkpoint.
+The [model guide](models/README.md) describes the FP16 engines and FP32 checkpoints. The baseline weights were trained locally using the DeepRWCap architectures. [Paper results](results/README.md) identifies the original experiment and readout definitions.
 
-| Paper configuration | Macro SelfCapErr (%) |
-|---|---:|
-| DeepRWCap, raw | 0.9278 |
-| CAPR + CER | 0.9001 |
-| CARE-RWCap: CAPR + CPGR + CER | 0.8110 |
+Additional commands:
 
-The table summarizes the original 300-run experiment. [Results](results/README.md) includes the raw/CER configurations, and [evaluation](docs/EVALUATION.md#tested-workflows) documents repeated-run variation and the later CARE-only batch.
+- [Five additional layouts](benchmarks/additional/README.md)
+- [Local transition evaluation and GGFT data generation](docs/DATA.md)
+- [FRW-AGF, MicroWalk and FRW-FDM](docs/CPU_BASELINES.md)
+- [Training-seed result tables](results/training_seeds/README.md)
+- [Coupling error and evaluation settings](docs/EVALUATION.md)
 
-## Optional workflows
-
-| Task | Entry and requirements |
-|---|---|
-| Evaluate the five additional layouts | [Inputs, screening and frozen configurations](benchmarks/additional/README.md) |
-| Generate Poisson/Gradient data | [Pinned upstream GGFT workflow](docs/DATA.md); CPU, Git and C++ compiler |
-| Evaluate local CAPR/CPGR mechanisms | [Local transition evaluation](docs/DATA.md#local-transition-evaluation); original external reference datasets and GPU |
-| Compare FRW-AGF, MicroWalk or FRW-FDM | [CPU baselines](docs/CPU_BASELINES.md); bundled upstream Linux x86_64 executables |
-| Compute coupling-entry error from a saved solve | [Optional readout flag](docs/EVALUATION.md#optional-coupling-entry-evaluation); bundled DSPF/SPICE references |
-| Reaggregate training-seed results | [Saved records](results/training_seeds/README.md); CPU-only command below |
-
-```bash
-python scripts/summarize_training_seeds.py --output outputs/training_seed_summary
-```
-
-The three saved training-seed macro errors are 0.8112%, 0.8038%, 0.8414% (mean ± sample SD: 0.8188 ± 0.0199%). The command generates the tables from saved capacitance records; the DeepRWCap control comes from the original experiment.
-
-## Repository structure
+## Code layout
 
 ```text
-src/                       CAPR architecture/loss and CER parser/readout
-cpp/                       CPGR and initial-seed extensions
-models/                    Frozen engines and FP32 checkpoints
-benchmarks/                Public10 and additional-layout inputs/references
-configs/                   Frozen execution and local-evaluation settings
-scripts/                   Build, inference and evaluation entries/helpers
-third_party/deeprwcap/     Upstream runtime, CPU baselines and license
-results/                   Historical reference and training-seed records
-tests/                     CPU/GPU implementation checks
-docs/                      Installation, method, evaluation and data guides
+src/capr/              CAPR model and loss
+src/readout/           CER and capacitance parsing
+cpp/cpgr/              CPGR sampling and kernel projection
+cpp/seed_control/      Solver initialization
+scripts/               Build, run and evaluation commands
+scripts/_internal/     Shared validation and statistics helpers
+models/                Deployment engines and FP32 checkpoints
+benchmarks/            Layouts and reference capacitances
+configs/               Run and validation settings
+third_party/           DeepRWCap runtime and CPU baselines
 ```
-
-See [experiment commands](docs/EVALUATION.md#experiment-commands) for the workflows and datasets used by each evaluation.
 
 ## Citation and license
 

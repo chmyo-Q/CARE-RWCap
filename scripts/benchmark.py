@@ -8,8 +8,8 @@ import random
 import subprocess
 import sys
 from common import ROOT, dump, check_files
-from input_checks import validate_plan, validate_config
-from method_names import normalize_arm, CLI_ARMS, ARM_LABELS
+from _internal.input_checks import validate_plan, validate_config
+from _internal.method_names import normalize_arm, CLI_ARMS, ARM_LABELS
 
 ARMS=('p0','bpr','full')
 
