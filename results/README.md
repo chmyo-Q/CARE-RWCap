@@ -29,7 +29,7 @@ These six readouts come from three solver configurations: DeepRWCap, CAPR and CA
 |---|:---:|:---:|:---:|---:|
 | DeepRWCap + CPGR + CER | Off | On | On | 0.8947 |
 
-Source: author-provided manuscript result. The underlying run records are external to this release and have not been independently checked for this entry. This value is listed separately from the three-arm results above and is not included in `reference_public10.json`.
+Source: manuscript-reported result. This entry is separate from the three-arm reference in `reference_public10.json`.
 
 ## Run records
 
