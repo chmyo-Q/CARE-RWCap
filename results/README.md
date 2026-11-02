@@ -16,8 +16,9 @@ The JSON includes per-case raw/CER means and repeat SDs. Macro means equally wei
 |---|---:|---:|---|
 | DeepRWCap | 0.9278 | 0.00 | Bundled reference |
 | DeepRWCap + CER | 0.9150 | 1.37 | Bundled reference |
-| DeepRWCap + CPGR + CER | 0.8947 | 3.56 | Bundled reference |
+| CPGR | 0.8901 | 4.06 | Bundled reference |
 | CAPR | 0.8720 | 6.00 | Bundled reference |
+| DeepRWCap + CPGR + CER | 0.8947 | 3.56 | Bundled reference |
 | CAPR + CER | 0.9001 | 2.98 | Bundled reference |
 | CAPR + CPGR | 0.8356 | 9.94 | Bundled reference |
 | CARE-RWCap | 0.8110 | 12.58 | Bundled reference |
