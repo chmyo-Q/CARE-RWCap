@@ -12,24 +12,17 @@ The JSON includes per-case raw/CER means and repeat SDs. Macro means equally wei
 
 ## Component configurations
 
-| Configuration | Macro SelfCapErr (%) | Error reduction vs DeepRWCap (%) |
-|---|---:|---:|
-| DeepRWCap | 0.9278 | 0.00 |
-| DeepRWCap + CER | 0.9150 | 1.37 |
-| CAPR | 0.8720 | 6.00 |
-| CAPR + CER | 0.9001 | 2.98 |
-| CAPR + CPGR | 0.8356 | 9.94 |
-| CARE-RWCap | 0.8110 | 12.58 |
+| Configuration | Macro SelfCapErr (%) | Error reduction vs DeepRWCap (%) | Source |
+|---|---:|---:|---|
+| DeepRWCap | 0.9278 | 0.00 | Bundled reference |
+| DeepRWCap + CER | 0.9150 | 1.37 | Bundled reference |
+| DeepRWCap + CPGR + CER | 0.8947 | ? | Manuscript-reported |
+| CAPR | 0.8720 | 6.00 | Bundled reference |
+| CAPR + CER | 0.9001 | 2.98 | Bundled reference |
+| CAPR + CPGR | 0.8356 | 9.94 | Bundled reference |
+| CARE-RWCap | 0.8110 | 12.58 | Bundled reference |
 
-These six readouts come from three solver configurations: DeepRWCap, CAPR and CAPR+CPGR. The original batch has no standalone DeepRWCap+CPGR arm. Error reductions use unrounded means.
-
-## Additional manuscript configuration
-
-| Configuration | CAPR | CPGR | CER | Reported Macro SelfCapErr (%) |
-|---|:---:|:---:|:---:|---:|
-| DeepRWCap + CPGR + CER | Off | On | On | 0.8947 |
-
-Source: manuscript-reported result. This entry is separate from the three-arm reference in `reference_public10.json`.
+Bundled-reference rows are computed from three solver configurations with raw/CER readouts. Their error reductions use unrounded means. `reference_public10.json` contains these bundled-reference results.
 
 ## Run records
 
