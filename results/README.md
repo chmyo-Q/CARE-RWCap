@@ -16,13 +16,13 @@ The JSON includes per-case raw/CER means and repeat SDs. Macro means equally wei
 |---|---:|---:|---|
 | DeepRWCap | 0.9278 | 0.00 | Bundled reference |
 | DeepRWCap + CER | 0.9150 | 1.37 | Bundled reference |
-| DeepRWCap + CPGR + CER | 0.8947 | ? | Manuscript-reported |
+| DeepRWCap + CPGR + CER | 0.8947 | 3.56 | Manuscript-reported |
 | CAPR | 0.8720 | 6.00 | Bundled reference |
 | CAPR + CER | 0.9001 | 2.98 | Bundled reference |
 | CAPR + CPGR | 0.8356 | 9.94 | Bundled reference |
 | CARE-RWCap | 0.8110 | 12.58 | Bundled reference |
 
-Bundled-reference rows are computed from three solver configurations with raw/CER readouts. Their error reductions use unrounded means. `reference_public10.json` contains these bundled-reference results.
+Bundled-reference rows are computed from three solver configurations with raw/CER readouts. Their error reductions use unrounded means. The manuscript-reported row uses 0.8947% and the same baseline. `reference_public10.json` contains these bundled-reference results.
 
 ## Run records
 
