@@ -1,5 +1,5 @@
 {
-  "description": "Paper reference results for ten public benchmarks, with ten repeats per method.",
+  "description": "Public10 reference: three-arm per-case statistics and additional configuration-level means.",
   "models": "Bundled DeepRWCap/CAPR deployment engines; CARE-RWCap adds the bundled CPGR implementation.",
   "seeds": [
     2029,
@@ -614,5 +614,17 @@
         "max": 1.0922298146655685
       }
     }
-  ]
+  ],
+  "component_references": {
+    "deeprwcap_cpgr_raw": {
+      "configuration": "DeepRWCap + CPGR",
+      "readout": "raw",
+      "macro_self_error_percent": 0.8901
+    },
+    "deeprwcap_cpgr_cer": {
+      "configuration": "DeepRWCap + CPGR + CER",
+      "readout": "cer",
+      "macro_self_error_percent": 0.8947
+    }
+  }
 }
