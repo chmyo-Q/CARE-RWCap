@@ -95,7 +95,7 @@ if a.arm == "care-rwcap":
     validate_cpgr_counts(projection, selector)
 result = evaluate(geom, out / "result.out", cfg.get("reference_F"), cfg["master"])
 result.update(
-    case=cfg["case"], arm=a.arm, method=ARM_LABELS[a.arm], initial_seed=cfg["seed"], diagnostics=out
+    case=cfg["case"], arm=a.arm, method=ARM_LABELS[a.arm], initial_seed=cfg["seed"]
 )
 dump(out / "metrics.json", result)
 print(json.dumps({k: v for k, v in result.items() if k not in ("matrix_F", "arm")}, indent=2))
