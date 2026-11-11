@@ -5,10 +5,12 @@ import subprocess
 import sys
 import argparse
 import importlib
+from importlib import metadata
+from types import SimpleNamespace
 import os
 import shutil
 from pathlib import Path
-from common import ROOT, check_files, runtime_env, model_paths
+from common import ROOT, check_files, runtime_env, model_paths, package_directory
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument(
@@ -20,9 +22,14 @@ args = ap.parse_args()
 modules = {}
 for name in ["torch", "torch_tensorrt", "tensorrt"]:
     try:
-        modules[name] = importlib.import_module(name)
+        if args.build_only and name != "torch":
+            distribution = "torch-tensorrt" if name == "torch_tensorrt" else name
+            package_directory(name)
+            modules[name] = SimpleNamespace(__version__=metadata.version(distribution))
+        else:
+            modules[name] = importlib.import_module(name)
     except Exception as exc:
-        print(f"{name}: {exc}. Install prerequisites following docs/INSTALL.md.", file=sys.stderr)
+        print(f"{name}: {exc}. Install prerequisites following docs/REPRODUCE.md.", file=sys.stderr)
 if len(modules) != 3:
     raise SystemExit(1)
 torch, torch_tensorrt, tensorrt = (modules[n] for n in ["torch", "torch_tensorrt", "tensorrt"])
@@ -63,6 +70,9 @@ if platform.system() == "Linux":
         capture_output=True,
     )
     missing = [line.strip() for line in r.stdout.splitlines() if "not found" in line]
+    if args.build_only:
+        # The NVIDIA driver is supplied by the host at GPU runtime, not image build time.
+        missing = [line for line in missing if not line.startswith(("libcuda.so.", "libnvidia-ml.so."))]
     errors.extend(missing)
     if r.returncode:
         errors.append("ldd failed: " + r.stderr.strip())

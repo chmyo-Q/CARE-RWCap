@@ -1,5 +1,6 @@
 """Shared paths, model files and runtime environment."""
 
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -18,6 +19,14 @@ NAMES = [
 
 def dump(path, value):
     Path(path).write_text(json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+
+
+def package_directory(name):
+    """Locate installed headers/libraries without initializing an inference runtime."""
+    spec = importlib.util.find_spec(name)
+    if spec is None or spec.origin is None:
+        raise ModuleNotFoundError(f"Package not found: {name}")
+    return Path(spec.origin).parent
 
 
 def check_files():
@@ -44,7 +53,6 @@ def model_paths(capr):
 
 def runtime_env(cpgr=False, seed=None, diagnostics=None):
     import torch
-    import torch_tensorrt
 
     env = {
         k: v
@@ -56,7 +64,7 @@ def runtime_env(cpgr=False, seed=None, diagnostics=None):
     dirs = [
         ROOT / "third_party/deeprwcap/runtime",
         Path(torch.__file__).parent / "lib",
-        Path(torch_tensorrt.__file__).parent / "lib",
+        package_directory("torch_tensorrt") / "lib",
         cuda / "lib64",
         Path(sys.prefix) / "lib",
     ]

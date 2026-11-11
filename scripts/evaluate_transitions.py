@@ -28,7 +28,7 @@ def preflight(data_dir, modules, config):
         p = data_dir / (name + ".bin")
         if not p.is_file():
             raise FileNotFoundError(
-                f"{p} is required. Set --data-dir to the original reference files; see docs/DATA.md#local-transition-evaluation."
+                f"{p} is required. Set --data-dir to the original reference files; see docs/REPRODUCE.md#local-transition-evaluation."
             )
         if p.stat().st_size != config["data_bytes"][name]:
             raise ValueError("Dataset size mismatch: " + name)

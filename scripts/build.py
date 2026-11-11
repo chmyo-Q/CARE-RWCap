@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Build CPGR, initial-seed support, and the sampler integration check."""
 import argparse
+from importlib import metadata
 import os
 from pathlib import Path
 import platform
 import subprocess
-from common import ROOT, dump, check_files
+from common import ROOT, dump, check_files, package_directory
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument(
@@ -16,14 +17,13 @@ args = ap.parse_args()
 if platform.system() != "Linux":
     raise SystemExit("The frozen solver requires Linux x86_64.")
 import torch
-import torch_tensorrt
 
 check_files()
 if not args.arch.isdigit():
     raise ValueError("--arch must contain digits only")
 b = ROOT / "build"
 b.mkdir(exist_ok=True)
-t, tt, cu = Path(torch.__file__).parent, Path(torch_tensorrt.__file__).parent, args.cuda_home
+t, tt, cu = Path(torch.__file__).parent, package_directory("torch_tensorrt"), args.cuda_home
 abi = str(int(torch._C._GLIBCXX_USE_CXX11_ABI))
 inc = [
     "-I" + str(p)
@@ -97,7 +97,7 @@ dump(
     {
         "python": platform.python_version(),
         "torch": torch.__version__,
-        "torch_tensorrt": torch_tensorrt.__version__,
+        "torch_tensorrt": metadata.version("torch-tensorrt"),
         "cxx11_abi": int(abi),
         "cuda_toolkit": str(cu),
         "gpu": torch.cuda.get_device_name() if torch.cuda.is_available() else None,
