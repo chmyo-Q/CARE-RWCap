@@ -1,0 +1,258 @@
+#!/usr/bin/env python3
+"""Aggregate benchmark outputs and compute paired comparisons."""
+import argparse
+import json
+import math
+from pathlib import Path
+import statistics
+from common import ROOT, dump
+from method_names import ARM_LABELS, comparison_label
+from input_checks import validate_plan
+from benchmark_stats import attribution, workload
+from evaluate_readout import evaluate
+
+
+def describe(values):
+    return {
+        "n": len(values),
+        "mean": statistics.mean(values),
+        "repeat_sd": statistics.stdev(values) if len(values) > 1 else None,
+        "min": min(values),
+        "max": max(values),
+    }
+
+
+def summarize(directory):
+    directory = Path(directory)
+    plan = json.loads((directory / "plan.json").read_text())
+    validate_plan(plan)
+    status_path = directory / "status.json"
+    status = json.loads(status_path.read_text()) if status_path.exists() else {}
+    valid = []
+    missing = []
+    invalid = []
+    for item in plan["runs"]:
+        path = directory / item["directory"] / "metrics.json"
+        if not path.exists():
+            missing.append(item["directory"])
+            continue
+        try:
+            row = json.loads(path.read_text())
+            for k, expected in [
+                ("case", item["case"]),
+                ("arm", item["arm"]),
+                ("initial_seed", item["seed"]),
+                ("master", item["config"]["master"]),
+                ("reference_F", item["config"]["reference_F"]),
+            ]:
+                if row.get(k) != expected:
+                    raise ValueError(f"{k} disagrees with plan")
+            for k in ["raw_self_error_percent", "cer_self_error_percent"]:
+                if (
+                    not isinstance(row.get(k), (int, float))
+                    or not math.isfinite(row[k])
+                    or row[k] < 0
+                ):
+                    raise ValueError("Invalid error metric: " + k)
+            # Require solver configuration, not just an unlabeled numeric result.
+            run = json.loads((path.parent / "run.json").read_text())
+            if run["arm"] != item["arm"] or run["configuration"] != item["config"]:
+                raise ValueError("Run configuration disagrees with plan")
+            # Re-read solver output before using cached metrics.
+            cfg = item["config"]
+            parsed = evaluate(
+                ROOT / cfg["geometry"],
+                path.parent / "result.out",
+                cfg.get("reference_F"),
+                cfg["master"],
+            )
+            for k in [
+                "raw_capacitance_F",
+                "cer_capacitance_F",
+                "raw_self_error_percent",
+                "cer_self_error_percent",
+                "walks",
+                "hops_per_walk",
+                "total_steps_approx",
+                "elapsed_seconds",
+                "cpu_seconds",
+            ]:
+                if k not in row or not math.isclose(row[k], parsed[k], rel_tol=1e-10, abs_tol=0):
+                    raise ValueError("Metric disagrees with original solver output: " + k)
+            if (
+                row.get("matrix_F") != parsed["matrix_F"]
+                or row.get("cer_action") != parsed["cer_action"]
+            ):
+                raise ValueError("Matrix/readout disagrees with solver output")
+            valid.append(row)
+        except (ValueError, KeyError, TypeError, OSError) as exc:
+            invalid.append({"directory": item["directory"], "reason": str(exc)})
+    warmup_missing = [
+        item["directory"]
+        for item in plan.get("warmups", [])
+        if not (directory / item["directory"] / "metrics.json").exists()
+    ]
+    complete = (
+        len(valid) == len(plan["runs"])
+        and not missing
+        and not invalid
+        and not warmup_missing
+        and status.get("state") == "completed"
+    )
+    per_case = []
+    for case in plan["cases"]:
+        for arm in plan["arms"]:
+            rows = [r for r in valid if r["case"] == case and r["arm"] == arm]
+            if not rows:
+                continue
+            per_case.append(
+                {
+                    "case": case,
+                    "arm": arm,
+                    "planned_n": len(plan["seeds"]),
+                    "raw_error_percent": describe([r["raw_self_error_percent"] for r in rows]),
+                    "cer_error_percent": describe([r["cer_self_error_percent"] for r in rows]),
+                }
+            )
+    macro = {}
+    differences = {}
+    module_comparisons = {}
+    resources = {}
+    if complete:
+        module_comparisons = attribution(valid, plan)
+        resources = {arm: workload([r for r in valid if r["arm"] == arm]) for arm in plan["arms"]}
+        for arm in plan["arms"]:
+            rows = [r for r in per_case if r["arm"] == arm]
+            raw = [r["raw_error_percent"]["mean"] for r in rows]
+            cer = [r["cer_error_percent"]["mean"] for r in rows]
+            endpoint = raw if plan["readout"][arm] == "raw" else cer
+            macro[arm] = {
+                "readout": plan["readout"][arm],
+                "case_count": len(rows),
+                "raw_macro_error_percent": statistics.mean(raw),
+                "cer_macro_error_percent": statistics.mean(cer),
+                "endpoint_macro_error_percent": statistics.mean(endpoint),
+                "endpoint_between_case_sd": (
+                    statistics.stdev(endpoint) if len(endpoint) > 1 else None
+                ),
+            }
+        if "deeprwcap" in macro:
+            baseline = macro["deeprwcap"]["endpoint_macro_error_percent"]
+            for arm in plan["arms"]:
+                if arm == "deeprwcap":
+                    continue
+                block_deltas = []
+                for seed in plan["seeds"]:
+                    a = [r for r in valid if r["initial_seed"] == seed and r["arm"] == arm]
+                    b = [r for r in valid if r["initial_seed"] == seed and r["arm"] == "deeprwcap"]
+                    key = (
+                        "raw_self_error_percent"
+                        if plan["readout"][arm] == "raw"
+                        else "cer_self_error_percent"
+                    )
+                    block_deltas.append(
+                        statistics.mean(r[key] for r in a)
+                        - statistics.mean(r["raw_self_error_percent"] for r in b)
+                    )
+                delta = macro[arm]["endpoint_macro_error_percent"] - baseline
+                differences[arm] = {
+                    "vs": "DeepRWCap raw",
+                    "mean_difference_pp": delta,
+                    "raw_difference_vs_deeprwcap_raw_pp": macro[arm]["raw_macro_error_percent"]
+                    - macro["deeprwcap"]["raw_macro_error_percent"],
+                    "cer_difference_vs_deeprwcap_cer_pp": macro[arm]["cer_macro_error_percent"]
+                    - macro["deeprwcap"]["cer_macro_error_percent"],
+                    "relative_change_percent": 100 * delta / baseline if baseline else None,
+                    "seed_block_difference_pp": describe(block_deltas),
+                    "note": "Negative favors this method. Differences are averaged within matched initial-seed blocks.",
+                }
+    reference_path = Path(__file__).resolve().parents[1] / "results/reference_public10.json"
+    reference_comparison = {}
+    if complete and plan["cases"] == [f"case{i}" for i in range(1, 11)] and reference_path.exists():
+        reference = json.loads(reference_path.read_text())
+        for arm, entry in macro.items():
+            if arm in reference["macro"]:
+                target = reference["macro"][arm]["endpoint_macro_error_percent"]
+                reference_comparison[arm] = {
+                    "paper_reference_percent": target,
+                    "difference_from_paper_pp": entry["endpoint_macro_error_percent"] - target,
+                }
+    return {
+        "complete": complete,
+        "profile": plan["profile"],
+        "planned": len(plan["runs"]),
+        "valid": len(valid),
+        "missing": missing,
+        "invalid": invalid,
+        "warmup_missing": warmup_missing,
+        "batch_state": status.get("state", "unknown"),
+        "failed": status.get("failed"),
+        "per_case": per_case,
+        "macro": macro,
+        "differences": differences,
+        "paper_reference_comparison": reference_comparison,
+        "module_comparisons": module_comparisons,
+        "resources": resources,
+        "scope": "Pointwise bootstrap intervals over matched initial-seed blocks on the fixed public benchmark.",
+    }
+
+
+def save_summary(directory, report):
+    directory = Path(directory)
+    dump(directory / "summary.json", report)
+    lines = [
+        "# Benchmark summary",
+        "",
+        f"Complete: {report['complete']}; valid/planned: {report['valid']}/{report['planned']}.",
+        "",
+    ]
+    if report["complete"]:
+        lines += [
+            "| Arm | Raw mean error (%) | CER mean error (%) | Selected endpoint (%) |",
+            "|---|---:|---:|---:|",
+        ]
+        for arm, row in report["macro"].items():
+            lines.append(
+                f"| {ARM_LABELS[arm]} | {row['raw_macro_error_percent']:.6f} | {row['cer_macro_error_percent']:.6f} | {row['endpoint_macro_error_percent']:.6f} |"
+            )
+        lines += [
+            "",
+            "| Same-batch comparison | Difference (pp) | 95% seed-block interval |",
+            "|---|---:|---|",
+        ]
+        for name, row in report["module_comparisons"].items():
+            ci = row["ci95_pp"]
+            label = "Not estimated (one seed)" if ci is None else f"[{ci[0]:+.6f}, {ci[1]:+.6f}]"
+            lines.append(
+                f"| {comparison_label(name)} | {row['mean_difference_pp']:+.6f} | {label} |"
+            )
+        lines += [
+            "",
+            "| Arm | Elapsed (s/case) | CPU (s/case) | Total walks | Weighted hops/walk |",
+            "|---|---:|---:|---:|---:|",
+        ]
+        for arm, r in report["resources"].items():
+            if r:
+                lines.append(
+                    f"| {ARM_LABELS[arm]} | {r['mean_elapsed_seconds_per_case']:.3f} | {r['mean_cpu_seconds_per_case']:.3f} | {r['mean_total_walks_across_cases']:.1f} | {r['walk_weighted_hops_per_walk']:.5f} |"
+                )
+        lines += [
+            "",
+            "Timings describe this batch. GPU/host memory and CER micro-latency are not measured here.",
+        ]
+    else:
+        lines += [
+            "Incomplete batch: aggregate performance comparisons are withheld. Inspect coverage and errors in summary.json."
+        ]
+    lines += ["", report["scope"], ""]
+    (directory / "summary.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--input", type=Path, required=True)
+    a = ap.parse_args()
+    result = summarize(a.input)
+    save_summary(a.input, result)
+    print(f"Complete={result['complete']}; valid/planned={result['valid']}/{result['planned']}")
+    raise SystemExit(0 if result["complete"] else 2)

@@ -1,0 +1,14 @@
+{
+  "case": "new002",
+  "geometry": "benchmarks/additional/new002.cap3d",
+  "master": "S7_TARGET",
+  "reference_F": 4.390211e-14,
+  "reference_source": "benchmarks/additional/references.csv",
+  "workers": 8,
+  "p": 0.01,
+  "c": 0.01,
+  "c_ratio": 0.3,
+  "omp_threads": 1,
+  "mkl_threads": 1,
+  "seed": 9263701
+}

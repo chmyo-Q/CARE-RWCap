@@ -1,0 +1,12 @@
+<conductor>
+name A
+</conductor>
+<conductor>
+name 1__B
+</conductor>
+<conductor>
+name 2__C
+</conductor>
+<capacitance>
+A
+</capacitance>

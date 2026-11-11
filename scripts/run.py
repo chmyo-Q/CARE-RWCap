@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Run a selected method on one capacitance-extraction case."""
+import argparse
+import json
+from pathlib import Path
+import subprocess
+from common import ROOT, dump, model_paths, runtime_env, check_files
+from evaluate_readout import evaluate
+from input_checks import validate_config, validate_cpgr_counts
+from method_names import normalize_arm, CLI_ARMS, ARM_LABELS
+
+ap = argparse.ArgumentParser(description=__doc__)
+ap.add_argument("--config", type=Path, default=ROOT / "configs/example.json")
+ap.add_argument(
+    "--arm",
+    type=normalize_arm,
+    choices=["deeprwcap", "capr", "care-rwcap"],
+    default="care-rwcap",
+    metavar=CLI_ARMS,
+)
+ap.add_argument(
+    "--output",
+    type=Path,
+    required=True,
+    help="New directory; existing directories are never overwritten",
+)
+ap.add_argument("--seed", type=int, help="Override initial solver seed")
+a = ap.parse_args()
+check_files()
+cfg = json.loads(a.config.read_text(encoding="utf-8"))
+if a.seed is not None:
+    cfg["seed"] = a.seed
+validate_config(cfg)
+geom = (ROOT / cfg["geometry"]).resolve()
+if not geom.is_file():
+    raise FileNotFoundError(geom)
+out = a.output.resolve()
+out.mkdir(parents=True, exist_ok=False)
+models = model_paths(a.arm in ["capr", "care-rwcap"])
+(out / "models.txt").write_text("\n".join(map(str, models)) + "\n")
+env = runtime_env(cpgr=a.arm == "care-rwcap", seed=cfg["seed"], diagnostics=out)
+env.update(OMP_NUM_THREADS=str(cfg["omp_threads"]), MKL_NUM_THREADS=str(cfg["mkl_threads"]))
+cmd = [
+    str(ROOT / "third_party/deeprwcap/runtime/deepRWCap"),
+    "-f",
+    str(geom),
+    "-n",
+    str(cfg["workers"]),
+    "-p",
+    str(cfg["p"]),
+    "-c",
+    str(cfg["c"]),
+    "--c-ratio",
+    str(cfg["c_ratio"]),
+    "--out-file",
+    str(out / "result.out"),
+    "--log-file",
+    str(out / "result.log"),
+]
+dump(
+    out / "run.json",
+    {
+        "arm": a.arm,
+        "configuration": cfg,
+        "command": cmd,
+        "models": [str(p) for p in models],
+        "environment": {
+            k: env.get(k)
+            for k in [
+                "LD_PRELOAD",
+                "LD_LIBRARY_PATH",
+                "CUDA_VISIBLE_DEVICES",
+                "OMP_NUM_THREADS",
+                "MKL_NUM_THREADS",
+                "CARE_SOLVER_SEED",
+                "CARE_CPGR_PROJECTION",
+                "CARE_CPGR_SELECTOR",
+            ]
+        },
+    },
+)
+with (out / "console.log").open("w") as f:
+    subprocess.run(cmd, cwd=out, env=env, stdout=f, stderr=subprocess.STDOUT, check=True)
+seed = json.loads((out / "SEED_AUDIT.json").read_text())
+if (
+    seed["requested_seed"] != cfg["seed"]
+    or not seed["torch_manual_seed_called"]
+    or seed["core_initial_seed_set"] != cfg["seed"]
+    or seed["core_set_seed_calls"] <= 0
+):
+    raise RuntimeError("Seed helper did not initialize requested seed")
+if a.arm == "care-rwcap":
+    projection = json.loads((out / "PROJECTION_COUNTS.json").read_text())
+    selector = json.loads((out / "JOINT_COUNTS.json").read_text())
+    validate_cpgr_counts(projection, selector)
+result = evaluate(geom, out / "result.out", cfg.get("reference_F"), cfg["master"])
+result.update(
+    case=cfg["case"], arm=a.arm, method=ARM_LABELS[a.arm], initial_seed=cfg["seed"], diagnostics=out
+)
+dump(out / "metrics.json", result)
+print(json.dumps({k: v for k, v in result.items() if k not in ("matrix_F", "arm")}, indent=2))

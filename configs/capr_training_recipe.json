@@ -1,0 +1,69 @@
+{
+  "scope": "CAPR training configuration used by scripts/train_capr.py.",
+  "training_seed": 2029,
+  "epochs": 30,
+  "selected_epoch": 25,
+  "batch_size": 16,
+  "validation_batch_size": 64,
+  "optimizer": {
+    "name": "AdamW",
+    "learning_rate": 0.0003,
+    "weight_decay": 1e-06,
+    "parameters": "adapter only; anchor parameters and BatchNorm statistics frozen"
+  },
+  "scheduler": {
+    "name": "CosineAnnealingLR",
+    "T_max": 30,
+    "eta_min": 5e-06,
+    "step": "after each training epoch"
+  },
+  "gradient_norm_clip": 1.0,
+  "num_workers": 0,
+  "epoch_shuffle_seed": "training_seed + epoch; epochs 1..30",
+  "dataset": {
+    "name": "poisson.bin",
+    "samples": 100000,
+    "train_samples": 90000,
+    "validation_samples": 10000,
+    "split_seed": 20260805,
+    "input": "normalize by spatial maximum (divisor 1 if maximum is zero)",
+    "target": "face-zero absolute kernel + 1e-10, normalized to unit sum"
+  },
+  "loss": {
+    "action_weight": 10.0,
+    "trust_weight": 2.0,
+    "risk_weight": 0.5,
+    "cvar_fraction": 0.25,
+    "max_log_dose": 0.125,
+    "primary": "K + 10*A + 2*T",
+    "training": "mean(primary) + 0.5*mean(top ceil(0.25*batch_size) primary)",
+    "validation_selection": "mean(K)+10*mean(A)+2*mean(T)+0.5*(q95(K)+10*q95(A))"
+  },
+  "checkpoint": "models/checkpoints/capr/best.pt",
+  "source_torchscript": "models/checkpoints/capr/PoissonPredictor_best.jit",
+  "deployed_engine": "models/capr/PoissonPredictor_tensorrt_fp16.jit",
+  "deployment_precision": "TensorRT FP16; source checkpoint/TorchScript FP32",
+  "post_hoc_sensitivity": {
+    "scope": "Single-training-seed sensitivity study, separate from the main checkpoint.",
+    "refinement_bounds": [
+      0.05,
+      0.1,
+      0.125,
+      0.15,
+      0.2
+    ],
+    "training_seed": 2029,
+    "epochs": 30,
+    "batch_size": 16,
+    "selection_criterion": "Same original FP32 risk-aware validation score; not a deployment metric ranking.",
+    "selected_epochs": {
+      "0.05": 25,
+      "0.10": 25,
+      "0.125": 25,
+      "0.15": 27,
+      "0.20": 30
+    },
+    "deployment_metrics": "Frozen FP16 evaluation on the same ordered 10,000 Poisson validation records.",
+    "relative_span_definition": "100*(maximum-minimum)/value_at_0.125 over bounds 0.10,0.125,0.15."
+  }
+}

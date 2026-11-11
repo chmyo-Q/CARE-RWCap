@@ -1,0 +1,42 @@
+{
+  "study": "CARE-RWCap CAPR training-seed evaluation",
+  "training_seeds": [
+    2029,
+    2039,
+    2053
+  ],
+  "selected_epochs": {
+    "2029": 25,
+    "2039": 17,
+    "2053": 19
+  },
+  "measured_solves": 300,
+  "reused_baseline_solves": 100,
+  "benchmark_protocol": "../../configs/paper_protocol.json",
+  "solver_initial_seeds": [
+    2029,
+    2030,
+    2031,
+    2032,
+    2033,
+    2034,
+    2035,
+    2036,
+    2037,
+    2038
+  ],
+  "order_seed": 20260919,
+  "warmups": "One excluded case8 solve for each CAPR model, initial seed 2040.",
+  "intervention": "Only the second models.txt line (CAPR Poisson engine); no tuning, training or new model selection.",
+  "precision": "TensorRT FP16",
+  "cpgr": {
+    "CARE_CPGR_PROJECTION": "1",
+    "CARE_CPGR_SELECTOR": "1"
+  },
+  "readout": "CARE-RWCap CER; DeepRWCap raw",
+  "comparison": "CARE-RWCap models compared with the reused DeepRWCap control, matched by case and initial FRW seed.",
+  "standard_deviation": "Sample SD (ddof=1) across three model-specific 10-case macro means; includes residual FRW evaluation noise.",
+  "baseline_batch": "Paper public10 reference",
+  "source_record_fields": "Numerical fields copied from accepted repeat_results.csv and baseline_repeat_results.csv without rounding.",
+  "release_scope": "Capacitance records and CPU reaggregation. Additional seed2039/2053 model files and original solver logs are not bundled; the default inference runner remains seed2029."
+}

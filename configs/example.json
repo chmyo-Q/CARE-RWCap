@@ -1,0 +1,14 @@
+{
+  "workers": 8,
+  "p": 0.01,
+  "c": 0.01,
+  "omp_threads": 1,
+  "mkl_threads": 1,
+  "case": "case1",
+  "master": "APpolysub",
+  "reference_F": 1.591776e-14,
+  "c_ratio": 0.95,
+  "geometry": "benchmarks/public10/case1.cap3d",
+  "reference_source": "benchmarks/public10/ref/case1.dspf",
+  "seed": 2029
+}

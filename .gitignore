@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+build/
+runs/
+*.log
+.DS_Store
+MODEL_CHECK.json
+outputs/
+/data/
+/tmp/
