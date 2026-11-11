@@ -101,8 +101,8 @@ Please cite CARE-RWCap using [CITATION.cff](CITATION.cff) or the software refere
   title={{CARE-RWCap}: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction},
   author={Qiao, Qihao and Guo, Shikai and Wang, Xinnian},
   year={2026},
-  version={1.0.2},
-  url={https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.2}
+  version={1.0.1},
+  url={https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.1}
 }
 ```
 

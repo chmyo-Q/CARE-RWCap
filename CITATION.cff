@@ -11,9 +11,9 @@ authors:
   given-names: Xinnian
 license: MIT
 repository-code: https://github.com/chmyo-Q/CARE-RWCap
-version: 1.0.2
+version: 1.0.1
 date-released: '2026-11-11'
-url: https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.2
+url: https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.1
 preferred-citation:
   type: software
   title: 'CARE-RWCap: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction'
@@ -24,6 +24,6 @@ preferred-citation:
     given-names: Shikai
   - family-names: Wang
     given-names: Xinnian
-  version: 1.0.2
+  version: 1.0.1
   date-released: '2026-11-11'
-  url: https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.2
+  url: https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.1
