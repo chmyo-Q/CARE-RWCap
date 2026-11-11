@@ -122,6 +122,12 @@ The ten public layouts were used to evaluate module variants and inspect case-le
 
 The main paper endpoints are DeepRWCap raw, CAPR+CER and CARE-RWCap CER. Default case1 uses master `APpolysub` and reference `1.591776e-14 F`; smoke uses case7 master `1`.
 
+## Memory measurements
+
+Table V's GPU memory was measured in cold-process runs on the ten public cases using `nvidia-smi --query-compute-apps=pid,used_memory --format=csv,noheader,nounits`. The monitor matches the solver PID and pauses for 50 ms between queries. The reported value is the largest sampled per-process usage across the cases, in MiB.
+
+Host memory for FRW-AGF and MicroWalk follows the solver's `Memuse` resident-memory monitor (`/proc/self/stat`), converted to MiB. FRW-FDM uses GNU `time`'s `%M` value in KiB, divided by 1024 to obtain MiB.
+
 ## Optional coupling-entry evaluation
 
 Calculate coupling error from a saved case1 output:

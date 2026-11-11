@@ -2,6 +2,8 @@
 
 Six candidate layouts were screened before end-to-end evaluation; five were retained. These are the layouts of Table VI and Fig. 4 of paper. `new004` remains included to document the reference-screening exclusion and has no end-to-end configuration.
 
+`S7_TARGET` is the target conductor name in the layout files; the configuration `master` field and `references.csv` refer to that conductor.
+
 ## References and screening
 
 [references.csv](references.csv) records FRW-FDM self-capacitances at stopping tolerances 0.005 and 0.0025. Both reference solves use 16 threads and `c_ratio=0.30`, with `p=c` set to the stated tolerance. The final reference is the raw target self term from the 0.0025 result. Discrepancy is `100 * abs(C_0.005 - C_0.0025) / C_0.0025`; retain a layout if this is at most 0.5%. New004 has discrepancy 0.7054% and was excluded before the end-to-end comparison. The supplied references are the saved estimates from this two-tolerance consistency check.

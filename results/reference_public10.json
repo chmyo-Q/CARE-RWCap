@@ -1,6 +1,6 @@
 {
   "description": "Paper reference results for ten public benchmarks, with ten repeats per method.",
-  "models": "Bundled DeepRWCap/CAPR deployment engines; Full adds the bundled CPGR implementation.",
+  "models": "Bundled DeepRWCap/CAPR deployment engines; CARE-RWCap adds the bundled CPGR implementation.",
   "seeds": [
     2029,
     2030,
@@ -16,7 +16,7 @@
   "case_count": 10,
   "repetitions_per_case_arm": 10,
   "endpoint": "DeepRWCap raw; CAPR and CARE-RWCap CER. Both raw and CER readouts are provided.",
-  "interpretation": "Historical observations, not a guaranteed target or a new independent replication. Public cases were used during development.",
+  "interpretation": "The ten public layouts were used to evaluate module variants and inspect case-level behavior during development. CAPR epoch selection uses the fixed local Poisson validation score rather than public10 SelfCapErr. Public10 and the additional layouts have separate configurations.",
   "macro": {
     "deeprwcap": {
       "readout": "raw",
