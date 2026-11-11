@@ -94,7 +94,19 @@ third_party/           DeepRWCap runtime and headers
 
 ## Citation and license
 
-[CITATION.cff](CITATION.cff) contains the manuscript title and authors; publication details will be added when available. Please also cite DeepRWCap when using its components:
+Please cite CARE-RWCap using [CITATION.cff](CITATION.cff) or the software reference below:
+
+```bibtex
+@software{qiao2026carerwcap,
+  title={{CARE-RWCap}: Condition-Aware Refinement for Neural-Guided Floating Random Walk Capacitance Extraction},
+  author={Qiao, Qihao and Guo, Shikai and Wang, Xinnian},
+  year={2026},
+  version={1.0.0},
+  url={https://github.com/chmyo-Q/CARE-RWCap/releases/tag/v1.0.0}
+}
+```
+
+Please also cite DeepRWCap when using its components:
 
 ```bibtex
 @article{rodriguez2026deeprwcap,
