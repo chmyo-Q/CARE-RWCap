@@ -1,6 +1,6 @@
 # Method
 
-The [overview](figures/overview.png), also available as a [vector PDF](figures/overview.pdf), shows the method pipeline (Fig. 1 of the paper). It follows the first neural Gradient transition (CPGR), subsequent Poisson transitions (CAPR), conductor-hit accumulation, and endpoint readout (CER). These two formats document the same figure and are not runtime inputs. The released runner evaluates one configured master per invocation and retains its capacitance row. The upstream runtime supplies neural/non-neural path selection, scheduling and stopping behavior.
+The [overview](figures/overview.png), also available as a [vector PDF](figures/overview.pdf), shows the method pipeline (Fig. 1 of the paper). Panel (a) constructs normalized dielectric states from the physical layout. Panel (b) applies CPGR at the first neural Gradient transition and CAPR during subsequent Poisson propagation. Panel (c) shows same-solve readout: the upstream solver aggregates physical fragments into logical-conductor entries, and CER consumes the resulting row to produce a conditional self-capacitance estimate. The released runner evaluates one configured master per invocation and retains its capacitance row. The upstream runtime supplies neural/non-neural path selection, scheduling and stopping behavior.
 
 ## CPGR: Conditional Parity Gradient Refinement
 
